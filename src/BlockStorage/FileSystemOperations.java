@@ -22,9 +22,9 @@ import org.apache.hadoop.conf.Configuration;
  */
 public class FileSystemOperations {
 	Utils utils = new Utils();
-  public FileSystemOperations() {
+	public FileSystemOperations() {
 
-  }
+	}
 
   /**
    * create a existing file from local filesystem to hdfs
@@ -33,9 +33,9 @@ public class FileSystemOperations {
    * @param conf
    * @throws IOException
    */
-  public  Configuration getConfiguration(){
+	public  Configuration getConfiguration(){
 		Configuration config = new Configuration();
-		System.setProperty("HADOOP_USER_NAME", "hduser");
+		System.setProperty("HADOOP_USER_NAME", utils.USER_NAME);
 		config.addResource(new Path("/usr/local/hadoop/etc/hadoop/core-site.xml"));
 		config.addResource(new Path("/usr/local/hadoop/etc/hadoop/hdfs-site.xml"));
 		//config.set("fs.defaultFS", FSNAME);
@@ -43,31 +43,31 @@ public class FileSystemOperations {
 		return config;
 	}
   
-  public void addFile(Configuration conf, block block) throws IOException {
+	public void addFile(Configuration conf, block block) throws IOException {
 
-    FileSystem fileSystem = FileSystem.get(conf);
+	FileSystem fileSystem = FileSystem.get(conf);
 
-    String dest = "/home/hduser/"+Long.toString(block.blockNumber);
-    Path path = new Path(dest);
-    if (fileSystem.exists(path)) {
-      // System.out.println("File " + dest + " already exists");
-      // TODO: delete the old file and write new file.
-      deleteFile(block.blockNumber,conf);
-    }
-     fileSystem = FileSystem.get(conf);
+	String dest = "/home/"+utils.USER_NAME+"/"+Long.toString(block.blockNumber);
+	Path path = new Path(dest);
+	if (fileSystem.exists(path)) {
+		// System.out.println("File " + dest + " already exists");
+		// TODO: delete the old file and write new file.
+		deleteFile(block.blockNumber,conf);
+	}
+	 fileSystem = FileSystem.get(conf);
 
-    // Create a new file and write data to it.
-    FSDataOutputStream out = fileSystem.create(path);
-    //InputStream in = new BufferedInputStream(new FileInputStream(new File(source)));
+	// Create a new file and write data to it.
+	FSDataOutputStream out = fileSystem.create(path);
+	//InputStream in = new BufferedInputStream(new FileInputStream(new File(source)));
 
-    // convert block to byte array
-    int numBytes = utils.PAGE_SIZE;
-    
-    out.write(block.blockData, 0, 8*numBytes);
+	// convert block to byte array
+	int numBytes = utils.PAGE_SIZE;
 
-    // Close all the file descriptors
-    out.close();
-    fileSystem.close();
+	out.write(block.blockData, 0, 8*numBytes);
+
+	// Close all the file descriptors
+	out.close();
+	fileSystem.close();
   }
 
   /**
@@ -76,78 +76,78 @@ public class FileSystemOperations {
    * @param conf
    * @throws IOException
    */
-  public byte[] readFile( Configuration conf,long blockNumber) throws IOException {
+	public byte[] readFile( Configuration conf,long blockNumber) throws IOException {
 	  
-    FileSystem fileSystem = FileSystem.get(conf);
-    	
-    String file = "/home/hduser/"+Long.toString(blockNumber);
-    
-    Path path = new Path(file);
-    byte[] b = new byte[8*utils.PAGE_SIZE];
-    if (!fileSystem.exists(path)) {
-      // System.out.println("File " + file + " does not exists");
-      fileSystem.close();
-      return b;
-    }
+	FileSystem fileSystem = FileSystem.get(conf);
 
-    FSDataInputStream in = fileSystem.open(path);
+	String file = "/home/"+utils.USER_NAME+"/"+Long.toString(blockNumber);
 
-//    String filename = file.substring(file.lastIndexOf('/') + 1,
-//        file.length());
+	Path path = new Path(file);
+	byte[] b = new byte[8*utils.PAGE_SIZE];
+	if (!fileSystem.exists(path)) {
+	   System.out.println("File " + file + " does not exist");
+	  fileSystem.close();
+	  return b;
+	}
 
-    // OutputStream out = new BufferedOutputStream(new FileOutputStream( new File(filename)));
+	FSDataInputStream in = fileSystem.open(path);
 
-    int numBytes = 0;
-    while ((numBytes = in.read(b)) > 0) {
-    		in.close();
-        //out.close();
-        fileSystem.close();
-        return b;
-    }
-    in.close();
-    //out.close();
-    fileSystem.close();
-    return b;
-  }
+//	String filename = file.substring(file.lastIndexOf('/') + 1,
+//	file.length());
+//
+//	OutputStream out = new BufferedOutputStream(new FileOutputStream( new File(filename)));
+
+	int numBytes = 0;
+	while ((numBytes = in.read(b)) > 0) {
+		in.close();
+		//out.close();
+		fileSystem.close();
+		return b;
+	}
+	in.close();
+	//out.close();
+	fileSystem.close();
+	return b;
+	}
 
   /**
    * delete a directory in hdfs
    * @param file
    * @throws IOException
    */
-  public void deleteFile(long blockNumber, Configuration conf) throws IOException {
-    FileSystem fileSystem = FileSystem.get(conf);
-    String file = "/home/hduser/"+Long.toString(blockNumber);
-    Path path = new Path(file);
-    if (!fileSystem.exists(path)) {
-      System.out.println("File " + file + " does not exists");
-      fileSystem.close();
-      return;
-    }
+	public void deleteFile(long blockNumber, Configuration conf) throws IOException {
+	FileSystem fileSystem = FileSystem.get(conf);
+	String file = "/home/"+utils.USER_NAME+"/"+Long.toString(blockNumber);
+	Path path = new Path(file);
+	if (!fileSystem.exists(path)) {
+		System.out.println("File " + file + " does not exists");
+		fileSystem.close();
+		return;
+	}
 
-    fileSystem.delete(new Path(file), true);
+	fileSystem.delete(new Path(file), true);
 
-    fileSystem.close();
-  }
+	fileSystem.close();
+	}
 
-  /**
-   * create directory in hdfs
-   * @param dir
-   * @throws IOException
-   */
-  public void mkdir(String dir, Configuration conf) throws IOException {
-    FileSystem fileSystem = FileSystem.get(conf);
+	/**
+	* create directory in hdfs
+	* @param dir
+	* @throws IOException
+	*/
+	public void mkdir(String dir, Configuration conf) throws IOException {
+	FileSystem fileSystem = FileSystem.get(conf);
 
-    Path path = new Path(dir);
-    if (fileSystem.exists(path)) {
-      System.out.println("Dir " + dir + " already not exists");
-      return;
-    }
+	Path path = new Path(dir);
+	if (fileSystem.exists(path)) {
+		System.out.println("Dir " + dir + " already not exists");
+		return;
+	}
 
-    fileSystem.mkdirs(path);
+	fileSystem.mkdirs(path);
 
-    fileSystem.close();
-  }
+	fileSystem.close();
+	}
 
 //  public static void main(String[] args) throws IOException {
 //

@@ -11,20 +11,19 @@ public class Test{
 
 	public void shit(){
 		FileSystemOperations client = new FileSystemOperations();
-    // 	block block = new block(0,new byte[8*utils.PAGE_SIZE]);
-    // 	try{
-    // 		client.deleteFile(0,HDFSLayer.config);
-    // 	client.addFile(HDFSLayer.config,block);
-    // }
-    // catch(IOException e){
-    // 	e.printStackTrace();
-    // }
-		
+	// 	block block = new block(0,new byte[8*utils.PAGE_SIZE]);
+	// 	try{
+	// 		client.deleteFile(0,HDFSLayer.config);
+	// 	client.addFile(HDFSLayer.config,block);
+	// }
+	// catch(IOException e){
+	// 	e.printStackTrace();
+	// }
 
 		blockServer server = new blockServer(cache, SSD, HDFSLayer);
-		System.out.println("Shit done");
+		System.out.println("Shit --- done");
 		long startTime = System.nanoTime();
-		runSeqTest(110000,server);
+		runSeqTest(100000 ,server);
 		long endTime = System.nanoTime();
 		System.out.println((endTime-startTime));
 	// 	try{

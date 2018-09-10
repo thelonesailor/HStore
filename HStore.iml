@@ -10,6 +10,19 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
+          <root url="file:///usr/local/hadoop/share/hadoop/common/lib" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file:///usr/local/hadoop/share/hadoop/common/lib" />
+        </SOURCES>
+        <jarDirectory url="file:///usr/local/hadoop/share/hadoop/common/lib" recursive="false" />
+        <jarDirectory url="file:///usr/local/hadoop/share/hadoop/common/lib" recursive="false" type="SOURCES" />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
           <root url="jar:///usr/local/hadoop/hadoop-core-1.2.1.jar!/" />
         </CLASSES>
         <JAVADOC />

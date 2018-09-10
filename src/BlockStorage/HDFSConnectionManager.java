@@ -1,10 +1,8 @@
 package BlockStorage;
 
 public class HDFSConnectionManager{
-    public boolean createImage(){
+	public boolean createImage(){
 		return false;
 
-    }
-
-
+	}
 }
