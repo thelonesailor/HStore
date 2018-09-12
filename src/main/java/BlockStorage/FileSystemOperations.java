@@ -35,11 +35,11 @@ public class FileSystemOperations {
    */
 	public  Configuration getConfiguration(){
 		Configuration config = new Configuration();
-		System.setProperty("HADOOP_USER_NAME", utils.USER_NAME);
+		System.setProperty("HADOOP_USER_NAME", utils.HADOOP_USER_NAME);
 		config.addResource(new Path("/usr/local/hadoop/etc/hadoop/core-site.xml"));
 		config.addResource(new Path("/usr/local/hadoop/etc/hadoop/hdfs-site.xml"));
 		//config.set("fs.defaultFS", FSNAME);
-		//config.setInt("dfs.replication", 2);
+		config.setInt("dfs.replication", 2);
 		return config;
 	}
   
@@ -47,14 +47,15 @@ public class FileSystemOperations {
 
 	FileSystem fileSystem = FileSystem.get(conf);
 
-	String dest = "/home/"+utils.USER_NAME+"/"+Long.toString(block.blockNumber);
+	String dest = utils.HDFS_LOCATION+"/"+Long.toString(block.blockNumber);
 	Path path = new Path(dest);
 	if (fileSystem.exists(path)) {
 		// System.out.println("File " + dest + " already exists");
 		// TODO: delete the old file and write new file.
 		deleteFile(block.blockNumber,conf);
 	}
-	 fileSystem = FileSystem.get(conf);
+
+	fileSystem = FileSystem.get(conf);
 
 	// Create a new file and write data to it.
 	FSDataOutputStream out = fileSystem.create(path);
@@ -80,7 +81,7 @@ public class FileSystemOperations {
 	  
 	FileSystem fileSystem = FileSystem.get(conf);
 
-	String file = "/home/"+utils.USER_NAME+"/"+Long.toString(blockNumber);
+	String file = utils.HDFS_LOCATION+"/"+Long.toString(blockNumber);
 
 	Path path = new Path(file);
 	byte[] b = new byte[8*utils.PAGE_SIZE];
@@ -117,7 +118,7 @@ public class FileSystemOperations {
    */
 	public void deleteFile(long blockNumber, Configuration conf) throws IOException {
 	FileSystem fileSystem = FileSystem.get(conf);
-	String file = "/home/"+utils.USER_NAME+"/"+Long.toString(blockNumber);
+	String file = utils.HDFS_LOCATION+"/"+Long.toString(blockNumber);
 	Path path = new Path(file);
 	if (!fileSystem.exists(path)) {
 		System.out.println("File " + file + " does not exists");

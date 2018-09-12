@@ -11,27 +11,22 @@ import java.util.Map;
 
 public class SSD{
 
-	page[] SSDBuffer, SSDToHDFSBuffer;
-	int SSDBufferPointer, SSDToHDFSBufferPointer;
-	String SSD_LOCATION;
-	Utils utils = new Utils();
-	LinkedHashMap<Long, Boolean> recencyList;
-	HDFSLayer HDFSLayer;
+//	private page[] SSDBuffer, SSDToHDFSBuffer;
+//	private int SSDBufferPointer, SSDToHDFSBufferPointer;
+	private String SSD_LOCATION;
+	private Utils utils = new Utils();
+	private LinkedHashMap<Long, Boolean> recencyList;
+	private HDFSLayer HDFSLayer;
 	private static Map.Entry<Long, Boolean> elder = null;
-	int size;
+	private int size;
 
 	public SSD(HDFSLayer HDFSLayer){
-		size = 0;
-			this.HDFSLayer = HDFSLayer;
-		this.SSDBuffer = new page[utils.CHUNK_SIZE];
+		this.size = 0;
+		this.HDFSLayer = HDFSLayer;
+//		this.SSDBuffer = new page[utils.CHUNK_SIZE];
 		setSSD_LOCATION();
 		this.recencyList = new LinkedHashMap<Long, Boolean>(utils.SSD_SIZE, 0.75F, false) {
-
-			/**
-			 * 
-			 */
 			private static final long serialVersionUID = 1L;
-
 			@Override
 			protected boolean removeEldestEntry(Map.Entry<Long, Boolean> eldest) {
 				elder =  eldest;
@@ -45,23 +40,23 @@ public class SSD{
 		this.SSD_LOCATION = utils.getSSD_LOCATION();
 	}
 
-	public void flushSSDBufferToSSD(){
-		for (int i = 0; i < utils.CHUNK_SIZE; i++) {
-			String fileName = SSD_LOCATION + "/" + SSDBuffer[i].getPageNumber();
-			try
-			{
-				FileOutputStream out = new FileOutputStream(fileName);
-				out.write(SSDBuffer[i].getPageData());
-				out.close();
-			}
-			catch (IOException e)
-			{
-				System.out.println("Exception Occurred:");
-				e.printStackTrace();
-			}
-		}
-		SSDBufferPointer = 0;
-	}
+//	public void flushSSDBufferToSSD(){
+//		for (int i = 0; i < utils.CHUNK_SIZE; i++) {
+//			String fileName = SSD_LOCATION + "/" + SSDBuffer[i].getPageNumber();
+//			try
+//			{
+//				FileOutputStream out = new FileOutputStream(fileName);
+//				out.write(SSDBuffer[i].getPageData());
+//				out.close();
+//			}
+//			catch (IOException e)
+//			{
+//				System.out.println("Exception Occurred:");
+//				e.printStackTrace();
+//			}
+//		}
+//		SSDBufferPointer = 0;
+//	}
 
 	public void writeSSDPage(page page) {
 		String fileName = SSD_LOCATION + "/" + page.getPageNumber();
@@ -128,6 +123,16 @@ public class SSD{
 			}
 		}
 		recencyList.put(page.getPageNumber(), true); //elder is updated
+	}
+
+	public void resetSSD(){
+		for(Long key : recencyList.keySet()) {
+			page temp = readSSDPage(key);
+			HDFSLayer.writePage(temp);
+		}
+
+		size=0;
+		recencyList.clear();
 	}
 
 	public void flushSSDToHDFS(){

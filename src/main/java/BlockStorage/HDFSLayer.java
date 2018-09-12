@@ -182,4 +182,18 @@ public class HDFSLayer{
 		}
 		return 0;
 	}
+
+	public void flushHDFSbuffer(){
+		for(Long key : HDFSBufferList.keySet()) {
+			blockValue x = HDFSBufferList.get(key);
+			try{
+				client.addFile(config, HDFSBufferArray[x.getPointer()]);
+			}catch(IOException e){
+				e.printStackTrace();
+			}
+		}
+
+		writePointer=0;
+		HDFSBufferList.clear();
+	}
 }

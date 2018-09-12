@@ -1,5 +1,6 @@
 package BlockStorage;
 
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -78,6 +79,16 @@ public class cache{
 				return (writePointer - 1);
 			}
 		}
+	}
+
+	public void resetCache(){
+		for(Long key : cacheList.keySet()) {
+			cacheValue x = cacheList.get(key);
+			SSD.writePage(new page((long) key, cacheBuffer[x.getPointer()]));
+		}
+
+		writePointer=0;
+		cacheList.clear();
 	}
 
 	/***
