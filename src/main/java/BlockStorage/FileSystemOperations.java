@@ -36,8 +36,12 @@ public class FileSystemOperations {
 	public  Configuration getConfiguration(){
 		Configuration config = new Configuration();
 		System.setProperty("HADOOP_USER_NAME", utils.HADOOP_USER_NAME);
-		config.addResource(new Path("/usr/local/hadoop/etc/hadoop/core-site.xml"));
-		config.addResource(new Path("/usr/local/hadoop/etc/hadoop/hdfs-site.xml"));
+
+		String HADOOP_HOME=System.getenv("HADOOP_HOME");
+//		String HADOOP_HOME="/usr/local/hadoop";
+//		System.out.println(System.getenv("HADOOP_HOME"));
+		config.addResource(new Path(HADOOP_HOME+"/etc/hadoop/core-site.xml"));
+		config.addResource(new Path(HADOOP_HOME+"/etc/hadoop/hdfs-site.xml"));
 		//config.set("fs.defaultFS", FSNAME);
 		config.setInt("dfs.replication", 2);
 		return config;
@@ -47,8 +51,10 @@ public class FileSystemOperations {
 
 	FileSystem fileSystem = FileSystem.get(conf);
 
-	String dest = utils.HDFS_LOCATION+"/"+Long.toString(block.blockNumber);
-	Path path = new Path(dest);
+	String file = conf.get("fs.defaultFS")+utils.HDFS_PATH+"/"+Long.toString(block.blockNumber);
+//	System.out.println(file);
+
+	Path path = new Path(file);
 	if (fileSystem.exists(path)) {
 		// System.out.println("File " + dest + " already exists");
 		// TODO: delete the old file and write new file.
@@ -81,7 +87,8 @@ public class FileSystemOperations {
 	  
 	FileSystem fileSystem = FileSystem.get(conf);
 
-	String file = utils.HDFS_LOCATION+"/"+Long.toString(blockNumber);
+	String file = conf.get("fs.defaultFS")+utils.HDFS_PATH+"/"+Long.toString(blockNumber);
+//	System.out.println(file);
 
 	Path path = new Path(file);
 	byte[] b = new byte[8*utils.PAGE_SIZE];
@@ -118,10 +125,13 @@ public class FileSystemOperations {
    */
 	public void deleteFile(long blockNumber, Configuration conf) throws IOException {
 	FileSystem fileSystem = FileSystem.get(conf);
-	String file = utils.HDFS_LOCATION+"/"+Long.toString(blockNumber);
-	Path path = new Path(file);
+
+	String file = conf.get("fs.defaultFS")+utils.HDFS_PATH+"/"+Long.toString(blockNumber);
+//	System.out.println(file);
+
+		Path path = new Path(file);
 	if (!fileSystem.exists(path)) {
-		System.out.println("File " + file + " does not exists");
+		System.out.println("File " + file + " does not exist");
 		fileSystem.close();
 		return;
 	}

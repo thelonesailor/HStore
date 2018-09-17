@@ -99,19 +99,21 @@ public class SSD{
 			return readSSDPage(pageNumber);
 	}
 
-	public void writePage(page page){
+	public void writePage(page page, blockServer server){
 //        SSDBuffer[this.SSDBufferPointer] = page;
 //        SSDBufferPointer++;
 //        if(SSDBufferPointer == utils.CHUNK_SIZE){
 //            flushSSDBufferToSSD();
 //        }
 
+		server.updatePageIndex(page.getPageNumber(), false, true, false);
+
 		if(size == utils.SSD_SIZE-1){
 			if(recencyList.containsKey(page.getPageNumber())){
 				writeSSDPage(page);
 			}else{
 				page temp = readSSDPage(elder.getKey());
-				HDFSLayer.writePage(temp);
+				HDFSLayer.writePage(temp, server);
 				writeSSDPage(page);
 			}
 		}else{
@@ -125,10 +127,10 @@ public class SSD{
 		recencyList.put(page.getPageNumber(), true); //elder is updated
 	}
 
-	public void resetSSD(){
+	public void resetSSD(blockServer server){
 		for(Long key : recencyList.keySet()) {
 			page temp = readSSDPage(key);
-			HDFSLayer.writePage(temp);
+			HDFSLayer.writePage(temp, server);
 		}
 
 		size=0;

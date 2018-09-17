@@ -14,8 +14,8 @@ public class cache{
 
 	private static Map.Entry<Long, cacheValue> elder = null;
 
-	public cache(SSD SSD){
-			this.SSD = SSD;
+	cache(SSD SSD){
+		this.SSD = SSD;
 		this.cacheList = new LinkedHashMap<Long, cacheValue>(utils.CACHE_SIZE, 0.75F, false) {
 
 			/**
@@ -51,7 +51,7 @@ public class cache{
 	 * @param dirtyBit
 	 * @return pointer to the cacheBuffer
 	 */
-	public int addWrite(long pageNumber, boolean dirtyBit){
+	public int addWrite(long pageNumber, boolean dirtyBit, blockServer server){
 		if(cacheList.containsKey(pageNumber)){
 			// page already exists in cache
 			cacheValue val = cacheList.get(pageNumber);
@@ -66,10 +66,14 @@ public class cache{
 				cacheValue val = new cacheValue();
 				cacheList.put(pageNumber,val); // elder gets updated here
 				if(elder.getValue().getDirtyBit()){
-					SSD.writePage(new page((long) elder.getKey(), cacheBuffer[elder.getValue().getPointer()]));
+					SSD.writePage(new page(elder.getKey(), cacheBuffer[elder.getValue().getPointer()]), server);
 				}
 				val.setPointer(elder.getValue().getPointer());
+
 				val.setDirtyBit(dirtyBit);
+				cacheList.remove(pageNumber);
+				cacheList.put(pageNumber,val);
+
 				return elder.getValue().getPointer();
 			}else{
 				// initial stage
@@ -81,10 +85,10 @@ public class cache{
 		}
 	}
 
-	public void resetCache(){
+	public void resetCache(blockServer server){
 		for(Long key : cacheList.keySet()) {
 			cacheValue x = cacheList.get(key);
-			SSD.writePage(new page((long) key, cacheBuffer[x.getPointer()]));
+			SSD.writePage(new page(key, cacheBuffer[x.getPointer()]), server);
 		}
 
 		writePointer=0;
@@ -117,9 +121,9 @@ public class cache{
 		return new page(pageNumber, cacheBuffer[pointer]);
 	}
 
-	public void writePage(page page, boolean dirtyBit){
+	public void writePage(page page, boolean dirtyBit, blockServer server){
 		// System.out.println("CACHE");
-		int pointer = addWrite(page.getPageNumber(), dirtyBit);
+		int pointer = addWrite(page.getPageNumber(), dirtyBit, server);
 		cacheBuffer[pointer] = page.getPageData();
 	}
 }

@@ -14,6 +14,7 @@ public class blockServer{
 		this.cache = cache;
 		this.SSD = SSD;
 		this.HDFSLayer = HDFSLayer;
+		pageIndex.clear();
 	}
 
 	public void createImage(){
@@ -23,10 +24,13 @@ public class blockServer{
 	public void deleteImage(){
 
 	}
-
+	/**
+	 * @param pageNumber is 1 indexed
+	 * */
 	public page readPage(long pageNumber){
 		page returnPage = null;
 		position pos = pageIndex.get(pageNumber);
+
 		if(pos.isLocationCache())
 		{
 			returnPage =  cache.readPage(pageNumber);
@@ -34,7 +38,7 @@ public class blockServer{
 		else if(pos.isLocationSSD())
 		{
 			returnPage = SSD.readPage(pageNumber);
-			cache.writePage(returnPage, false);
+			cache.writePage(returnPage, false, this);
 			updatePageIndex(pageNumber, true, true, pos.isLocationHDFS());
 		}
 		else if(pos.isLocationHDFS()){
@@ -45,7 +49,7 @@ public class blockServer{
 				// TODO : if condition to be added to check the validity
 				position p = pageIndex.get(returnBlock.blockNumber+i);
 				if(p!=null && p.isLocationHDFS() && cache.cacheList.get(returnBlock.blockNumber+i)==null) {
-					cache.writePage(returnAllPages[i], false);
+					cache.writePage(returnAllPages[i], false, this);
 					updatePageIndex(pageNumber, true, false, true);
 				}
 			}
@@ -55,9 +59,12 @@ public class blockServer{
 		return returnPage;
 	}
 
-	public void writePage(long pageNumber, byte[] pageData){
+	/**
+	 * @param pageNumber is 1 indexed
+	 * */
+	void writePage(long pageNumber, byte[] pageData){
 		page newPage = new page(pageNumber, pageData);
-		cache.writePage(newPage, true);
+		cache.writePage(newPage, true, this);
 		updatePageIndex(pageNumber, true, false, false);
 	}
 

@@ -51,8 +51,9 @@ public class HDFSLayer{
 
 	}
 
-	public void writePage(page page){
-		   HDFSBufferWrite(page, true);
+	public void writePage(page page, blockServer server){
+		server.updatePageIndex(page.getPageNumber(),false, false, true);
+		HDFSBufferWrite(page, true);
 	}
 
 	public block readBlock(long pageNumber){
@@ -157,21 +158,24 @@ public class HDFSLayer{
 				HDFSBufferList.put(blockNumber, val);
 				return pointer;
 			}else{
-				if(writePointer == utils.CACHE_SIZE){
+				if(writePointer == utils.BUFFER_SIZE){
 					// victim page removal
 					blockValue val = new blockValue();
 					HDFSBufferList.put(blockNumber,val);
 					if(elder.getValue().getDirtyBit()){
 						// TODO : write to HDFS
-							blockList.put(elder.getKey(),true);
-							client.addFile(config, HDFSBufferArray[elder.getValue().getPointer()]);
+						blockList.put(elder.getKey(),true);
+						client.addFile(config, HDFSBufferArray[elder.getValue().getPointer()]);
 					}
 					val.setPointer(elder.getValue().getPointer());
 					val.setDirtyBit(dirtyBit);
+					HDFSBufferList.remove(blockNumber);
+					HDFSBufferList.put(blockNumber,val);
+					assert (HDFSBufferList.size()<=utils.BUFFER_SIZE);
 					return elder.getValue().getPointer();
 				}else{
 					// initial stage
-					blockValue val = new blockValue(writePointer,dirtyBit);
+					blockValue val = new blockValue(writePointer,true);
 					HDFSBufferList.put(blockNumber, val);
 					writePointer++;
 					return (writePointer - 1);
