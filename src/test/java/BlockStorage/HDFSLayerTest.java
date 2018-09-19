@@ -34,7 +34,7 @@ public class HDFSLayerTest {
 		}
 		double endTime = System.nanoTime();
 		double time=(endTime - startTime) / 1000000000L;
-		System.out.println("Wrote "+numPages +" pages in "+time+" seconds at "+(16*numPages*1.0)/time+"kB/s");
+		System.out.println("Wrote "+ numBlocks +" blocks to HDFS directly in "+time+" seconds at "+(16*numPages*1.0)/time+"kB/s");
 
 		startTime = System.nanoTime();
 		for(int i=1;i<=numBlocks;++i){
@@ -46,7 +46,7 @@ public class HDFSLayerTest {
 		}
 		endTime = System.nanoTime();
 		time=(endTime - startTime) / 1000000000L;
-		System.out.println("Read "+numPages +" pages in "+time+" seconds at "+(16*numPages*1.0)/time+"kB/s");
+		System.out.println("Read "+numBlocks +" blocks from HDFS directly in "+time+" seconds at "+(16*numPages*1.0)/time+"kB/s");
 
 		System.out.println("------------------------------------------------------");
 	}
