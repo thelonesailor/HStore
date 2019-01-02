@@ -11,12 +11,12 @@ public class HDFSLayerTest {
 	private Utils utils = new Utils();
 
 	@Test
-	public void WriteAndReadFromHDFSDirectly1() {
+	public void WriteAndReadFromHDFSClusterDirectly1() {
 		HDFSLayer HDFSLayer = new HDFSLayer();
 		SSD SSD = new SSD(HDFSLayer);
 		cache cache = new cache(SSD);
 
-		int numPages = 1000;
+		int numPages = 100;
 		int numBlocks = numPages/8;
 		blockServer server = new blockServer(cache, SSD, HDFSLayer);
 		System.out.println("Block Server made");

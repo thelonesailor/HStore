@@ -4,15 +4,17 @@ public class position{
 	boolean locationCache;
 	boolean locationSSD;
 	boolean locationHDFS;
+	boolean diryBit;
 
 	public position(){
 
 	}
 
-	public position(boolean locationCache, boolean locationSSD, boolean locationHDFS){
+	public position(boolean locationCache, boolean locationSSD, boolean locationHDFS, boolean dirtyBit){
 		this.locationCache = locationCache;
 		this.locationSSD = locationSSD;
 		this.locationHDFS = locationHDFS;
+		this.diryBit = dirtyBit;
 	}
 
 	public boolean isLocationCache(){
@@ -37,5 +39,9 @@ public class position{
 
 	public void setLocationSSD(boolean locationSSD) {
 		this.locationSSD = locationSSD;
+	}
+
+	public boolean isDirty() {
+		return diryBit;
 	}
 }

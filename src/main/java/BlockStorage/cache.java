@@ -18,9 +18,6 @@ public class cache{
 		this.SSD = SSD;
 		this.cacheList = new LinkedHashMap<Long, cacheValue>(utils.CACHE_SIZE, 0.75F, false) {
 
-			/**
-			 * 
-			 */
 			private static final long serialVersionUID = 1L;
 
 			protected boolean removeEldestEntry(Map.Entry<Long, cacheValue> eldest) {
@@ -40,9 +37,10 @@ public class cache{
 	 */
 	public int addRead(long pageNumber){
 		cacheValue val = cacheList.get(pageNumber);
+//		 System.out.println(pageNumber);
 		int pointer = val.getPointer();
 		cacheList.remove(pageNumber);
-		cacheList.put(pageNumber,val);
+		cacheList.put(pageNumber,new cacheValue(pointer));
 		return pointer;
 	}
 	/***
@@ -57,28 +55,29 @@ public class cache{
 			cacheValue val = cacheList.get(pageNumber);
 			int pointer = val.getPointer();
 			cacheList.remove(pageNumber);
-			val.setDirtyBit(dirtyBit);
-			cacheList.put(pageNumber,val);
+			cacheList.put(pageNumber,new cacheValue(pointer));
 			return pointer;
 		}else{
 			if(writePointer == utils.CACHE_SIZE){
 				// victim page removal
 				cacheValue val = new cacheValue();
 				cacheList.put(pageNumber,val); // elder gets updated here
-				if(elder.getValue().getDirtyBit()){
+				if(server.pageIndex.get(elder.getKey()).isDirty() /*elder.getValue().getDirtyBit()*/){
 					SSD.writePage(new page(elder.getKey(), cacheBuffer[elder.getValue().getPointer()]), server);
 				}
-				val.setPointer(elder.getValue().getPointer());
+				server.updatePageIndex(elder.getKey(), 0, 1, -1, -1);
+				cacheList.remove(elder.getKey());
 
-				val.setDirtyBit(dirtyBit);
+
 				cacheList.remove(pageNumber);
-				cacheList.put(pageNumber,val);
+				cacheList.put(pageNumber,new cacheValue(elder.getValue().getPointer()));
 
 				return elder.getValue().getPointer();
 			}else{
 				// initial stage
-				cacheValue val = new cacheValue(writePointer,dirtyBit);
-				cacheList.put(pageNumber,val);
+//				cacheValue val = new cacheValue(writePointer);
+				cacheList.put(pageNumber, new cacheValue(writePointer));
+//				 System.out.println("added "+pageNumber);
 				writePointer++;
 				return (writePointer - 1);
 			}
@@ -95,22 +94,13 @@ public class cache{
 		cacheList.clear();
 	}
 
-	/***
-	 * removes the tail entry and returns pointer
-	 * @return pointer
-	 */
-	public int getBlankPage(){
-		return 0;
-	}
-
-	/***
-	 * Flushes the dirty pages into SSD.
-	 * @param numberOfPages
-	 * @return false if the number of dirty pages < numberOfPages.
-	 */
-	public boolean cleanWriteChunk(int numberOfPages){
-		return true;
-	}
+//	/***
+//	 * removes the tail entry and returns pointer
+//	 * @return pointer
+//	 */
+//	public int getBlankPage(){
+//		return 0;
+//	}
 
 	/***
 	 * It is guaranteed that page is already in the cache

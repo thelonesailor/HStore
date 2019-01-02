@@ -52,7 +52,7 @@ public class HDFSLayer{
 	}
 
 	public void writePage(page page, blockServer server){
-		server.updatePageIndex(page.getPageNumber(),false, false, true);
+
 		HDFSBufferWrite(page, true);
 	}
 

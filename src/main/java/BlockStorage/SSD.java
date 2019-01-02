@@ -11,8 +11,6 @@ import java.util.Map;
 
 public class SSD{
 
-//	private page[] SSDBuffer, SSDToHDFSBuffer;
-//	private int SSDBufferPointer, SSDToHDFSBufferPointer;
 	private String SSD_LOCATION;
 	private Utils utils = new Utils();
 	private LinkedHashMap<Long, Boolean> recencyList;
@@ -40,24 +38,6 @@ public class SSD{
 		this.SSD_LOCATION = utils.getSSD_LOCATION();
 	}
 
-//	public void flushSSDBufferToSSD(){
-//		for (int i = 0; i < utils.CHUNK_SIZE; i++) {
-//			String fileName = SSD_LOCATION + "/" + SSDBuffer[i].getPageNumber();
-//			try
-//			{
-//				FileOutputStream out = new FileOutputStream(fileName);
-//				out.write(SSDBuffer[i].getPageData());
-//				out.close();
-//			}
-//			catch (IOException e)
-//			{
-//				System.out.println("Exception Occurred:");
-//				e.printStackTrace();
-//			}
-//		}
-//		SSDBufferPointer = 0;
-//	}
-
 	public void writeSSDPage(page page) {
 		String fileName = SSD_LOCATION + "/" + page.getPageNumber();
 		try
@@ -78,9 +58,9 @@ public class SSD{
 		byte[] pageData = new byte[utils.PAGE_SIZE];
 		try
 		{
-			FileInputStream fin = new FileInputStream(file);
-			fin.read(pageData);
-			fin.close();
+			FileInputStream in = new FileInputStream(file);
+			in.read(pageData);
+			in.close();
 		}
 		catch(FileNotFoundException e)
 		{
@@ -100,20 +80,18 @@ public class SSD{
 	}
 
 	public void writePage(page page, blockServer server){
-//        SSDBuffer[this.SSDBufferPointer] = page;
-//        SSDBufferPointer++;
-//        if(SSDBufferPointer == utils.CHUNK_SIZE){
-//            flushSSDBufferToSSD();
-//        }
 
-		server.updatePageIndex(page.getPageNumber(), false, true, false);
 
 		if(size == utils.SSD_SIZE-1){
 			if(recencyList.containsKey(page.getPageNumber())){
 				writeSSDPage(page);
 			}else{
+				//assume elder is always updated
 				page temp = readSSDPage(elder.getKey());
 				HDFSLayer.writePage(temp, server);
+				server.updatePageIndex(elder.getKey(),-1, -1, 1, -1);
+
+				recencyList.remove(temp.getPageNumber());
 				writeSSDPage(page);
 			}
 		}else{
@@ -137,8 +115,4 @@ public class SSD{
 		recencyList.clear();
 	}
 
-	public void flushSSDToHDFS(){
-		// TODO : create the recency list
-
-	}
 }
