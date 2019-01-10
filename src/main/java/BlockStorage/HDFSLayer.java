@@ -43,17 +43,9 @@ public class HDFSLayer{
 		this.writePointer = 0;
 	}
 
-	public void createImage(){
-
-		/***
-		 * TODO : create folder in HDFS
-		 */
-
-	}
 
 	public void writePage(page page, blockServer server){
-
-		HDFSBufferWrite(page, true);
+		HDFSBufferWritePage(page, true);
 	}
 
 	public block readBlock(long pageNumber){
@@ -64,13 +56,14 @@ public class HDFSLayer{
 	 * Writes or update the page to the corresponding block
 	 * @param page
 	 */
-	public void HDFSBufferWrite(page page, boolean dirtyBit){
+	public void HDFSBufferWritePage(page page, boolean dirtyBit){
 		/***
 		 * Update the page if present in the buffer else
 		 * get the block that is having this page and update the block
 		 */
+		assert dirtyBit;
 		try{
-			long blockNumber = page.getPageNumber() / 8;
+			long blockNumber = page.getPageNumber() >> 3;
 			if(HDFSBufferList.containsKey(blockNumber)){
 
 				// System.out.println("Hello "+page.getPageNumber());
@@ -79,9 +72,6 @@ public class HDFSLayer{
 				HDFSBufferArray[pointer].addPageToBlock(page);
 			}
 			else{
-				/***
-				* TODO : get the block from HDFS
-				*/
 				// System.out.println("Hello "+page.getPageNumber());
 				byte[] read;
 				if(blockList.containsKey(blockNumber)){
@@ -106,16 +96,14 @@ public class HDFSLayer{
 
 	public block HDFSBufferReadBlock(long pageNumber){
 
-		long blockNumber = pageNumber / 8;
+		long blockNumber = pageNumber >> 3;
 		block tempBlock = null;
 	try{
 		if(HDFSBufferList.containsKey(blockNumber)){
 			int pointer = addRead(blockNumber);
 			tempBlock =  HDFSBufferArray[pointer];
 		}else{
-			/***
-			 * TODO : get the block from HDFS
-			 */
+			// get the block from HDFS cluster
 			byte[] read;
 			if(blockList.containsKey(blockNumber)){
 				read = client.readFile(config, blockNumber);
@@ -150,7 +138,7 @@ public class HDFSLayer{
 		// int answer = 0;
 		try{
 			if(HDFSBufferList.containsKey(blockNumber)){
-				// page already exists in cache
+				// page already exists in HDFS Buffer
 				blockValue val = HDFSBufferList.get(blockNumber);
 				int pointer = val.getPointer();
 				HDFSBufferList.remove(blockNumber);
@@ -163,16 +151,18 @@ public class HDFSLayer{
 					blockValue val = new blockValue();
 					HDFSBufferList.put(blockNumber,val);
 					if(elder.getValue().getDirtyBit()){
-						// TODO : write to HDFS
+						// write to HDFS cluster
 						blockList.put(elder.getKey(),true);
 						client.addFile(config, HDFSBufferArray[elder.getValue().getPointer()]);
 					}
-					val.setPointer(elder.getValue().getPointer());
+					int emptyPointer = elder.getValue().getPointer();
+					val.setPointer(emptyPointer);
 					val.setDirtyBit(dirtyBit);
 					HDFSBufferList.remove(blockNumber);
 					HDFSBufferList.put(blockNumber,val);
 					assert (HDFSBufferList.size()<=utils.BUFFER_SIZE);
-					return elder.getValue().getPointer();
+
+					return emptyPointer;
 				}else{
 					// initial stage
 					blockValue val = new blockValue(writePointer,true);

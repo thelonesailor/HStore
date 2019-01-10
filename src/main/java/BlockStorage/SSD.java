@@ -7,7 +7,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 
 public class SSD{
 
@@ -17,11 +19,12 @@ public class SSD{
 	private HDFSLayer HDFSLayer;
 	private static Map.Entry<Long, Boolean> elder = null;
 	private int size;
+	Queue<page> queue1 = new LinkedList<page>();
+
 
 	public SSD(HDFSLayer HDFSLayer){
 		this.size = 0;
 		this.HDFSLayer = HDFSLayer;
-//		this.SSDBuffer = new page[utils.CHUNK_SIZE];
 		setSSD_LOCATION();
 		this.recencyList = new LinkedHashMap<Long, Boolean>(utils.SSD_SIZE, 0.75F, false) {
 			private static final long serialVersionUID = 1L;
@@ -38,19 +41,24 @@ public class SSD{
 		this.SSD_LOCATION = utils.getSSD_LOCATION();
 	}
 
-	public void writeSSDPage(page page) {
+	void thread1(){
+		page page = queue1.remove();
 		String fileName = SSD_LOCATION + "/" + page.getPageNumber();
-		try
-		{
+
+		try {
 			FileOutputStream out = new FileOutputStream(fileName);
 			out.write(page.getPageData());
 			out.close();
 		}
-		catch (IOException e)
-		{
+		catch (IOException e) {
 			System.out.println("Exception Occurred:");
 			e.printStackTrace();
 		}
+	}
+
+	public void writeSSDPage(page page) {
+		queue1.add(page);
+		thread1();
 	}
 
 	public page readSSDPage(long pageNumber){
@@ -88,10 +96,12 @@ public class SSD{
 			}else{
 				//assume elder is always updated
 				page temp = readSSDPage(elder.getKey());
-				HDFSLayer.writePage(temp, server);
-				server.updatePageIndex(elder.getKey(),-1, -1, 1, -1);
-
-				recencyList.remove(temp.getPageNumber());
+				long tempPageNumber= temp.getPageNumber();
+				if(server.pageIndex.get(tempPageNumber).isDirty()) {
+					HDFSLayer.writePage(temp, server);
+					server.updatePageIndex(elder.getKey(), -1, -1, 1, -1);
+				}
+				recencyList.remove(tempPageNumber);
 				writeSSDPage(page);
 			}
 		}else{

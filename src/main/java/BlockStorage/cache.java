@@ -46,10 +46,9 @@ public class cache{
 	/***
 	 * Adding a recently write page to the list
 	 * @param pageNumber
-	 * @param dirtyBit
 	 * @return pointer to the cacheBuffer
 	 */
-	public int addWrite(long pageNumber, boolean dirtyBit, blockServer server){
+	public int addWrite(long pageNumber, blockServer server){
 		if(cacheList.containsKey(pageNumber)){
 			// page already exists in cache
 			cacheValue val = cacheList.get(pageNumber);
@@ -84,36 +83,29 @@ public class cache{
 		}
 	}
 
-	public void resetCache(blockServer server){
-		for(Long key : cacheList.keySet()) {
-			cacheValue x = cacheList.get(key);
-			SSD.writePage(new page(key, cacheBuffer[x.getPointer()]), server);
-		}
-
-		writePointer=0;
-		cacheList.clear();
-	}
-
-//	/***
-//	 * removes the tail entry and returns pointer
-//	 * @return pointer
-//	 */
-//	public int getBlankPage(){
-//		return 0;
+//	public void resetCache(blockServer server){
+//		for(Long key : cacheList.keySet()) {
+//			cacheValue x = cacheList.get(key);
+//			SSD.writePage(new page(key, cacheBuffer[x.getPointer()]), server);
+//		}
+//
+//		writePointer=0;
+//		cacheList.clear();
 //	}
+
 
 	/***
 	 * It is guaranteed that page is already in the cache
 	 * @return page
 	 */
-	public page readPage(long pageNumber){
+	page readPage(long pageNumber){
 		int pointer = addRead(pageNumber);
 		return new page(pageNumber, cacheBuffer[pointer]);
 	}
 
-	public void writePage(page page, boolean dirtyBit, blockServer server){
+	void writePage(page page, blockServer server){
 		// System.out.println("CACHE");
-		int pointer = addWrite(page.getPageNumber(), dirtyBit, server);
+		int pointer = addWrite(page.getPageNumber(), server);
 		cacheBuffer[pointer] = page.getPageData();
 	}
 }

@@ -17,7 +17,6 @@ import org.apache.hadoop.conf.Configuration;
 
 /**
  * Simple Driver to read/write to hdfs
- * @author ashrith
  *
  */
 public class FileSystemOperations {
@@ -26,13 +25,7 @@ public class FileSystemOperations {
 
 	}
 
-  /**
-   * create a existing file from local filesystem to hdfs
-   * @param source
-   * @param dest
-   * @param conf
-   * @throws IOException
-   */
+
 	public  Configuration getConfiguration(){
 		Configuration config = new Configuration();
 		System.setProperty("HADOOP_USER_NAME", utils.HADOOP_USER_NAME);
@@ -46,7 +39,14 @@ public class FileSystemOperations {
 		config.setInt("dfs.replication", 2);
 		return config;
 	}
-  
+
+
+	/**
+	 * create a existing file from local filesystem to hdfs
+	 * @param block
+	 * @param conf
+	 * @throws IOException
+	 */
 	public void addFile(Configuration conf, block block) throws IOException {
 
 	FileSystem fileSystem = FileSystem.get(conf);
@@ -79,7 +79,7 @@ public class FileSystemOperations {
 
   /**
    * read a file from hdfs
-   * @param file
+   * @param blockNumber
    * @param conf
    * @throws IOException
    */

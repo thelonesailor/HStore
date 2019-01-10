@@ -2,12 +2,13 @@ package BlockStorage;
 
 import java.util.HashMap;
 
-public class blockServer{
+class blockServer{
 	
 	cache cache;
 	SSD SSD;
 	HDFSLayer HDFSLayer;
 	HashMap<Long, position> pageIndex;
+	private Utils utils = new Utils();
 
 	public blockServer(cache cache, SSD SSD, HDFSLayer HDFSLayer){
 		pageIndex = new HashMap<Long, position>();
@@ -21,7 +22,7 @@ public class blockServer{
 	/**
 	 * @param pageNumber is 1 indexed
 	 * */
-	public page readPage(long pageNumber){
+	page readPage(long pageNumber){
 		page returnPage = null;
 		position pos = pageIndex.get(pageNumber);
 
@@ -32,19 +33,21 @@ public class blockServer{
 		else if(pos.isLocationSSD())
 		{
 			returnPage = SSD.readPage(pageNumber);
-			cache.writePage(returnPage, false, this);
+			cache.writePage(returnPage,this);
 			updatePageIndex(pageNumber, 1, 1, -1, -1);
 		}
 		else if(pos.isLocationHDFS()){
 			block returnBlock = HDFSLayer.readBlock(pageNumber);
 			returnPage = returnBlock.readPage(pageNumber);
+
 			page[] returnAllPages = returnBlock.getAllPages();
-			for (int i = 0; i < 8; i++){
+			for (int i = 0; i < utils.BLOCK_SIZE; i++){
 				// TODO : if condition to be added to check the validity
-				position p = pageIndex.get(returnBlock.blockNumber+i);
-				if(p!=null && p.isLocationHDFS() && cache.cacheList.get(returnBlock.blockNumber+i)==null) {
-					cache.writePage(returnAllPages[i], false, this);
-					updatePageIndex(pageNumber, 1, -1, 1, -1);
+				long temp = ((returnBlock.blockNumber)<<3)+i;
+				position p = pageIndex.get(temp);
+				if(p!=null && p.isLocationHDFS() && !p.isDirty() && !p.isLocationCache() && cache.cacheList.get(temp)==null) {
+					cache.writePage(returnAllPages[i],this);
+					updatePageIndex(temp, 1, -1, 1, -1);
 				}
 			}
 		}else {
@@ -58,20 +61,12 @@ public class blockServer{
 	 * */
 	void writePage(long pageNumber, byte[] pageData){
 		page newPage = new page(pageNumber, pageData);
-		cache.writePage(newPage, true, this);
+		cache.writePage(newPage, this);
 		updatePageIndex(pageNumber, 1, 0, 0, 1);
 	}
 
-	public void shutdown(){
 
-	}
-
-	public void recover(){
-
-	}
-
-
-	public void updatePageIndex(long pageNumber,int Cache, int SSD, int HDFS, int dirty){
+	void updatePageIndex(long pageNumber,int Cache, int SSD, int HDFS, int dirty){
 		boolean locationCache, locationSSD, locationHDFS, dirtyBit;
 		if(pageIndex.containsKey(pageNumber)) {
 			position po = pageIndex.get(pageNumber);
@@ -116,5 +111,4 @@ public class blockServer{
 
 		}
 	}
-
 }

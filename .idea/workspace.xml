@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="4c19fffc-a117-4928-b411-c1c847cc868f" name="Default Changelist" comment="">
+    <list default="true" id="4c19fffc-a117-4928-b411-c1c847cc868f" name="Default Changelist" comment="small changes dirtybit, checking">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/HStore/BlockStorage/FileSystemOperations.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/HStore/BlockStorage/FileSystemOperations.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/HStore/BlockStorage/HDFSLayer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/HStore/BlockStorage/HDFSLayer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/HStore/BlockStorage/SSD$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/HStore/BlockStorage/SSD$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/HStore/BlockStorage/SSD.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/HStore/BlockStorage/SSD.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/HStore/BlockStorage/blockServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/HStore/BlockStorage/blockServer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/HStore/BlockStorage/cache$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/HStore/BlockStorage/cache$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/HStore/BlockStorage/cache.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/HStore/BlockStorage/cache.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/HStore/BlockStorage/cacheValue.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/HStore/BlockStorage/cacheValue.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/HStore/BlockStorage/position.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/HStore/BlockStorage/position.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/BlockStorage/FileSystemOperations.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/BlockStorage/FileSystemOperations.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/BlockStorage/HDFSLayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/BlockStorage/HDFSLayer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/BlockStorage/SSD.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/BlockStorage/SSD.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/BlockStorage/blockServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/BlockStorage/blockServer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/BlockStorage/cache.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/BlockStorage/cache.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/BlockStorage/cacheValue.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/BlockStorage/cacheValue.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/BlockStorage/position.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/BlockStorage/position.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/BlockStorage/HDFSLayerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/BlockStorage/HDFSLayerTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/BlockStorage/SSDTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/BlockStorage/SSDTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/BlockStorage/blockServerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/BlockStorage/blockServerTest.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -25,12 +29,13 @@
     <session id="-241432048">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="38" />
+          <entry key="project.closed" value="40" />
           <entry key="project.open.time.1" value="1" />
           <entry key="project.open.time.13" value="1" />
-          <entry key="project.open.time.14" value="1" />
+          <entry key="project.open.time.14" value="2" />
           <entry key="project.open.time.15" value="3" />
           <entry key="project.open.time.16" value="2" />
+          <entry key="project.open.time.17" value="1" />
           <entry key="project.open.time.18" value="4" />
           <entry key="project.open.time.19" value="1" />
           <entry key="project.open.time.2" value="1" />
@@ -43,8 +48,9 @@
           <entry key="project.open.time.32" value="3" />
           <entry key="project.open.time.33" value="1" />
           <entry key="project.open.time.35" value="1" />
-          <entry key="project.open.time.37" value="2" />
-          <entry key="project.open.time.38" value="1" />
+          <entry key="project.open.time.36" value="1" />
+          <entry key="project.open.time.37" value="4" />
+          <entry key="project.open.time.38" value="2" />
           <entry key="project.open.time.40" value="1" />
           <entry key="project.open.time.41" value="1" />
           <entry key="project.open.time.44" value="1" />
@@ -57,33 +63,33 @@
           <entry key="project.open.time.67" value="1" />
           <entry key="project.open.time.69" value="3" />
           <entry key="project.open.time.79" value="1" />
-          <entry key="project.opened" value="45" />
+          <entry key="project.opened" value="51" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="class" value="16" />
+          <entry key="class" value="17" />
           <entry key="iml" value="1" />
-          <entry key="java" value="64" />
+          <entry key="java" value="69" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="CLASS" value="16" />
+          <entry key="CLASS" value="18" />
           <entry key="IDEA_MODULE" value="1" />
-          <entry key="JAVA" value="64" />
+          <entry key="JAVA" value="71" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="java" value="3488" />
-          <entry key="txt" value="119" />
+          <entry key="java" value="3490" />
+          <entry key="txt" value="154" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="3488" />
-          <entry key="PLAIN_TEXT" value="119" />
+          <entry key="JAVA" value="3922" />
+          <entry key="PLAIN_TEXT" value="186" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.vcs.git.usages" />
@@ -91,50 +97,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/FileSystemOperations.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1875">
-              <caret line="138" selection-start-line="138" selection-end-line="138" />
+            <state relative-caret-position="120">
+              <caret line="45" column="19" selection-start-line="45" selection-start-column="19" selection-end-line="45" selection-end-column="19" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/blockServer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="219">
-              <caret line="52" column="26" lean-forward="true" selection-start-line="52" selection-start-column="26" selection-end-line="52" selection-end-column="26" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/SSD.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-111">
-              <caret line="91" column="67" selection-start-line="91" selection-start-column="67" selection-end-line="91" selection-end-column="67" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/test/java/BlockStorage/blockServerTest.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="123">
-              <caret line="63" selection-start-line="63" selection-end-line="63" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/HDFSLayer.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="210">
-              <caret line="53" column="21" lean-forward="true" selection-start-line="53" selection-start-column="21" selection-end-line="53" selection-end-column="21" />
+            <state relative-caret-position="105">
+              <caret line="7" column="6" lean-forward="true" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
             </state>
           </provider>
         </entry>
@@ -142,8 +118,59 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/cache.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1170">
-              <caret line="80" column="31" lean-forward="true" selection-start-line="80" selection-start-column="31" selection-end-line="80" selection-end-column="31" />
+            <state relative-caret-position="1545">
+              <caret line="105" column="29" selection-start-line="105" selection-start-column="29" selection-end-line="105" selection-end-column="29" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/SSD.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="142">
+              <caret line="100" column="30" selection-start-line="100" selection-start-column="30" selection-end-line="100" selection-end-column="30" />
+              <folding>
+                <element signature="e#562#568#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/Utils.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="30">
+              <caret line="2" column="19" lean-forward="true" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="19" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/HDFSLayer.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-832">
+              <caret line="105" column="46" selection-start-line="105" selection-start-column="46" selection-end-line="105" selection-end-column="46" />
+              <folding>
+                <element signature="e#1262#1263#0" expanded="true" />
+                <element signature="e#1296#1297#0" expanded="true" />
+                <element signature="e#1340#1341#0" expanded="true" />
+                <element signature="e#1385#1386#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/blockValue.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="60">
+              <caret line="4" lean-forward="true" selection-start-line="4" selection-end-line="5" />
+              <folding>
+                <element signature="e#228#229#0" expanded="true" />
+                <element signature="e#250#251#0" expanded="true" />
+                <element signature="e#295#296#0" expanded="true" />
+                <element signature="e#326#327#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -153,10 +180,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="45">
               <caret line="3" column="16" selection-start-line="3" selection-start-column="16" selection-end-line="3" selection-end-column="16" />
-              <folding>
-                <element signature="e#192#193#0" expanded="true" />
-                <element signature="e#221#222#0" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -200,17 +223,18 @@
         <option value="$PROJECT_DIR$/src/BlockStorage/Utils.java" />
         <option value="$PROJECT_DIR$/src/BlockStorage/Test.java" />
         <option value="$PROJECT_DIR$/src/main/java/BlockStorage/Test.java" />
-        <option value="$PROJECT_DIR$/src/main/java/BlockStorage/FileSystemOperations.java" />
         <option value="$PROJECT_DIR$/src/main/java/BlockStorage/Utils.java" />
         <option value="$PROJECT_DIR$/src/test/java/BlockStorage/SSDTest.java" />
         <option value="$PROJECT_DIR$/src/test/java/BlockStorage/HDFSLayerTest.java" />
         <option value="$PROJECT_DIR$/src/test/java/BlockStorage/blockServerTest.java" />
         <option value="$PROJECT_DIR$/src/main/java/BlockStorage/position.java" />
-        <option value="$PROJECT_DIR$/src/main/java/BlockStorage/HDFSLayer.java" />
-        <option value="$PROJECT_DIR$/src/main/java/BlockStorage/SSD.java" />
         <option value="$PROJECT_DIR$/src/main/java/BlockStorage/cacheValue.java" />
         <option value="$PROJECT_DIR$/src/main/java/BlockStorage/cache.java" />
         <option value="$PROJECT_DIR$/src/main/java/BlockStorage/blockServer.java" />
+        <option value="$PROJECT_DIR$/src/main/java/BlockStorage/SSD.java" />
+        <option value="$PROJECT_DIR$/src/main/java/BlockStorage/blockValue.java" />
+        <option value="$PROJECT_DIR$/src/main/java/BlockStorage/HDFSLayer.java" />
+        <option value="$PROJECT_DIR$/src/main/java/BlockStorage/FileSystemOperations.java" />
       </list>
     </option>
   </component>
@@ -334,7 +358,7 @@
     </navigator>
     <panes>
       <pane id="Scope" />
-      <pane id="AndroidView" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -377,12 +401,11 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="SearchEverywhereHistoryKey" value="elder&#9;PSI&#9;JAVA://BlockStorage.SSD#elder&#10;hduser&#9;PSI&#9;JAVA://com.sun.corba.se.impl.protocol.CorbaMessageMediatorImpl#handleThrowableDuringServerDispatch" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1546458598898" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1547121518727" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit4" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit4" value="" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5" value="" />
@@ -624,38 +647,45 @@
       <option name="project" value="LOCAL" />
       <updated>1537330433210</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="changed pageIndex and other things">
+      <created>1546458744677</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1546458744677</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="All - 2019.01.03 at 00h 34m 51s.xml">
+    <history-entry file="All - 2019.01.10 at 16h 34m 39s.xml">
       <configuration name="All" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="All - 2019.01.03 at 00h 36m 58s.xml">
+    <history-entry file="All - 2019.01.10 at 16h 41m 10s.xml">
       <configuration name="All" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="All - 2019.01.03 at 00h 40m 47s.xml">
+    <history-entry file="All - 2019.01.10 at 16h 42m 35s.xml">
       <configuration name="All" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="All - 2019.01.03 at 00h 42m 10s.xml">
+    <history-entry file="All - 2019.01.10 at 16h 43m 33s.xml">
       <configuration name="All" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="All - 2019.01.03 at 00h 43m 40s.xml">
+    <history-entry file="All - 2019.01.10 at 16h 49m 57s.xml">
       <configuration name="All" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="All - 2019.01.03 at 00h 45m 48s.xml">
+    <history-entry file="All - 2019.01.10 at 17h 02m 11s.xml">
       <configuration name="All" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="All - 2019.01.03 at 00h 48m 03s.xml">
+    <history-entry file="All - 2019.01.10 at 17h 03m 07s.xml">
       <configuration name="All" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="All - 2019.01.03 at 00h 49m 19s.xml">
+    <history-entry file="All - 2019.01.10 at 17h 04m 44s.xml">
       <configuration name="All" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="All - 2019.01.03 at 00h 50m 22s.xml">
+    <history-entry file="All - 2019.01.10 at 17h 19m 05s.xml">
       <configuration name="All" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="All - 2019.01.03 at 00h 51m 43s.xml">
+    <history-entry file="All - 2019.01.10 at 17h 25m 15s.xml">
       <configuration name="All" configurationId="JUnit" />
     </history-entry>
   </component>
@@ -672,7 +702,7 @@
     <frame x="54" y="-11" width="1313" height="780" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49884528" visible="true" weight="0.2743083" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49884528" visible="true" weight="0.26561266" />
       <window_info id="Structure" order="1" sideWeight="0.5011547" side_tool="true" weight="0.30671936" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -681,15 +711,15 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.3462733" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.25776398" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.39906833" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32919255" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.32919255" />
       <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
-      <window_info anchor="bottom" id="Version Control" order="9" weight="0.32763976" />
-      <window_info anchor="bottom" id="Messages" order="10" weight="0.32919255" />
+      <window_info anchor="bottom" id="Version Control" order="9" weight="0.32608697" />
+      <window_info active="true" anchor="bottom" id="Messages" order="10" visible="true" weight="0.32919255" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -699,6 +729,16 @@
       <window_info anchor="right" id="Palette&#9;" order="6" />
       <window_info anchor="right" id="Maven Projects" order="7" />
     </layout>
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ORDER">
+      <list>
+        <option value="0" />
+        <option value="2" />
+        <option value="3" />
+        <option value="1" />
+      </list>
+    </option>
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -736,7 +776,9 @@
     <MESSAGE value="runs on single node hdfs &amp; made test" />
     <MESSAGE value="made tests &amp; removed a lot of bugs" />
     <MESSAGE value="made tests for SSD" />
-    <option name="LAST_COMMIT_MESSAGE" value="made tests for SSD" />
+    <MESSAGE value="changed pageIndex and other things" />
+    <MESSAGE value="small changes dirtybit, checking" />
+    <option name="LAST_COMMIT_MESSAGE" value="small changes dirtybit, checking" />
   </component>
   <component name="editorHistoryManager">
     <entry file="jar:///usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar!/java/net/URLClassLoader.class">
@@ -774,13 +816,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="180">
           <caret line="1285" column="132" lean-forward="true" selection-start-line="1285" selection-start-column="98" selection-end-line="1285" selection-end-column="132" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar!/java/util/LinkedHashMap.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="219" column="22" selection-start-line="219" selection-start-column="22" selection-end-line="219" selection-end-column="22" />
         </state>
       </provider>
     </entry>
@@ -833,13 +868,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/blockValue.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/BlockStorage/SSDTest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-15">
@@ -847,31 +875,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/BlockStorage/HDFSLayerTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="18" column="24" lean-forward="true" selection-start-line="18" selection-start-column="24" selection-end-line="18" selection-end-column="24" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/Utils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="11" selection-start-line="4" selection-start-column="11" selection-end-line="4" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar:///usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar!/java/util/HashMap.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="113">
           <caret line="141" column="13" selection-start-line="141" selection-start-column="13" selection-end-line="141" selection-end-column="13" />
-          <folding>
-            <element signature="e#5787#5788#0" expanded="true" />
-            <element signature="e#5848#5849#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -882,17 +889,60 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/HDFSLayer.java">
+    <entry file="jar:///usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar!/java/util/LinkedHashMap.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="53" column="21" lean-forward="true" selection-start-line="53" selection-start-column="21" selection-end-line="53" selection-end-column="21" />
+        <state relative-caret-position="120">
+          <caret line="172" column="11" selection-start-line="172" selection-start-column="11" selection-end-line="172" selection-end-column="11" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/SSD.java">
+    <entry file="file://$PROJECT_DIR$/out/production/HStore/BlockStorage/blockServer.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-111">
-          <caret line="91" column="67" selection-start-line="91" selection-start-column="67" selection-end-line="91" selection-end-column="67" />
+        <state>
+          <folding>
+            <element signature="e#0#4668#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/BlockStorage/HDFSLayerTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="305">
+          <caret line="84" column="16" selection-start-line="84" selection-start-column="16" selection-end-line="84" selection-end-column="16" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/BlockStorage/blockServerTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="13" column="16" selection-start-line="13" selection-start-column="16" selection-end-line="13" selection-end-column="16" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/blockServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" column="6" lean-forward="true" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/cache.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1545">
+          <caret line="105" column="29" selection-start-line="105" selection-start-column="29" selection-end-line="105" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/Utils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="19" lean-forward="true" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="19" />
         </state>
       </provider>
     </entry>
@@ -900,41 +950,49 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="45">
           <caret line="3" column="16" selection-start-line="3" selection-start-column="16" selection-end-line="3" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/blockValue.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" lean-forward="true" selection-start-line="4" selection-end-line="5" />
           <folding>
-            <element signature="e#192#193#0" expanded="true" />
-            <element signature="e#221#222#0" expanded="true" />
+            <element signature="e#228#229#0" expanded="true" />
+            <element signature="e#250#251#0" expanded="true" />
+            <element signature="e#295#296#0" expanded="true" />
+            <element signature="e#326#327#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/BlockStorage/blockServerTest.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/SSD.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="123">
-          <caret line="63" selection-start-line="63" selection-end-line="63" />
+        <state relative-caret-position="142">
+          <caret line="100" column="30" selection-start-line="100" selection-start-column="30" selection-end-line="100" selection-end-column="30" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="e#562#568#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/cache.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/HDFSLayer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1170">
-          <caret line="80" column="31" lean-forward="true" selection-start-line="80" selection-start-column="31" selection-end-line="80" selection-end-column="31" />
+        <state relative-caret-position="-832">
+          <caret line="105" column="46" selection-start-line="105" selection-start-column="46" selection-end-line="105" selection-end-column="46" />
+          <folding>
+            <element signature="e#1262#1263#0" expanded="true" />
+            <element signature="e#1296#1297#0" expanded="true" />
+            <element signature="e#1340#1341#0" expanded="true" />
+            <element signature="e#1385#1386#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/FileSystemOperations.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1875">
-          <caret line="138" selection-start-line="138" selection-end-line="138" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/blockServer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="219">
-          <caret line="52" column="26" lean-forward="true" selection-start-line="52" selection-start-column="26" selection-end-line="52" selection-end-column="26" />
+        <state relative-caret-position="120">
+          <caret line="45" column="19" selection-start-line="45" selection-start-column="19" selection-end-line="45" selection-end-column="19" />
         </state>
       </provider>
     </entry>
