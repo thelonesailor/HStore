@@ -19,7 +19,8 @@ public class SSD{
 	private HDFSLayer HDFSLayer;
 	private static Map.Entry<Long, Boolean> elder = null;
 	private int size;
-	Queue<page> queue1 = new LinkedList<page>();
+	Queue<page> WritetoSSDqueue = new LinkedList<page>();
+	Queue<Long> RemovalFromSSDqueue = new LinkedList<Long>();
 
 
 	public SSD(HDFSLayer HDFSLayer){
@@ -37,12 +38,11 @@ public class SSD{
 	}
 
 	public void setSSD_LOCATION(){
-		// utils utilsObject = new utils();
 		this.SSD_LOCATION = utils.getSSD_LOCATION();
 	}
 
-	void thread1(){
-		page page = queue1.remove();
+	void WritetoSSDthread(){
+		page page = WritetoSSDqueue.remove();
 		String fileName = SSD_LOCATION + "/" + page.getPageNumber();
 
 		try {
@@ -57,8 +57,8 @@ public class SSD{
 	}
 
 	public void writeSSDPage(page page) {
-		queue1.add(page);
-		thread1();
+		WritetoSSDqueue.add(page);
+		WritetoSSDthread();
 	}
 
 	public page readSSDPage(long pageNumber){
@@ -87,6 +87,35 @@ public class SSD{
 			return readSSDPage(pageNumber);
 	}
 
+
+	void RemovalFromSSDthread(blockServer server){
+		long pageNumber = RemovalFromSSDqueue.remove();
+		File file = new File(SSD_LOCATION + "/" + pageNumber);
+		byte[] pageData = new byte[utils.PAGE_SIZE];
+		try
+		{
+			FileInputStream in = new FileInputStream(file);
+			in.read(pageData);
+			in.close();
+		}
+		catch(FileNotFoundException e)
+		{
+			System.out.println("File not found" + e);
+		}
+		catch(IOException ioe)
+		{
+			System.out.println("Exception while reading the file " + ioe);
+		}
+		page page = new page(pageNumber, pageData);
+
+		if(server.pageIndex.get(pageNumber).isDirty()) {
+			HDFSLayer.writePage(page, server);
+			server.updatePageIndex(elder.getKey(), -1, 0, 1, -1);
+		}
+		recencyList.remove(pageNumber);
+		file.delete(); //remove the file from actual SSD
+	}
+
 	public void writePage(page page, blockServer server){
 
 
@@ -95,6 +124,7 @@ public class SSD{
 				writeSSDPage(page);
 			}else{
 				//assume elder is always updated
+				/*
 				page temp = readSSDPage(elder.getKey());
 				long tempPageNumber= temp.getPageNumber();
 				if(server.pageIndex.get(tempPageNumber).isDirty()) {
@@ -102,6 +132,10 @@ public class SSD{
 					server.updatePageIndex(elder.getKey(), -1, 0, 1, -1);
 				}
 				recencyList.remove(tempPageNumber);
+				*/
+				RemovalFromSSDqueue.add(elder.getKey());
+				RemovalFromSSDthread(server);
+
 				writeSSDPage(page);
 			}
 		}else{
