@@ -2,8 +2,6 @@ package BlockStorage;
 
 import org.junit.Test;
 
-//import static org.junit.Assert.*;
-
 public class SSDTest {
 	private Utils utils = new Utils();
 	
@@ -22,6 +20,7 @@ public class SSDTest {
 		double startTime = System.nanoTime();
 		for(int i=1;i<=numPages;++i){
 			SSD.writePage(new page(i, b), server);
+			server.updatePageIndex(i, 0, 1, 0, 1);
 		}
 		double endTime = System.nanoTime();
 		double time=(endTime - startTime) / 1000000000L;
@@ -53,6 +52,7 @@ public class SSDTest {
 		double startTime = System.nanoTime();
 		for(int i=1;i<=numPages;++i){
 			SSD.writePage(new page(i, b), server);
+			server.updatePageIndex(i, 0, 1, 0, 1);
 		}
 		double endTime = System.nanoTime();
 		double time=(endTime - startTime) / 1000000000L;
@@ -84,6 +84,7 @@ public class SSDTest {
 //		double startTime = System.nanoTime();
 //		for(int i=1;i<=numPages;++i){
 //			SSD.writePage(new page(i, b), server);
+//			server.updatePageIndex(i, 0, 1, 0, 1);
 //		}
 //		double endTime = System.nanoTime();
 //		double time=(endTime - startTime) / 1000000000L;

@@ -99,7 +99,7 @@ public class SSD{
 				long tempPageNumber= temp.getPageNumber();
 				if(server.pageIndex.get(tempPageNumber).isDirty()) {
 					HDFSLayer.writePage(temp, server);
-					server.updatePageIndex(elder.getKey(), -1, -1, 1, -1);
+					server.updatePageIndex(elder.getKey(), -1, 0, 1, -1);
 				}
 				recencyList.remove(tempPageNumber);
 				writeSSDPage(page);

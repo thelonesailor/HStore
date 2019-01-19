@@ -4,9 +4,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static org.junit.Assert.*;
-
-
 public class HDFSLayerTest {
 	private Utils utils = new Utils();
 
@@ -72,7 +69,7 @@ public class HDFSLayerTest {
 
 		startTime = System.nanoTime();
 		for(int i=1;i<=numPages;++i){
-			HDFSLayer.readBlock(i);
+			HDFSLayer.readBlock(i, server);
 		}
 		endTime = System.nanoTime();
 		time=(endTime - startTime) / 1000000000L;
@@ -95,6 +92,7 @@ public class HDFSLayerTest {
 		double startTime = System.nanoTime();
 		for(int i=1;i<=numPages;++i){
 			HDFSLayer.writePage(new page(i, b), server);
+			server.updatePageIndex(i, 0, 0, 1, 1);
 		}
 		double endTime = System.nanoTime();
 		double time=(endTime - startTime) / 1000000000L;
@@ -102,7 +100,7 @@ public class HDFSLayerTest {
 
 		startTime = System.nanoTime();
 		for(int i=1;i<=numPages;++i){
-			HDFSLayer.readBlock(i);
+			HDFSLayer.readBlock(i, server);
 		}
 		endTime = System.nanoTime();
 		time=(endTime - startTime) / 1000000000L;
@@ -125,14 +123,15 @@ public class HDFSLayerTest {
 		double startTime = System.nanoTime();
 		for(int i=1;i<=numPages;++i){
 			HDFSLayer.writePage(new page(i, b), server);
+			server.updatePageIndex(i, 0, 0, 1, 1);
 		}
 		double endTime = System.nanoTime();
 		double time=(endTime - startTime) / 1000000000L;
 		System.out.println("Wrote "+numPages +" pages to HDFSLayer in "+time+" seconds at "+(16*numPages*1.0)/time+"kB/s");
 
 		startTime = System.nanoTime();
-		for(int i=numPages;i>=1;--i){
-			HDFSLayer.readBlock(i);
+		for(int i=(numPages>>3);i>=0;--i){
+			HDFSLayer.readBlock(i, server);
 		}
 		endTime = System.nanoTime();
 		time=(endTime - startTime) / 1000000000L;
@@ -155,14 +154,15 @@ public class HDFSLayerTest {
 		double startTime = System.nanoTime();
 		for(int i=1;i<=numPages;++i){
 			HDFSLayer.writePage(new page(i, b), server);
+			server.updatePageIndex(i, 0, 0, 1, 1);
 		}
 		double endTime = System.nanoTime();
 		double time=(endTime - startTime) / 1000000000L;
 		System.out.println("Wrote "+numPages +" pages to HDFSLayer in "+time+" seconds at "+(16*numPages*1.0)/time+"kB/s");
 
 		startTime = System.nanoTime();
-		for(int i=numPages;i>=1;--i){
-			HDFSLayer.readBlock(i);
+		for(int i=(numPages>>3);i>=0;--i){
+			HDFSLayer.readBlock(i, server);
 		}
 		endTime = System.nanoTime();
 		time=(endTime - startTime) / 1000000000L;

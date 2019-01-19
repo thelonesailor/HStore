@@ -26,7 +26,7 @@ public class cache{
 			}
 		};
 		this.cacheBuffer = new byte[utils.CACHE_SIZE][utils.PAGE_SIZE];
-		this.writePointer = 0;
+		this.writePointer = 1;
 	}
 
 	/***

@@ -37,7 +37,7 @@ class blockServer{
 			updatePageIndex(pageNumber, 1, 1, -1, -1);
 		}
 		else if(pos.isLocationHDFS()){
-			block returnBlock = HDFSLayer.readBlock(pageNumber);
+			block returnBlock = HDFSLayer.readBlock(pageNumber, this);
 			returnPage = returnBlock.readPage(pageNumber);
 
 			page[] returnAllPages = returnBlock.getAllPages();
@@ -85,8 +85,9 @@ class blockServer{
 
 			if (dirty == 1) dirtyBit = true;
 			else if (dirty == 0) dirtyBit = false;
-			else dirtyBit = po.locationHDFS;
+			else dirtyBit = po.diryBit;
 
+			pageIndex.remove(pageNumber);
 			pageIndex.put(pageNumber, new position(locationCache, locationSSD, locationHDFS, dirtyBit));
 		}
 		else {
@@ -108,7 +109,6 @@ class blockServer{
 			else {System.out.println("Error in updating pageIndex for "+pageNumber);return;}
 
 			pageIndex.put(pageNumber, new position(locationCache, locationSSD, locationHDFS, dirtyBit));
-
 		}
 	}
 }

@@ -1,14 +1,53 @@
 package BlockStorage;
 
 import org.junit.Test;
-import java.util.*;
-import java.io.IOException;
-
-import static org.junit.Assert.*;
-
 
 public class blockServerTest {
 	private Utils utils = new Utils();
+
+	@Test
+	public void correctness1(){
+		HDFSLayer HDFSLayer = new HDFSLayer();
+		SSD SSD = new SSD(HDFSLayer);
+		cache cache = new cache(SSD);
+		Utils utils = new Utils();
+		blockServer server = new blockServer(cache, SSD, HDFSLayer);
+		System.out.println("Block Server made");
+
+		byte[] b = new byte[utils.PAGE_SIZE];
+		for (int i=1; i<=utils.CACHE_SIZE + 1; ++i) {
+			server.writePage(i, b);
+		}
+		long one = 1;
+		assert !server.pageIndex.get(one).isLocationCache();
+		assert server.pageIndex.get(one).isLocationSSD();
+		assert !server.pageIndex.get(one).isLocationHDFS();
+		assert server.pageIndex.get(one).isDirty();
+
+		for (int i=utils.CACHE_SIZE + 2; i<=utils.CACHE_SIZE + 2 + utils.SSD_SIZE; ++i) {
+			server.writePage(i, b);
+		}
+		assert !server.pageIndex.get(one).isLocationCache();
+		assert !server.pageIndex.get(one).isLocationSSD();
+		assert server.pageIndex.get(one).isLocationHDFS();
+		assert server.pageIndex.get(one).isDirty();
+
+		for (int i=utils.CACHE_SIZE + 3 + utils.SSD_SIZE; i<=utils.CACHE_SIZE + 3 + utils.SSD_SIZE + (utils.HDFS_BUFFER_SIZE<<3); ++i) {
+			server.writePage(i, b);
+		}
+		assert !server.pageIndex.get(one).isLocationCache();
+		assert !server.pageIndex.get(one).isLocationSSD();
+		assert server.pageIndex.get(one).isLocationHDFS();
+		assert !server.pageIndex.get(one).isDirty();
+
+		server.readPage(one);
+		assert server.pageIndex.get(one).isLocationCache();
+		assert !server.pageIndex.get(one).isLocationSSD();
+		assert server.pageIndex.get(one).isLocationHDFS();
+		assert !server.pageIndex.get(one).isDirty();
+
+		System.out.println("------------------------------------------------------");
+	}
 
 	@Test
 	public void WriteAndReadFromBlockServer1(){

@@ -10,13 +10,13 @@ public class Utils{
 
 	final int BLOCK_SIZE = 8;//pages   128KB
 
-	final int CHUNK_SIZE = 64;//pages
-
 	final int CACHE_SIZE = 1024 * 4;//pages   64MB
 
-	final int BUFFER_SIZE = 1024 * 4;//pages for cache buffer(64MB) & blocks for hdfs buffer(512MB)
+	final int HDFS_BUFFER_SIZE = 1024 * 4;//blocks for hdfs buffer(512MB)
+//	final int HDFS_BUFFER_SIZE = 1024 * 1;//blocks for hdfs buffer(128MB)
 
-	final int SSD_SIZE = 100000;//pages   ~1.6GB
+//	final int SSD_SIZE = 100000;//pages   ~1.6GB
+	final int SSD_SIZE = 10000;//pages   ~.16GB
 
 	String SSD_LOCATION = "/home/prakhar10_10/ssd"; //TODO: take as input
 
