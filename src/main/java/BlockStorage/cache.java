@@ -1,32 +1,49 @@
 package BlockStorage;
 
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class cache{
 
 	LinkedHashMap<Long, cacheValue> cacheList;
+	Lock cacheListLock = new ReentrantLock();
+
 	byte[][] cacheBuffer;
-	int writePointer;
+//	int writePointer;
+	AtomicInteger size = new AtomicInteger(0);
 	SSD SSD;
 	Utils utils = new Utils();
 
-	private static Map.Entry<Long, cacheValue> elder = null;
+	ConcurrentLinkedQueue<Integer> EmptyPointers;
+	ConcurrentHashMap<Long, Integer> pointersList;
+	ConcurrentHashMap<Long, Integer> wasputinpointersList;
+
+	Map.Entry<Long, cacheValue> elder = null;
 
 	cache(SSD SSD){
 		this.SSD = SSD;
 		this.cacheList = new LinkedHashMap<Long, cacheValue>(utils.CACHE_SIZE, 0.75F, false) {
 
 			private static final long serialVersionUID = 1L;
-
+			@Override
 			protected boolean removeEldestEntry(Map.Entry<Long, cacheValue> eldest) {
 				elder =  eldest;
 				return size() > utils.CACHE_SIZE;
 			}
 		};
-		this.cacheBuffer = new byte[utils.CACHE_SIZE][utils.PAGE_SIZE];
-		this.writePointer = 1;
+		this.cacheBuffer = new byte[utils.CACHE_SIZE+1][utils.PAGE_SIZE];
+//		this.writePointer = 1;
+
+		this.pointersList = new ConcurrentHashMap<>();
+		this.wasputinpointersList = new ConcurrentHashMap<>();
+		this.EmptyPointers = new ConcurrentLinkedQueue<>();
+		for(int i=1;i<=utils.CACHE_SIZE;++i) {
+			EmptyPointers.add(i);
+		}
 	}
 
 	/***
@@ -35,12 +52,23 @@ public class cache{
 	 * @return pointer to the cacheBuffer
 	 * Even if page was already in cache remove and add for LRU
 	 */
-	public int addRead(long pageNumber){
-		cacheValue val = cacheList.get(pageNumber);
-//		 System.out.println(pageNumber);
-		int pointer = val.getPointer();
-		cacheList.remove(pageNumber);
-		cacheList.put(pageNumber,new cacheValue(pointer));
+	public int addRead(long pageNumber, boolean forQueue){
+//		cacheValue val = cacheList.get(pageNumber);
+
+//		System.out.println("Reading "+pageNumber+" from cache");
+		if(!pointersList.containsKey(pageNumber)) {
+			System.out.println("Reading "+pageNumber+" from cache");
+			assert false;
+		}
+
+		int pointer = pointersList.get(pageNumber);
+		if(!forQueue){
+			cacheListLock.lock();
+			cacheList.remove(pageNumber);
+			cacheList.put(pageNumber,new cacheValue(pointer));
+			cacheListLock.unlock();
+		}
+
 		return pointer;
 	}
 	/***
@@ -49,36 +77,59 @@ public class cache{
 	 * @return pointer to the cacheBuffer
 	 */
 	public int addWrite(long pageNumber, blockServer server){
-		if(cacheList.containsKey(pageNumber)){
+		if(pointersList.containsKey(pageNumber)){
 			// page already exists in cache
-			cacheValue val = cacheList.get(pageNumber);
-			int pointer = val.getPointer();
+//			cacheValue val = cacheList.get(pageNumber);
+			int pointer = pointersList.get(pageNumber);
+
+			cacheListLock.lock();
 			cacheList.remove(pageNumber);
 			cacheList.put(pageNumber,new cacheValue(pointer));
+			cacheListLock.unlock();
+
 			return pointer;
 		}else{
-			if(writePointer == utils.CACHE_SIZE){
+			while (size.get() >= utils.CACHE_SIZE){
+				System.out.println("stuck here");
+				try{Thread.sleep(100);}
+				catch(InterruptedException e){}
+			}
+			if(size.get() == utils.CACHE_SIZE){
 				// victim page removal
 				cacheValue val = new cacheValue();
 				cacheList.put(pageNumber,val); // elder gets updated here
-				if(server.pageIndex.get(elder.getKey()).isDirty() /*elder.getValue().getDirtyBit()*/){
-					SSD.writePage(new page(elder.getKey(), cacheBuffer[elder.getValue().getPointer()]), server);
+				long pageNumberToRemove = elder.getKey();
+				int freePointer= elder.getValue().getPointer();
+				if(server.pageIndex.get(pageNumberToRemove).isDirty() /*elder.getValue().getDirtyBit()*/){
+					SSD.writePage(pageNumberToRemove, freePointer, server);
 				}
-				server.updatePageIndex(elder.getKey(), 0, 1, -1, -1);
-				cacheList.remove(elder.getKey());
+//				server.updatePageIndex(pageNumberToRemove, 0, 1, -1, -1);
+//				cacheList.remove(pageNumberToRemove);
 
 
-				cacheList.remove(pageNumber);
-				cacheList.put(pageNumber,new cacheValue(elder.getValue().getPointer()));
+//				cacheList.remove(pageNumber);
+//				cacheList.put(pageNumber,new cacheValue(freePointer));
 
 				return elder.getValue().getPointer();
 			}else{
 				// initial stage
 //				cacheValue val = new cacheValue(writePointer);
-				cacheList.put(pageNumber, new cacheValue(writePointer));
-//				 System.out.println("added "+pageNumber);
-				writePointer++;
-				return (writePointer - 1);
+				int freePointer = EmptyPointers.remove();
+
+				cacheListLock.lock();
+				cacheList.remove(pageNumber);
+				cacheList.put(pageNumber, new cacheValue(freePointer));
+				cacheListLock.unlock();
+
+//	    		System.out.println("added "+pageNumber);
+
+				size.getAndIncrement();
+//				if(size.get() == utils.CACHE_SIZE){
+//					try{Thread.sleep(1000);}
+//					catch(InterruptedException e){}
+//				}
+
+				return freePointer;
 			}
 		}
 	}
@@ -98,14 +149,22 @@ public class cache{
 	 * It is guaranteed that page is already in the cache
 	 * @return page
 	 */
-	page readPage(long pageNumber){
-		int pointer = addRead(pageNumber);
+	page readPage(long pageNumber, boolean forQueue){
+		int pointer = addRead(pageNumber, forQueue);
 		return new page(pageNumber, cacheBuffer[pointer]);
 	}
 
-	void writePage(page page, blockServer server){
+	boolean writePage(page page, blockServer server){
 		// System.out.println("CACHE");
-		int pointer = addWrite(page.getPageNumber(), server);
+		long pageNumber = page.getPageNumber();
+		int pointer = addWrite(pageNumber, server);
 		cacheBuffer[pointer] = page.getPageData();
+
+//		pointersList.remove(pageNumber);
+		pointersList.put(pageNumber, pointer);
+		wasputinpointersList.put(pageNumber,pointer);
+
+//		System.out.println("Wrote "+pageNumber+" to cache");
+		return true;
 	}
 }

@@ -1,26 +1,30 @@
 package BlockStorage;
 
 
+import javafx.util.Pair;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class SSD{
 
 	private String SSD_LOCATION;
 	private Utils utils = new Utils();
-	private LinkedHashMap<Long, Boolean> recencyList;
+	LinkedHashMap<Long, Boolean> recencyList;
 	private HDFSLayer HDFSLayer;
 	private static Map.Entry<Long, Boolean> elder = null;
-	private int size;
-	Queue<page> WritetoSSDqueue = new LinkedList<page>();
-	Queue<Long> RemovalFromSSDqueue = new LinkedList<Long>();
+	int size;
+
+//	Queue<Pair<Long,Integer>> WritetoSSDqueue = new LinkedList<>();
+//	Queue<Long> RemovalFromSSDqueue = new LinkedList<>();
+
+	ConcurrentLinkedQueue<Pair<Long,Integer>> WritetoSSDqueue = new ConcurrentLinkedQueue<>();
+	ConcurrentLinkedQueue<Long> RemovalFromSSDqueue = new ConcurrentLinkedQueue<>();
 
 
 	public SSD(HDFSLayer HDFSLayer){
@@ -41,24 +45,24 @@ public class SSD{
 		this.SSD_LOCATION = utils.getSSD_LOCATION();
 	}
 
-	void WritetoSSDthread(){
-		page page = WritetoSSDqueue.remove();
-		String fileName = SSD_LOCATION + "/" + page.getPageNumber();
+//	void WritetoSSDthread(){
+//		page page = WritetoSSDqueue.remove();
+//		String fileName = SSD_LOCATION + "/" + page.getPageNumber();
+//
+//		try {
+//			FileOutputStream out = new FileOutputStream(fileName);
+//			out.write(page.getPageData());
+//			out.close();
+//		}
+//		catch (IOException e) {
+//			System.out.println("Exception Occurred:");
+//			e.printStackTrace();
+//		}
+//	}
 
-		try {
-			FileOutputStream out = new FileOutputStream(fileName);
-			out.write(page.getPageData());
-			out.close();
-		}
-		catch (IOException e) {
-			System.out.println("Exception Occurred:");
-			e.printStackTrace();
-		}
-	}
-
-	public void writeSSDPage(page page) {
-		WritetoSSDqueue.add(page);
-		WritetoSSDthread();
+	public void writeSSDPage(long pageNumber, int pointer) {
+		WritetoSSDqueue.add(new Pair<>(pageNumber, pointer));
+//		WritetoSSDthread();
 	}
 
 	public page readSSDPage(long pageNumber){
@@ -110,18 +114,25 @@ public class SSD{
 
 		if(server.pageIndex.get(pageNumber).isDirty()) {
 			HDFSLayer.writePage(page, server);
-			server.updatePageIndex(elder.getKey(), -1, 0, 1, -1);
+			server.updatePageIndex(pageNumber, -1, 0, 1, -1);
 		}
+		else {
+			server.updatePageIndex(pageNumber, -1, 0, -1, -1);
+		}
+
 		recencyList.remove(pageNumber);
+		--size;
+//		System.out.println(pageNumber+" removed from SSD.");
 		file.delete(); //remove the file from actual SSD
 	}
 
-	public void writePage(page page, blockServer server){
+	public void writePage(long pageNumber,int pointer, blockServer server){
 
 
-		if(size == utils.SSD_SIZE-1){
-			if(recencyList.containsKey(page.getPageNumber())){
-				writeSSDPage(page);
+		if(size >= utils.SSD_SIZE-1){
+
+			if(recencyList.containsKey(pageNumber)){
+				writeSSDPage(pageNumber, pointer);
 			}else{
 				//assume elder is always updated
 				/*
@@ -133,20 +144,24 @@ public class SSD{
 				}
 				recencyList.remove(tempPageNumber);
 				*/
+				long zero = 0;
+				recencyList.put(zero, true);
+				recencyList.remove(zero);
 				RemovalFromSSDqueue.add(elder.getKey());
 				RemovalFromSSDthread(server);
 
-				writeSSDPage(page);
+				writeSSDPage(pageNumber, pointer);
 			}
 		}else{
-			if(recencyList.containsKey(page.getPageNumber())){
-				writeSSDPage(page);
+			if(recencyList.containsKey(pageNumber)){
+				writeSSDPage(pageNumber, pointer);
 			}else{
 				size++;
-				writeSSDPage(page);
+				writeSSDPage(pageNumber, pointer);
 			}
 		}
-		recencyList.put(page.getPageNumber(), true); //elder is updated
+//		System.out.println("size & max_size = "+size+" "+utils.SSD_SIZE);
+		recencyList.put(pageNumber, true); //elder is updated
 	}
 
 	public void resetSSD(blockServer server){

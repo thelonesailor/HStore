@@ -28,7 +28,7 @@ public class block{
 		byte[] temp = new byte[utils.PAGE_SIZE];
 		for (int i = 0; i < utils.BLOCK_SIZE; i++) {
 			System.arraycopy(blockData,i*utils.PAGE_SIZE,temp,0,utils.PAGE_SIZE);
-			returnAllPages[i] = new page((blockNumber * 8) + i, temp);
+			returnAllPages[i] = new page((blockNumber << 3) + i, temp);
 		}
 		return returnAllPages;
 	}

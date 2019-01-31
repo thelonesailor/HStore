@@ -1,10 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="4c19fffc-a117-4928-b411-c1c847cc868f" name="Default Changelist" comment="">
+    <list default="true" id="4c19fffc-a117-4928-b411-c1c847cc868f" name="Default Changelist" comment="made queues">
+      <change afterPath="$PROJECT_DIR$/src/main/java/BlockStorage/RemoveFromCache.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/BlockStorage/WritetoSSD.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HStore.iml" beforeDir="false" afterPath="$PROJECT_DIR$/HStore.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/HStore/BlockStorage/FileSystemOperations.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/HStore/BlockStorage/FileSystemOperations.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/HStore/BlockStorage/HDFSLayer$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/HStore/BlockStorage/HDFSLayer$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/HStore/BlockStorage/HDFSLayer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/HStore/BlockStorage/HDFSLayer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/HStore/BlockStorage/SSD$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/HStore/BlockStorage/SSD$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/HStore/BlockStorage/SSD.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/HStore/BlockStorage/SSD.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/HStore/BlockStorage/Utils.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/HStore/BlockStorage/Utils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/HStore/BlockStorage/block.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/HStore/BlockStorage/block.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/HStore/BlockStorage/blockServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/HStore/BlockStorage/blockServer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/HStore/BlockStorage/cache$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/HStore/BlockStorage/cache$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/HStore/BlockStorage/cache.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/HStore/BlockStorage/cache.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/BlockStorage/FileSystemOperations.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/BlockStorage/FileSystemOperations.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/BlockStorage/HDFSLayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/BlockStorage/HDFSLayer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/BlockStorage/SSD.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/BlockStorage/SSD.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/BlockStorage/Utils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/BlockStorage/Utils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/BlockStorage/block.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/BlockStorage/block.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/BlockStorage/blockServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/BlockStorage/blockServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/BlockStorage/cache.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/BlockStorage/cache.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/BlockStorage/HDFSLayerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/BlockStorage/HDFSLayerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/BlockStorage/SSDTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/BlockStorage/SSDTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/BlockStorage/blockServerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/BlockStorage/blockServerTest.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -13,45 +34,33 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="CodeInsightWorkspaceSettings">
+    <option name="optimizeImportsOnTheFly" value="true" />
+  </component>
+  <component name="CoverageDataManager">
+    <SUITE FILE_PATH="coverage/HStore$blockServerTest_WriteAndRevReadFromBlockServer2.ic" NAME="blockServerTest.WriteAndRevReadFromBlockServer2 Coverage Results" MODIFIED="1548913404070" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>BlockStorage.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/HStore$blockServerTest_WriteAndReadFromBlockServer1.ic" NAME="blockServerTest.WriteAndReadFromBlockServer1 Coverage Results" MODIFIED="1548910731382" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>BlockStorage.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/HStore$blockServerTest.ic" NAME="blockServerTest Coverage Results" MODIFIED="1548915566922" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>BlockStorage.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/HStore$blockServerTest_correctness2.ic" NAME="blockServerTest.correctness2 Coverage Results" MODIFIED="1548873351513" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>BlockStorage.*</FILTER>
+    </SUITE>
+  </component>
+  <component name="CoverageViewManager">
+    <option name="myElementSize" value="162" />
+  </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/blockServer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1011">
-              <caret line="13" column="8" selection-start-line="13" selection-start-column="8" selection-end-line="13" selection-end-column="8" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/cache.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-615">
-              <caret line="12" column="24" selection-start-line="12" selection-start-column="24" selection-end-line="12" selection-end-column="24" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/SSD.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="218">
-              <caret line="39" column="34" selection-start-line="39" selection-start-column="34" selection-end-line="39" selection-end-column="34" />
-              <folding>
-                <element signature="e#560#566#0" expanded="true" />
-                <element signature="e#619#625#0" expanded="true" />
-                <element signature="e#1118#1119#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/test/java/BlockStorage/SSDTest.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="397">
-              <caret line="54" selection-start-line="54" selection-end-line="54" selection-end-column="50" />
+            <state relative-caret-position="231">
+              <caret line="55" column="28" lean-forward="true" selection-start-line="55" selection-start-column="28" selection-end-line="55" selection-end-column="28" />
             </state>
           </provider>
         </entry>
@@ -59,8 +68,35 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/java/BlockStorage/HDFSLayerTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2310">
-              <caret line="156" column="50" selection-start-line="156" selection-start-column="50" selection-end-line="156" selection-end-column="50" />
+            <state relative-caret-position="90">
+              <caret line="6" column="9" lean-forward="true" selection-start-line="6" selection-start-column="9" selection-end-line="6" selection-end-column="9" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/Utils.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="255">
+              <caret line="17" column="36" selection-start-line="17" selection-start-column="36" selection-end-line="17" selection-end-column="36" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/RemoveFromCache.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="487">
+              <caret line="47" lean-forward="true" selection-start-line="47" selection-end-line="47" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/WritetoSSD.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="189">
+              <caret line="29" column="23" selection-start-line="29" selection-start-column="23" selection-end-line="29" selection-end-column="23" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -69,37 +105,15 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/test/java/BlockStorage/blockServerTest.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="525">
-              <caret line="35" selection-start-line="35" selection-end-line="35" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/Utils.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="67">
-              <caret line="14" lean-forward="true" selection-start-line="14" selection-end-line="14" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/HDFSLayer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="465">
-              <caret line="40" column="63" selection-start-line="40" selection-start-column="63" selection-end-line="40" selection-end-column="63" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/blockValue.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="4" selection-start-line="4" selection-end-line="5" />
+            <state relative-caret-position="-2250">
+              <caret line="12" column="28" lean-forward="true" selection-start-line="12" selection-start-column="28" selection-end-line="12" selection-end-column="28" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#771#772#0" expanded="true" />
+                <element signature="e#800#801#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -111,6 +125,7 @@
       <list>
         <option value="JUnit5 Test Class" />
         <option value="JUnit4 Test Class" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -121,6 +136,7 @@
       <find>elder</find>
       <find>update</find>
       <find>clie</find>
+      <find>zero</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -146,15 +162,18 @@
         <option value="$PROJECT_DIR$/src/main/java/BlockStorage/position.java" />
         <option value="$PROJECT_DIR$/src/main/java/BlockStorage/cacheValue.java" />
         <option value="$PROJECT_DIR$/src/main/java/BlockStorage/blockValue.java" />
+        <option value="$PROJECT_DIR$/src/test/java/BlockStorage/SSDTest.java" />
+        <option value="$PROJECT_DIR$/src/main/java/BlockStorage/SSD.java" />
+        <option value="$PROJECT_DIR$/src/main/java/BlockStorage/block.java" />
+        <option value="$PROJECT_DIR$/src/main/java/BlockStorage/Utils.java" />
+        <option value="$PROJECT_DIR$/src/test/java/BlockStorage/blockServerTest.java" />
         <option value="$PROJECT_DIR$/src/main/java/BlockStorage/FileSystemOperations.java" />
         <option value="$PROJECT_DIR$/src/main/java/BlockStorage/cache.java" />
-        <option value="$PROJECT_DIR$/src/test/java/BlockStorage/SSDTest.java" />
-        <option value="$PROJECT_DIR$/src/test/java/BlockStorage/blockServerTest.java" />
+        <option value="$PROJECT_DIR$/src/main/java/BlockStorage/RemoveFromCache.java" />
+        <option value="$PROJECT_DIR$/src/main/java/BlockStorage/WritetoSSD.java" />
         <option value="$PROJECT_DIR$/src/main/java/BlockStorage/HDFSLayer.java" />
-        <option value="$PROJECT_DIR$/src/test/java/BlockStorage/HDFSLayerTest.java" />
         <option value="$PROJECT_DIR$/src/main/java/BlockStorage/blockServer.java" />
-        <option value="$PROJECT_DIR$/src/main/java/BlockStorage/Utils.java" />
-        <option value="$PROJECT_DIR$/src/main/java/BlockStorage/SSD.java" />
+        <option value="$PROJECT_DIR$/src/test/java/BlockStorage/HDFSLayerTest.java" />
       </list>
     </option>
   </component>
@@ -272,6 +291,9 @@
       </profile-state>
     </entry>
   </component>
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
@@ -325,16 +347,16 @@
   </component>
   <component name="PropertiesComponent">
     <property name="SearchEverywhereHistoryKey" value="elder&#9;PSI&#9;JAVA://BlockStorage.SSD#elder&#10;hduser&#9;PSI&#9;JAVA://com.sun.corba.se.impl.protocol.CorbaMessageMediatorImpl#handleThrowableDuringServerDispatch" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1547154889611" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1548915983238" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit4" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit4" value="" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5" value="" />
     <property name="last_directory_selection" value="$PROJECT_DIR$/src/test/java/BlockStorage" />
-    <property name="last_opened_file_path" value="$USER_HOME$/Downloads/jar_files" />
+    <property name="last_opened_file_path" value="/usr/local/hadoop/share/hadoop/common/lib" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
-    <property name="settings.editor.selected.configurable" value="preferences.pathVariables" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.import" />
   </component>
   <component name="RecentsManager">
     <key name="CreateTestDialog.RecentsKey">
@@ -356,20 +378,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="JUnit.All">
-    <configuration name="Test" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="BlockStorage.Test" />
-      <module name="HStore" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="BlockStorage.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
+  <component name="RunManager" selected="JUnit.blockServerTest">
     <configuration name="All" type="JUnit" factoryName="JUnit" repeat_count="3">
       <option name="PACKAGE_NAME" value="" />
       <option name="MAIN_CLASS_NAME" value="" />
@@ -394,38 +403,6 @@
       <option name="PACKAGE_NAME" value="BlockStorage" />
       <option name="MAIN_CLASS_NAME" value="BlockStorage.HDFSLayerTest" />
       <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="HDFSLayerTest.WriteAndReadFromHDFSDirectly1" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="HStore" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="BlockStorage.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="BlockStorage" />
-      <option name="MAIN_CLASS_NAME" value="BlockStorage.HDFSLayerTest" />
-      <option name="METHOD_NAME" value="WriteAndReadFromHDFSDirectly1" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="HDFSLayerTest.WriteAndReadFromHDFSLayer3" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="HStore" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="BlockStorage.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="BlockStorage" />
-      <option name="MAIN_CLASS_NAME" value="BlockStorage.HDFSLayerTest" />
-      <option name="METHOD_NAME" value="WriteAndReadFromHDFSLayer3" />
-      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -460,7 +437,7 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="blockServerTest.WriteAndReadFromBlockServer3" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="blockServerTest.WriteAndReadFromBlockServer1" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="HStore" />
       <extension name="coverage">
         <pattern>
@@ -470,29 +447,81 @@
       </extension>
       <option name="PACKAGE_NAME" value="BlockStorage" />
       <option name="MAIN_CLASS_NAME" value="BlockStorage.blockServerTest" />
-      <option name="METHOD_NAME" value="WriteAndReadFromBlockServer3" />
+      <option name="METHOD_NAME" value="WriteAndReadFromBlockServer1" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="blockServerTest.WriteAndRevReadFromBlockServer2" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="HStore" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="BlockStorage.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="BlockStorage" />
+      <option name="MAIN_CLASS_NAME" value="BlockStorage.blockServerTest" />
+      <option name="METHOD_NAME" value="WriteAndRevReadFromBlockServer2" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="blockServerTest.correctness1" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true" repeat_count="3">
+      <module name="HStore" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="BlockStorage.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="BlockStorage" />
+      <option name="MAIN_CLASS_NAME" value="BlockStorage.blockServerTest" />
+      <option name="METHOD_NAME" value="correctness1" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="PARAMETERS" value="" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="wholeProject" />
+      </option>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="blockServerTest.correctness2" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="HStore" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="BlockStorage.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="BlockStorage" />
+      <option name="MAIN_CLASS_NAME" value="BlockStorage.blockServerTest" />
+      <option name="METHOD_NAME" value="correctness2" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <list>
-      <item itemvalue="Application.Test" />
       <item itemvalue="JUnit.HDFSLayerTest" />
       <item itemvalue="JUnit.blockServerTest" />
       <item itemvalue="JUnit.All" />
-      <item itemvalue="JUnit.HDFSLayerTest.WriteAndReadFromHDFSLayer3" />
-      <item itemvalue="JUnit.HDFSLayerTest.WriteAndReadFromHDFSDirectly1" />
-      <item itemvalue="JUnit.blockServerTest.WriteAndReadFromBlockServer3" />
       <item itemvalue="JUnit.SSDTest" />
+      <item itemvalue="JUnit.blockServerTest.correctness1" />
+      <item itemvalue="JUnit.blockServerTest.correctness2" />
+      <item itemvalue="JUnit.blockServerTest.WriteAndReadFromBlockServer1" />
+      <item itemvalue="JUnit.blockServerTest.WriteAndRevReadFromBlockServer2" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.blockServerTest.WriteAndRevReadFromBlockServer2" />
+        <item itemvalue="JUnit.blockServerTest.WriteAndReadFromBlockServer1" />
+        <item itemvalue="JUnit.blockServerTest.correctness2" />
+        <item itemvalue="JUnit.blockServerTest.correctness1" />
         <item itemvalue="JUnit.SSDTest" />
-        <item itemvalue="JUnit.HDFSLayerTest.WriteAndReadFromHDFSDirectly1" />
-        <item itemvalue="JUnit.blockServerTest.WriteAndReadFromBlockServer3" />
-        <item itemvalue="JUnit.HDFSLayerTest.WriteAndReadFromHDFSLayer3" />
-        <item itemvalue="Application.Test" />
       </list>
     </recent_temporary>
   </component>
@@ -591,39 +620,46 @@
       <option name="project" value="LOCAL" />
       <updated>1547924095827</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="made queues">
+      <created>1547931273974</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1547931273974</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="All - 2019.01.10 at 22h 12m 09s.xml">
-      <configuration name="All" configurationId="JUnit" />
+    <history-entry file="blockServerTest_WriteAndRevReadFromBlockServer2 - 2019.01.31 at 11h 29m 32s.xml">
+      <configuration name="blockServerTest.WriteAndRevReadFromBlockServer2" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="All - 2019.01.10 at 22h 13m 01s.xml">
-      <configuration name="All" configurationId="JUnit" />
+    <history-entry file="blockServerTest_WriteAndRevReadFromBlockServer2 - 2019.01.31 at 11h 29m 50s.xml">
+      <configuration name="blockServerTest.WriteAndRevReadFromBlockServer2" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="All - 2019.01.10 at 22h 14m 04s.xml">
-      <configuration name="All" configurationId="JUnit" />
+    <history-entry file="blockServerTest_WriteAndRevReadFromBlockServer2 - 2019.01.31 at 11h 30m 54s.xml">
+      <configuration name="blockServerTest.WriteAndRevReadFromBlockServer2" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="All - 2019.01.18 at 01h 49m 02s.xml">
-      <configuration name="All" configurationId="JUnit" />
+    <history-entry file="blockServerTest_WriteAndRevReadFromBlockServer2 - 2019.01.31 at 11h 35m 07s.xml">
+      <configuration name="blockServerTest.WriteAndRevReadFromBlockServer2" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="All - 2019.01.18 at 02h 18m 14s.xml">
-      <configuration name="All" configurationId="JUnit" />
+    <history-entry file="blockServerTest_WriteAndRevReadFromBlockServer2 - 2019.01.31 at 11h 35m 24s.xml">
+      <configuration name="blockServerTest.WriteAndRevReadFromBlockServer2" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="All - 2019.01.19 at 21h 40m 44s.xml">
-      <configuration name="All" configurationId="JUnit" />
+    <history-entry file="blockServerTest - 2019.01.31 at 11h 37m 25s.xml">
+      <configuration name="blockServerTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="All - 2019.01.20 at 01h 00m 54s.xml">
-      <configuration name="All" configurationId="JUnit" />
+    <history-entry file="blockServerTest - 2019.01.31 at 11h 42m 46s.xml">
+      <configuration name="blockServerTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="All - 2019.01.20 at 01h 24m 40s.xml">
-      <configuration name="All" configurationId="JUnit" />
+    <history-entry file="HDFSLayerTest - 2019.01.31 at 11h 46m 30s.xml">
+      <configuration name="HDFSLayerTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="All - 2019.01.20 at 01h 36m 15s.xml">
-      <configuration name="All" configurationId="JUnit" />
+    <history-entry file="blockServerTest - 2019.01.31 at 11h 48m 49s.xml">
+      <configuration name="blockServerTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="All - 2019.01.20 at 01h 48m 42s.xml">
-      <configuration name="All" configurationId="JUnit" />
+    <history-entry file="blockServerTest - 2019.01.31 at 11h 51m 18s.xml">
+      <configuration name="blockServerTest" configurationId="JUnit" />
     </history-entry>
   </component>
   <component name="TodoView">
@@ -637,9 +673,8 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="54" y="-11" width="1313" height="780" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49884528" visible="true" weight="0.28458497" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49884528" visible="true" weight="0.3193676" />
       <window_info id="Structure" order="1" sideWeight="0.5011547" side_tool="true" weight="0.30671936" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -648,17 +683,17 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.25736433" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.39906833" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.31007752" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49960473" weight="0.3860465" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32919255" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.32919255" />
-      <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
-      <window_info active="true" anchor="bottom" id="Version Control" order="9" visible="true" weight="0.32248062" />
-      <window_info anchor="bottom" id="Messages" order="10" weight="0.32919255" />
+      <window_info anchor="bottom" id="Event Log" order="8" sideWeight="0.50039524" side_tool="true" weight="0.3984496" />
+      <window_info anchor="bottom" id="Version Control" order="9" weight="0.32248062" />
+      <window_info anchor="bottom" id="Messages" order="10" weight="0.32868218" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.24980237" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="Palette" order="3" />
       <window_info anchor="right" id="Capture Analysis" order="4" />
@@ -666,6 +701,7 @@
       <window_info anchor="right" id="Palette&#9;" order="6" />
       <window_info anchor="right" id="Maven Projects" order="7" />
       <window_info anchor="right" id="Maven" order="8" />
+      <window_info active="true" anchor="right" id="Coverage" order="9" side_tool="true" visible="true" weight="0.32964426" />
     </layout>
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -728,7 +764,73 @@
     <MESSAGE value="changed pageIndex and other things" />
     <MESSAGE value="small changes dirtybit, checking" />
     <MESSAGE value="bug fixes" />
-    <option name="LAST_COMMIT_MESSAGE" value="bug fixes" />
+    <MESSAGE value="made queues" />
+    <option name="LAST_COMMIT_MESSAGE" value="made queues" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/BlockStorage/cache.java</url>
+          <line>59</line>
+          <properties />
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="antWorkspaceConfiguration">
+    <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
+    <option name="FILTER_TARGETS" value="false" />
+  </component>
+  <component name="debuggerHistoryManager">
+    <expressions id="evaluateExpression">
+      <expression>
+        <expression-string>wasputinpointersList.containsKey((long)6299)</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>wasputinpointersList.containsKey((long)6)</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>wasputinpointersList.get(1)</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>wasputinpointersList.get(0)</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>wasputinpointersList.get(6)</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>wasputinpointersList.get(7059)</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>wasputinpointersList.containsKey(7059)</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>.containsKey(6985)</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>cacheList.containsKey(6985)</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+    </expressions>
   </component>
   <component name="editorHistoryManager">
     <entry file="jar:///usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar!/java/net/URLClassLoader.class">
@@ -811,13 +913,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/page.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar:///usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar!/java/util/HashMap.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="113">
@@ -825,65 +920,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar:///usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar!/java/util/LinkedHashMap.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="172" column="11" selection-start-line="172" selection-start-column="11" selection-end-line="172" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/out/production/HStore/BlockStorage/blockServer.class">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/cacheValue.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="16" selection-start-line="3" selection-start-column="16" selection-end-line="3" selection-end-column="16" />
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/position.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="465">
           <caret line="43" column="19" selection-start-line="43" selection-start-column="19" selection-end-line="43" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/FileSystemOperations.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1365">
-          <caret line="45" column="19" selection-start-line="45" selection-start-column="19" selection-end-line="45" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/blockServer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1011">
-          <caret line="13" column="8" selection-start-line="13" selection-start-column="8" selection-end-line="13" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/BlockStorage/HDFSLayerTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2310">
-          <caret line="156" column="50" selection-start-line="156" selection-start-column="50" selection-end-line="156" selection-end-column="50" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/BlockStorage/blockServerTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="525">
-          <caret line="35" selection-start-line="35" selection-end-line="35" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/HDFSLayer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="465">
-          <caret line="40" column="63" selection-start-line="40" selection-start-column="63" selection-end-line="40" selection-end-column="63" />
         </state>
       </provider>
     </entry>
@@ -894,36 +937,160 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/Utils.java">
+    <entry file="jar:///usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar!/java/util/LinkedHashMap.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="67">
-          <caret line="14" lean-forward="true" selection-start-line="14" selection-end-line="14" />
+        <state relative-caret-position="150">
+          <caret line="215" column="22" selection-start-line="215" selection-start-column="22" selection-end-line="215" selection-end-column="22" />
+          <folding>
+            <element signature="e#6044#6045#0" expanded="true" />
+            <element signature="e#6072#6073#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar!/java/lang/reflect/Constructor.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="61" selection-start-line="61" selection-end-line="61" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar!/java/lang/Thread.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="81" lean-forward="true" selection-start-line="81" selection-end-line="81" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/BlockStorage/SSDTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="397">
-          <caret line="54" selection-start-line="54" selection-end-line="54" selection-end-column="50" />
+        <state relative-caret-position="390">
+          <caret line="26" column="30" selection-start-line="26" selection-start-column="8" selection-end-line="26" selection-end-column="30" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/cache.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/page.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-615">
-          <caret line="12" column="24" selection-start-line="12" selection-start-column="24" selection-end-line="12" selection-end-column="24" />
+        <state relative-caret-position="30">
+          <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/HDFSConnectionManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/cacheValue.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="18" selection-start-line="18" selection-end-line="18" />
+          <folding>
+            <element signature="e#266#267#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///usr/lib/jvm/java-8-openjdk-amd64/jre/lib/ext/jfxrt.jar!/javafx/util/Pair.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="25" selection-start-line="25" selection-end-line="25" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/SSD.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="218">
-          <caret line="39" column="34" selection-start-line="39" selection-start-column="34" selection-end-line="39" selection-end-column="34" />
+        <state relative-caret-position="90">
+          <caret line="128" column="16" selection-start-line="128" selection-start-column="16" selection-end-line="128" selection-end-column="16" />
           <folding>
-            <element signature="e#560#566#0" expanded="true" />
-            <element signature="e#619#625#0" expanded="true" />
-            <element signature="e#1118#1119#0" expanded="true" />
+            <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/FileSystemOperations.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1380">
+          <caret line="98" column="15" lean-forward="true" selection-start-line="98" selection-start-column="15" selection-end-line="98" selection-end-column="15" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/BlockStorage/blockServerTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="220" column="16" selection-start-line="220" selection-start-column="16" selection-end-line="220" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/block.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="107">
+          <caret line="25" column="18" selection-start-line="25" selection-start-column="18" selection-end-line="25" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/cache.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="767">
+          <caret line="61" column="9" lean-forward="true" selection-start-line="61" selection-start-column="9" selection-end-line="61" selection-end-column="9" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/RemoveFromCache.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="487">
+          <caret line="47" lean-forward="true" selection-start-line="47" selection-end-line="47" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/WritetoSSD.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="189">
+          <caret line="29" column="23" selection-start-line="29" selection-start-column="23" selection-end-line="29" selection-end-column="23" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/HDFSLayer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2250">
+          <caret line="12" column="28" lean-forward="true" selection-start-line="12" selection-start-column="28" selection-end-line="12" selection-end-column="28" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#771#772#0" expanded="true" />
+            <element signature="e#800#801#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/blockServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="231">
+          <caret line="55" column="28" lean-forward="true" selection-start-line="55" selection-start-column="28" selection-end-line="55" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/BlockStorage/HDFSLayerTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="6" column="9" lean-forward="true" selection-start-line="6" selection-start-column="9" selection-end-line="6" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/BlockStorage/Utils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="17" column="36" selection-start-line="17" selection-start-column="36" selection-end-line="17" selection-end-column="36" />
         </state>
       </provider>
     </entry>
@@ -986,7 +1153,6 @@
             <option name="proportions">
               <list>
                 <option value="0.2" />
-                <option value="0.6" />
               </list>
             </option>
           </splitter-proportions>

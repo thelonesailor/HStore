@@ -14,14 +14,22 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="file://$USER_HOME$/Downloads/jar_files" />
+          <root url="file:///usr/local/hadoop/share/hadoop/httpfs" />
+          <root url="file:///usr/local/hadoop/share/hadoop/yarn" />
+          <root url="file:///usr/local/hadoop/share/hadoop/common" />
+          <root url="file:///usr/local/hadoop/share/hadoop/hdfs" />
+          <root url="file:///usr/local/hadoop/share/hadoop/mapreduce" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="file://$USER_HOME$/Downloads/jar_files" />
+          <root url="file:///usr/local/hadoop/share/hadoop/common/jdiff" />
+          <root url="file:///usr/local/hadoop/share/hadoop/hdfs/jdiff" />
+          <root url="file:///usr/local/hadoop/share/hadoop/mapreduce/jdiff" />
         </SOURCES>
-        <jarDirectory url="file://$USER_HOME$/Downloads/jar_files" recursive="false" />
-        <jarDirectory url="file://$USER_HOME$/Downloads/jar_files" recursive="false" type="SOURCES" />
+        <jarDirectory url="file:///usr/local/hadoop/share/hadoop/common" recursive="false" />
+        <jarDirectory url="file:///usr/local/hadoop/share/hadoop/hdfs" recursive="false" />
+        <jarDirectory url="file:///usr/local/hadoop/share/hadoop/mapreduce" recursive="false" />
+        <jarDirectory url="file:///usr/local/hadoop/share/hadoop/yarn" recursive="false" />
       </library>
     </orderEntry>
     <orderEntry type="module-library">
@@ -35,15 +43,6 @@
         </SOURCES>
         <jarDirectory url="file:///usr/local/hadoop/share/hadoop/common/lib" recursive="false" />
         <jarDirectory url="file:///usr/local/hadoop/share/hadoop/common/lib" recursive="false" type="SOURCES" />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar:///usr/local/hadoop/hadoop-core-1.2.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
       </library>
     </orderEntry>
   </component>

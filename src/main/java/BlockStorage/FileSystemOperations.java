@@ -1,19 +1,12 @@
 package BlockStorage;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.conf.Configuration;
+
+import java.io.IOException;
 
 /**
  * Simple Driver to read/write to hdfs
@@ -25,6 +18,14 @@ public class FileSystemOperations {
 
 	}
 
+	void closeFS(Configuration conf){
+		try {
+			FileSystem fileSystem = FileSystem.get(conf);
+			fileSystem.close();
+		} catch (IOException e) {
+			System.out.println("Error while closing filesystem");
+		}
+	}
 
 	public  Configuration getConfiguration(){
 		Configuration config = new Configuration();
@@ -36,7 +37,7 @@ public class FileSystemOperations {
 		config.addResource(new Path(HADOOP_HOME+"/etc/hadoop/core-site.xml"));
 		config.addResource(new Path(HADOOP_HOME+"/etc/hadoop/hdfs-site.xml"));
 		//config.set("fs.defaultFS", FSNAME);
-		config.setInt("dfs.replication", 2);
+//		config.setInt("dfs.replication", 2);
 		return config;
 	}
 
@@ -49,17 +50,17 @@ public class FileSystemOperations {
 	 */
 	public void addFile(Configuration conf, block block) throws IOException {
 
-	FileSystem fileSystem = FileSystem.get(conf);
+	FileSystem fileSystem;
 
 	String file = conf.get("fs.defaultFS")+utils.HDFS_PATH+"/"+Long.toString(block.blockNumber);
 //	System.out.println(file);
 
 	Path path = new Path(file);
-	if (fileSystem.exists(path)) {
-		// System.out.println("File " + dest + " already exists");
-		// TODO: delete the old file and write new file.
-		deleteFile(block.blockNumber,conf);
-	}
+//	if (fileSystem.exists(path)) {
+//
+//		// delete the old file and write new file.
+//		deleteFile(block.blockNumber,conf);
+//	}
 
 	fileSystem = FileSystem.get(conf);
 
@@ -74,7 +75,7 @@ public class FileSystemOperations {
 
 	// Close all the file descriptors
 	out.close();
-	fileSystem.close();
+//	fileSystem.close();
   }
 
   /**
@@ -94,33 +95,29 @@ public class FileSystemOperations {
 	byte[] b = new byte[8*utils.PAGE_SIZE];
 	if (!fileSystem.exists(path)) {
 	   System.out.println("File " + file + " does not exist");
-	  fileSystem.close();
+//	  fileSystem.close();
 	  return b;
 	}
 
 	FSDataInputStream in = fileSystem.open(path);
 
-//	String filename = file.substring(file.lastIndexOf('/') + 1,
-//	file.length());
-//
-//	OutputStream out = new BufferedOutputStream(new FileOutputStream( new File(filename)));
 
 	int numBytes = 0;
 	while ((numBytes = in.read(b)) > 0) {
 		in.close();
 		//out.close();
-		fileSystem.close();
+//		fileSystem.close();
 		return b;
 	}
 	in.close();
 	//out.close();
-	fileSystem.close();
+//	fileSystem.close();
 	return b;
 	}
 
   /**
    * delete a directory in hdfs
-   * @param file
+   * @param blockNumber
    * @throws IOException
    */
 	public void deleteFile(long blockNumber, Configuration conf) throws IOException {
@@ -132,13 +129,13 @@ public class FileSystemOperations {
 		Path path = new Path(file);
 	if (!fileSystem.exists(path)) {
 		System.out.println("File " + file + " does not exist");
-		fileSystem.close();
+//		fileSystem.close();
 		return;
 	}
 
 	fileSystem.delete(new Path(file), true);
 
-	fileSystem.close();
+//	fileSystem.close();
 	}
 
 	/**
@@ -157,7 +154,7 @@ public class FileSystemOperations {
 
 	fileSystem.mkdirs(path);
 
-	fileSystem.close();
+//	fileSystem.close();
 	}
 
 //  public static void main(String[] args) throws IOException {

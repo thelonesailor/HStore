@@ -1,23 +1,60 @@
 package BlockStorage;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 class blockServer{
 	
 	cache cache;
 	SSD SSD;
 	HDFSLayer HDFSLayer;
-	HashMap<Long, position> pageIndex;
+	ConcurrentHashMap<Long, position> pageIndex;
 	private Utils utils = new Utils();
+	WritetoSSD writetoSSD;
+	RemoveFromCache removeFromCache;
+
+	Thread removeFromCachethread;
+	Thread writetoSSDthread;
+
+	boolean removeFromCacheStop = false;
+	boolean writetoSSDStop = false;
 
 	public blockServer(cache cache, SSD SSD, HDFSLayer HDFSLayer){
-		pageIndex = new HashMap<Long, position>();
+		pageIndex = new ConcurrentHashMap<>();
 		this.cache = cache;
 		this.SSD = SSD;
 		this.HDFSLayer = HDFSLayer;
 		pageIndex.clear();
+
+		this.removeFromCache = new RemoveFromCache(this.cache, this.SSD, this);
+		removeFromCachethread = new Thread(this.removeFromCache);
+		removeFromCachethread.start();
+		removeFromCachethread.setName("removeFromCachethread");
+
+		this.writetoSSD = new WritetoSSD(this.cache, this.SSD, this);
+		writetoSSDthread = new Thread(this.writetoSSD);
+		writetoSSDthread.start();
+		writetoSSDthread.setName("writetoSSDthread");
 	}
 
+	public void stop(){
+//		removeFromCachethread.interrupt();
+//		writetoSSDthread.interrupt();
+
+		removeFromCacheStop = true;
+		writetoSSDStop = true;
+
+		System.out.println("Interrupts sent, waiting to join");
+		try{
+			removeFromCachethread.join();
+			writetoSSDthread.join();
+		}
+		catch(InterruptedException e){
+			System.out.println("InterruptedException in joining: " + e);
+		}
+
+		HDFSLayer.flushHDFSbuffer();
+		HDFSLayer.closeFS();
+	}
 
 	/**
 	 * @param pageNumber is 1 indexed
@@ -28,7 +65,7 @@ class blockServer{
 
 		if(pos.isLocationCache())
 		{
-			returnPage =  cache.readPage(pageNumber);
+			returnPage =  cache.readPage(pageNumber, false);
 		}
 		else if(pos.isLocationSSD())
 		{
@@ -42,10 +79,10 @@ class blockServer{
 
 			page[] returnAllPages = returnBlock.getAllPages();
 			for (int i = 0; i < utils.BLOCK_SIZE; i++){
-				// TODO : if condition to be added to check the validity
+				// if condition to be added to check the validity
 				long temp = ((returnBlock.blockNumber)<<3)+i;
 				position p = pageIndex.get(temp);
-				if(p!=null && p.isLocationHDFS() && !p.isDirty() && !p.isLocationCache() && cache.cacheList.get(temp)==null) {
+				if(p!=null && p.isLocationHDFS() && !p.isDirty() && !p.isLocationCache() && cache.pointersList.get(temp)==null) {
 					cache.writePage(returnAllPages[i],this);
 					updatePageIndex(temp, 1, -1, 1, -1);
 				}
@@ -57,12 +94,17 @@ class blockServer{
 	}
 
 	/**
-	 * @param pageNumber is 1 indexed
+	 * @param pageNumber is 0 indexed
 	 * */
 	void writePage(long pageNumber, byte[] pageData){
 		page newPage = new page(pageNumber, pageData);
-		cache.writePage(newPage, this);
+		boolean written = cache.writePage(newPage, this);
+
+		if(written)
 		updatePageIndex(pageNumber, 1, 0, 0, 1);
+		else{
+			System.out.println("Error in writing page to cache");
+		}
 	}
 
 
