@@ -21,7 +21,7 @@ public class Utils{
 	final int SSD_SIZE = 10000;//pages   ~.16GB
 	final int MAX_SSD_FULL_PERCENTAGE = 70;// %
 
-	String SSD_LOCATION = "/home/prakhar10_10/ssd";
+	String SSD_LOCATION = System.getenv("HOME") + "/ssd";
 
 	public void setSSD_LOCATION(String SSD_LOCATION) {
 		this.SSD_LOCATION = SSD_LOCATION;

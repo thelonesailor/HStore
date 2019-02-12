@@ -1,6 +1,7 @@
 package BlockStorage;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -90,7 +91,7 @@ public class cache{
 			return pointer;
 		}else{
 			while (size.get() >= utils.CACHE_SIZE){
-				System.out.println("stuck here");
+				System.out.println("waiting for cache to have space");
 				try{Thread.sleep(100);}
 				catch(InterruptedException e){}
 			}
