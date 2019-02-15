@@ -5,16 +5,16 @@ public class RemoveFromCache implements Runnable{
 	SSD SSD;
 	blockServer server;
 //	boolean stp;
-	private Utils utils = new Utils();
+	private Utils utils;
 	long m1 = -1;
-	RemoveFromCache(cache cache, SSD SSD, blockServer server){
+	RemoveFromCache(cache cache, SSD SSD, blockServer server, Utils utils){
 		this.cache = cache;
 		this.SSD = SSD;
 		this.server = server;
+		this.utils = utils;
 	}
 
 	public void doWork() throws InterruptedException{
-//		cache.cacheList.remove(zero);
 		if((cache.cacheList.size() > utils.MAX_CACHE_FULL_SIZE )||( server.removeFromCacheStop && (cache.cacheList.size() > 0))) {
 			cacheValue val = new cacheValue();
 

@@ -13,9 +13,9 @@ import java.io.IOException;
  *
  */
 public class FileSystemOperations {
-	Utils utils = new Utils();
-	public FileSystemOperations() {
-
+	Utils utils;
+	public FileSystemOperations(Utils utils) {
+		this.utils = utils;
 	}
 
 	void closeFS(Configuration conf){

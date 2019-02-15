@@ -13,19 +13,22 @@ public class HDFSLayer{
 	block[] HDFSBufferArray;
 	int writePointer;
 	HashMap<Long,Boolean> blockList ; // all the blocks which HDFS Cluster contains
-	Utils utils = new Utils();
+	Utils utils;
 
 	private static Map.Entry<Long, blockValue> elder = null;
 
-	FileSystemOperations client = new FileSystemOperations();
-
-	Configuration config = client.getConfiguration();
+	FileSystemOperations client;
+	Configuration config;
 
 	void closeFS(){
 		client.closeFS(config);
 	}
 
-	public HDFSLayer(){
+	HDFSLayer(Utils utils){
+		this.utils = utils;
+		client = new FileSystemOperations(this.utils);
+		config = client.getConfiguration();
+
 		this.HDFSBufferList = new LinkedHashMap<Long, blockValue>(utils.HDFS_BUFFER_SIZE, 0.75F, false) {
 
 			/**
@@ -81,7 +84,7 @@ public class HDFSLayer{
 
 				System.arraycopy(page.getPageData(), 0, read, ((int)(page.getPageNumber()%8))*utils.PAGE_SIZE, utils.PAGE_SIZE);
 
-				block tempBlock = new block(blockNumber,read);
+				block tempBlock = new block(blockNumber,read, utils);
 				int pointer = addWrite(blockNumber, true, server);
 				//System.out.println(pointer);
 				HDFSBufferArray[pointer] = tempBlock;
@@ -109,7 +112,7 @@ public class HDFSLayer{
 			}else{
 				read = new byte[8*utils.PAGE_SIZE];
 			}
-			tempBlock = new block(blockNumber,read);
+			tempBlock = new block(blockNumber,read, utils);
 			int pointer = addWrite(blockNumber, false, server);
 			HDFSBufferArray[pointer] = tempBlock;
 		}

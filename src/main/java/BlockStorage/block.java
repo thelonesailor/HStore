@@ -1,29 +1,30 @@
 package BlockStorage;
 
-public class block{
+class block{
 	long blockNumber;
 	byte[] blockData;
 
-	Utils utils = new Utils();
+	Utils utils;
 
-	public block(long blockNumber, byte[] blockData){
+	block(long blockNumber, byte[] blockData, Utils utils){
 		this.blockNumber = blockNumber;
 		this.blockData = blockData;
+		this.utils = utils;
 	}
 
-	public page readPage(long pageNumber){
+	page readPage(long pageNumber){
 		int offset = (int) (pageNumber % utils.BLOCK_SIZE);
 		byte[] temp = new byte[utils.PAGE_SIZE];
 		System.arraycopy(blockData,offset*utils.PAGE_SIZE,temp,0,utils.PAGE_SIZE);
 		return new page(pageNumber, temp);
 	}
 
-	public void addPageToBlock(page page){
+	void addPageToBlock(page page){
 		int offset = (int) (page.getPageNumber() % 8);
 		System.arraycopy(page.getPageData(),0,blockData,offset*utils.PAGE_SIZE,utils.PAGE_SIZE);
 	}
 
-	public page[] getAllPages() {
+	page[] getAllPages() {
 		page[] returnAllPages = new page[utils.BLOCK_SIZE];
 		byte[] temp = new byte[utils.PAGE_SIZE];
 		for (int i = 0; i < utils.BLOCK_SIZE; i++) {

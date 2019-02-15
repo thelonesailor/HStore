@@ -3,15 +3,45 @@ package BlockStorage;
 import org.junit.Test;
 
 public class blockServerTest {
-	private Utils utils = new Utils();
+
+	@Test
+	public void demo1(){
+		Utils utils = new Utils(10, 15, 1, true);
+
+		HDFSLayer HDFSLayer = new HDFSLayer(utils);
+		SSD SSD = new SSD(HDFSLayer, utils);
+		cache cache = new cache(SSD, utils);
+
+		blockServer server = new blockServer(cache, SSD, HDFSLayer, utils);
+		System.out.println("Block Server made");
+
+		byte[] b = new byte[utils.PAGE_SIZE];
+		for (int i=0; i<=utils.CACHE_SIZE ; ++i) {
+			server.writePage(i, b);
+		}
+		try{Thread.sleep(100);}
+		catch(InterruptedException e){}
+
+		long one = 1;
+		assert !server.pageIndex.get(one).isLocationCache();
+		assert server.pageIndex.get(one).isLocationSSD();
+		assert !server.pageIndex.get(one).isLocationHDFS();
+		assert server.pageIndex.get(one).isDirty();
+
+
+		server.stop();
+		System.out.println("------------------------------------------------------");
+	}
 
 	@Test
 	public void correctness1(){
-		HDFSLayer HDFSLayer = new HDFSLayer();
-		SSD SSD = new SSD(HDFSLayer);
-		cache cache = new cache(SSD);
-		Utils utils = new Utils();
-		blockServer server = new blockServer(cache, SSD, HDFSLayer);
+		Utils utils = new Utils(4096, 10000, 128, false);
+
+		HDFSLayer HDFSLayer = new HDFSLayer(utils);
+		SSD SSD = new SSD(HDFSLayer, utils);
+		cache cache = new cache(SSD, utils);
+
+		blockServer server = new blockServer(cache, SSD, HDFSLayer, utils);
 		System.out.println("Block Server made");
 
 		byte[] b = new byte[utils.PAGE_SIZE];
@@ -34,11 +64,13 @@ public class blockServerTest {
 
 	@Test
 	public void correctness2(){
-		HDFSLayer HDFSLayer = new HDFSLayer();
-		SSD SSD = new SSD(HDFSLayer);
-		cache cache = new cache(SSD);
-		Utils utils = new Utils();
-		blockServer server = new blockServer(cache, SSD, HDFSLayer);
+		Utils utils = new Utils(4096, 10000, 128, false);
+
+		HDFSLayer HDFSLayer = new HDFSLayer(utils);
+		SSD SSD = new SSD(HDFSLayer, utils);
+		cache cache = new cache(SSD, utils);
+
+		blockServer server = new blockServer(cache, SSD, HDFSLayer, utils);
 		System.out.println("Block Server made");
 
 		byte[] b = new byte[utils.PAGE_SIZE];
@@ -72,11 +104,13 @@ public class blockServerTest {
 
 	@Test
 	public void correctness3(){
-		HDFSLayer HDFSLayer = new HDFSLayer();
-		SSD SSD = new SSD(HDFSLayer);
-		cache cache = new cache(SSD);
-		Utils utils = new Utils();
-		blockServer server = new blockServer(cache, SSD, HDFSLayer);
+		Utils utils = new Utils(4096, 10000, 128, false);
+
+		HDFSLayer HDFSLayer = new HDFSLayer(utils);
+		SSD SSD = new SSD(HDFSLayer, utils);
+		cache cache = new cache(SSD, utils);
+
+		blockServer server = new blockServer(cache, SSD, HDFSLayer, utils);
 		System.out.println("Block Server made");
 
 		byte[] b = new byte[utils.PAGE_SIZE];
@@ -127,12 +161,14 @@ public class blockServerTest {
 
 	@Test
 	public void WriteAndReadFromBlockServer1(){
-		HDFSLayer HDFSLayer = new HDFSLayer();
-		SSD SSD = new SSD(HDFSLayer);
-		cache cache = new cache(SSD);
+		Utils utils = new Utils(4096, 10000, 128, false);
+
+		HDFSLayer HDFSLayer = new HDFSLayer(utils);
+		SSD SSD = new SSD(HDFSLayer, utils);
+		cache cache = new cache(SSD, utils);
 
 		int numPages = 1000;
-		blockServer server = new blockServer(cache, SSD, HDFSLayer);
+		blockServer server = new blockServer(cache, SSD, HDFSLayer, utils);
 		System.out.println("Block Server made");
 
 		double startTime = System.nanoTime();
@@ -158,12 +194,14 @@ public class blockServerTest {
 
 	@Test
 	public void WriteAndReadFromBlockServer2(){
-		HDFSLayer HDFSLayer = new HDFSLayer();
-		SSD SSD = new SSD(HDFSLayer);
-		cache cache = new cache(SSD);
+		Utils utils = new Utils(4096, 10000, 128, false);
+
+		HDFSLayer HDFSLayer = new HDFSLayer(utils);
+		SSD SSD = new SSD(HDFSLayer, utils);
+		cache cache = new cache(SSD, utils);
 
 		int numPages = 10000;
-		blockServer server = new blockServer(cache, SSD, HDFSLayer);
+		blockServer server = new blockServer(cache, SSD, HDFSLayer, utils);
 		System.out.println("Block Server made");
 
 		double startTime = System.nanoTime();
@@ -219,12 +257,14 @@ public class blockServerTest {
 
 	@Test
 	public void WriteAndRevReadFromBlockServer2(){
-		HDFSLayer HDFSLayer = new HDFSLayer();
-		SSD SSD = new SSD(HDFSLayer);
-		cache cache = new cache(SSD);
+		Utils utils = new Utils(4096, 10000, 128, false);
+
+		HDFSLayer HDFSLayer = new HDFSLayer(utils);
+		SSD SSD = new SSD(HDFSLayer, utils);
+		cache cache = new cache(SSD, utils);
 
 		int numPages = 10000;
-		blockServer server = new blockServer(cache, SSD, HDFSLayer);
+		blockServer server = new blockServer(cache, SSD, HDFSLayer, utils);
 		System.out.println("Block Server made");
 
 		double startTime = System.nanoTime();

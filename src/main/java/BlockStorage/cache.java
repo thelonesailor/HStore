@@ -8,16 +8,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class cache{
+class cache{
 
 	LinkedHashMap<Long, cacheValue> cacheList;
 	Lock cacheListLock = new ReentrantLock();
 
 	byte[][] cacheBuffer;
-//	int writePointer;
 	AtomicInteger size = new AtomicInteger(0);
 	SSD SSD;
-	Utils utils = new Utils();
+	Utils utils;
 
 	ConcurrentLinkedQueue<Integer> EmptyPointers;
 	ConcurrentHashMap<Long, Integer> pointersList;
@@ -25,8 +24,9 @@ public class cache{
 
 	Map.Entry<Long, cacheValue> elder = null;
 
-	cache(SSD SSD){
+	cache(SSD SSD, Utils utils){
 		this.SSD = SSD;
+		this.utils = utils;
 		this.cacheList = new LinkedHashMap<Long, cacheValue>(utils.CACHE_SIZE, 0.75F, false) {
 
 			private static final long serialVersionUID = 1L;
@@ -37,7 +37,6 @@ public class cache{
 			}
 		};
 		this.cacheBuffer = new byte[utils.CACHE_SIZE+1][utils.PAGE_SIZE];
-//		this.writePointer = 1;
 
 		this.pointersList = new ConcurrentHashMap<>();
 		this.wasputinpointersList = new ConcurrentHashMap<>();

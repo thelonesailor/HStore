@@ -1,7 +1,7 @@
 package BlockStorage;
 
 public class HDFSLayerTest {
-	private Utils utils = new Utils();
+//	private Utils utils = new Utils();
 
 //	@Test
 //	public void WriteAndReadFromHDFSClusterDirectly1() {

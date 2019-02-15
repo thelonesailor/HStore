@@ -14,22 +14,19 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class SSD{
 
 	private String SSD_LOCATION;
-	private Utils utils = new Utils();
+	private Utils utils;
 	LinkedHashMap<Long, Boolean> recencyList;
 	private HDFSLayer HDFSLayer;
 	private static Map.Entry<Long, Boolean> elder = null;
 	int size;
 
-//	Queue<Pair<Long,Integer>> WritetoSSDqueue = new LinkedList<>();
-//	Queue<Long> RemovalFromSSDqueue = new LinkedList<>();
-
 	ConcurrentLinkedQueue<Pair<Long,Integer>> WritetoSSDqueue = new ConcurrentLinkedQueue<>();
 	ConcurrentLinkedQueue<Long> RemovalFromSSDqueue = new ConcurrentLinkedQueue<>();
 
-
-	public SSD(HDFSLayer HDFSLayer){
+	SSD(HDFSLayer HDFSLayer, Utils utils){
 		this.size = 0;
 		this.HDFSLayer = HDFSLayer;
+		this.utils = utils;
 		setSSD_LOCATION();
 		this.recencyList = new LinkedHashMap<Long, Boolean>(utils.SSD_SIZE, 0.75F, false) {
 			private static final long serialVersionUID = 1L;
@@ -41,31 +38,18 @@ public class SSD{
 		};
 	}
 
-	public void setSSD_LOCATION(){
+	void setSSD_LOCATION(){
 		this.SSD_LOCATION = utils.getSSD_LOCATION();
 	}
 
-//	void WritetoSSDthread(){
-//		page page = WritetoSSDqueue.remove();
-//		String fileName = SSD_LOCATION + "/" + page.getPageNumber();
-//
-//		try {
-//			FileOutputStream out = new FileOutputStream(fileName);
-//			out.write(page.getPageData());
-//			out.close();
-//		}
-//		catch (IOException e) {
-//			System.out.println("Exception Occurred:");
-//			e.printStackTrace();
-//		}
-//	}
 
-	public void writeSSDPage(long pageNumber, int pointer) {
+	void writeSSDPage(long pageNumber, int pointer) {
 		WritetoSSDqueue.add(new Pair<>(pageNumber, pointer));
-//		WritetoSSDthread();
+		if(utils.SHOW_LOG)
+			System.out.println(pageNumber + " put in WritetoSSDqueue");
 	}
 
-	public page readSSDPage(long pageNumber){
+	page readSSDPage(long pageNumber){
 		File file = new File(SSD_LOCATION + "/" + pageNumber);
 		byte[] pageData = new byte[utils.PAGE_SIZE];
 		try
@@ -86,7 +70,7 @@ public class SSD{
 		return new page(pageNumber, pageData);
 	}
 
-	public page readPage(long pageNumber) {
+	page readPage(long pageNumber) {
 			recencyList.put(pageNumber, true);
 			return readSSDPage(pageNumber);
 	}
@@ -126,8 +110,7 @@ public class SSD{
 		file.delete(); //remove the file from actual SSD
 	}
 
-	public void writePage(long pageNumber,int pointer, blockServer server){
-
+	void writePage(long pageNumber,int pointer, blockServer server){
 
 		if(size >= utils.SSD_SIZE-1){
 
@@ -164,14 +147,14 @@ public class SSD{
 		recencyList.put(pageNumber, true); //elder is updated
 	}
 
-	public void resetSSD(blockServer server){
-		for(Long key : recencyList.keySet()) {
-			page temp = readSSDPage(key);
-			HDFSLayer.writePage(temp, server);
-		}
-
-		size=0;
-		recencyList.clear();
-	}
+//	public void resetSSD(blockServer server){
+//		for(Long key : recencyList.keySet()) {
+//			page temp = readSSDPage(key);
+//			HDFSLayer.writePage(temp, server);
+//		}
+//
+//		size=0;
+//		recencyList.clear();
+//	}
 
 }

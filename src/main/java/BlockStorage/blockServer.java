@@ -8,38 +8,39 @@ class blockServer{
 	SSD SSD;
 	HDFSLayer HDFSLayer;
 	ConcurrentHashMap<Long, position> pageIndex;
-	private Utils utils = new Utils();
+	private Utils utils;
 	WritetoSSD writetoSSD;
 	RemoveFromCache removeFromCache;
 
 	Thread removeFromCachethread;
 	Thread writetoSSDthread;
 
+	Thread removeFromSSDthread;
+	Thread writetoHDFSthread;
+
 	boolean removeFromCacheStop = false;
 	boolean writetoSSDStop = false;
 
-	public blockServer(cache cache, SSD SSD, HDFSLayer HDFSLayer){
+	blockServer(cache cache, SSD SSD, HDFSLayer HDFSLayer, Utils utils){
 		pageIndex = new ConcurrentHashMap<>();
+		pageIndex.clear();
 		this.cache = cache;
 		this.SSD = SSD;
 		this.HDFSLayer = HDFSLayer;
-		pageIndex.clear();
+		this.utils = utils;
 
-		this.removeFromCache = new RemoveFromCache(this.cache, this.SSD, this);
+		this.removeFromCache = new RemoveFromCache(this.cache, this.SSD, this, this.utils);
 		removeFromCachethread = new Thread(this.removeFromCache);
 		removeFromCachethread.start();
 		removeFromCachethread.setName("removeFromCachethread");
 
-		this.writetoSSD = new WritetoSSD(this.cache, this.SSD, this);
+		this.writetoSSD = new WritetoSSD(this.cache, this.SSD, this, this.utils);
 		writetoSSDthread = new Thread(this.writetoSSD);
 		writetoSSDthread.start();
 		writetoSSDthread.setName("writetoSSDthread");
 	}
 
-	public void stop(){
-//		removeFromCachethread.interrupt();
-//		writetoSSDthread.interrupt();
-
+	void stop(){
 		removeFromCacheStop = true;
 		writetoSSDStop = true;
 

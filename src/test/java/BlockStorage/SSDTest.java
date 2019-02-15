@@ -1,9 +1,7 @@
 package BlockStorage;
 
-import org.junit.Test;
-
 public class SSDTest {
-	private Utils utils = new Utils();
+//	private Utils utils = new Utils();
 	
 //	@Test
 //	public void WriteAndReadFromSSDLayer1() {

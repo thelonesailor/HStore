@@ -11,14 +11,15 @@ public class WritetoSSD implements Runnable{
 	private SSD SSD;
 	private blockServer server;
 //	boolean stop = false;
-	private Utils utils = new Utils();
+	private Utils utils;
 	String SSD_LOCATION;
 
 
-	WritetoSSD(cache cache,SSD SSD, blockServer server){
+	WritetoSSD(cache cache,SSD SSD, blockServer server, Utils utils){
 		this.cache = cache;
 		this.SSD = SSD;
 		this.server = server;
+		this.utils = utils;
 		this.SSD_LOCATION = utils.getSSD_LOCATION();
 	}
 
