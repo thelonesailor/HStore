@@ -10,7 +10,6 @@ public class WritetoSSD implements Runnable{
 	private cache cache;
 	private SSD SSD;
 	private blockServer server;
-//	boolean stop = false;
 	private Utils utils;
 	String SSD_LOCATION;
 
@@ -48,6 +47,14 @@ public class WritetoSSD implements Runnable{
 				cache.EmptyPointers.add(freePointer);
 				cache.size.getAndDecrement();// cache.size--
 
+				SSD.recencyListLock.lock();
+				SSD.recencyList.put(pageNumber, true); //elder is updated
+				SSD.recencyListLock.unlock();
+
+				if(!SSD.pointersList.contains(pageNumber)){
+					SSD.pointersList.add(pageNumber);
+					SSD.size.getAndIncrement();
+				}
 			} catch (IOException e) {
 				System.out.println("Exception Occurred:");
 				e.printStackTrace();
@@ -59,17 +66,15 @@ public class WritetoSSD implements Runnable{
 	}
 
 	public void run(){
+		System.out.println("writetoSSDthread started.");
 		while (true) {
-			try{doWork();}
+			try{
+				doWork();
+			}
 			catch(InterruptedException e){
-//				stop = true;
-//				Thread.currentThread().interrupt();
+				System.out.println("InterruptedException in Write to SSD thread: " + e);
 			}
 //			System.out.println("WritetoSSDqueue.size() & cache.size & cache.cachelist.size = " + SSD.WritetoSSDqueue.size()+" "+cache.size.get()+" "+cache.cacheList.size()+" "+server.writetoSSDStop);
-
-//			if(Thread.currentThread().isInterrupted()){
-//				stop = true;
-//			}
 
 			if(server.writetoSSDStop){
 				if(!server.removeFromCachethread.isAlive() && SSD.WritetoSSDqueue.size() == 0){
@@ -77,7 +82,7 @@ public class WritetoSSD implements Runnable{
 				}
 			}
 		}
-		System.out.println("Write to SSD thread ended.");
+		System.out.println("writetoSSDthread ended.");
 	}
 }
 

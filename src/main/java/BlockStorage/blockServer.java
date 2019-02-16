@@ -9,17 +9,21 @@ class blockServer{
 	HDFSLayer HDFSLayer;
 	ConcurrentHashMap<Long, position> pageIndex;
 	private Utils utils;
-	WritetoSSD writetoSSD;
+
 	RemoveFromCache removeFromCache;
+	WritetoSSD writetoSSD;
+	RemoveFromSSD removeFromSSD;
+	WritetoHDFS writetoHDFS;
 
 	Thread removeFromCachethread;
-	Thread writetoSSDthread;
-
+	Thread writeToSSDthread;
 	Thread removeFromSSDthread;
-	Thread writetoHDFSthread;
+	Thread writeToHDFSthread;
 
 	boolean removeFromCacheStop = false;
 	boolean writetoSSDStop = false;
+	boolean removeFromSSDStop = false;
+	boolean writetoHDFSStop = false;
 
 	blockServer(cache cache, SSD SSD, HDFSLayer HDFSLayer, Utils utils){
 		pageIndex = new ConcurrentHashMap<>();
@@ -35,25 +39,41 @@ class blockServer{
 		removeFromCachethread.setName("removeFromCachethread");
 
 		this.writetoSSD = new WritetoSSD(this.cache, this.SSD, this, this.utils);
-		writetoSSDthread = new Thread(this.writetoSSD);
-		writetoSSDthread.start();
-		writetoSSDthread.setName("writetoSSDthread");
+		writeToSSDthread = new Thread(this.writetoSSD);
+		writeToSSDthread.start();
+		writeToSSDthread.setName("writetoSSDthread");
+
+		this.removeFromSSD = new RemoveFromSSD(this.cache, this.SSD, this, this.utils);
+		removeFromSSDthread = new Thread(this.removeFromSSD);
+		removeFromSSDthread.start();
+		removeFromSSDthread.setName("removeFromSSDthread");
+
+		this.writetoHDFS = new WritetoHDFS(this.cache, this.SSD, this.HDFSLayer, this, this.utils);
+		writeToHDFSthread = new Thread(this.writetoHDFS);
+		writeToHDFSthread.start();
+		writeToHDFSthread.setName("writetoHDFSthread");
+
+		System.out.println("blockServer initialised");
 	}
 
 	void stop(){
 		removeFromCacheStop = true;
 		writetoSSDStop = true;
+		removeFromSSDStop = true;
+		writetoHDFSStop = true;
 
-		System.out.println("Interrupts sent, waiting to join");
+		System.out.println("Stop function called, threads signalled to stop, waiting for threads to join");
 		try{
 			removeFromCachethread.join();
-			writetoSSDthread.join();
+			writeToSSDthread.join();
+			removeFromSSDthread.join();
+			writeToHDFSthread.join();
 		}
 		catch(InterruptedException e){
 			System.out.println("InterruptedException in joining: " + e);
 		}
 
-		HDFSLayer.flushHDFSbuffer();
+		HDFSLayer.flushHDFSBuffer();
 		HDFSLayer.closeFS();
 	}
 
@@ -72,9 +92,11 @@ class blockServer{
 		{
 			returnPage = SSD.readPage(pageNumber);
 			cache.writePage(returnPage,this);
-			updatePageIndex(pageNumber, 1, 1, -1, -1);
+			updatePageIndex(pageNumber, 1, -1, -1, -1);
 		}
 		else if(pos.isLocationHDFS()){
+			if(utils.SHOW_LOG)
+				System.out.println("Reading page " + pageNumber + " from HDFS Layer");
 			block returnBlock = HDFSLayer.readBlock(pageNumber, this);
 			returnPage = returnBlock.readPage(pageNumber);
 
@@ -137,19 +159,35 @@ class blockServer{
 
 			if (Cache == 1) locationCache = true;
 			else if (Cache == 0) locationCache = false;
-			else {System.out.println("Error in updating pageIndex for "+pageNumber);return;}
+			else {
+				System.out.println("Error in updating pageIndex for "+pageNumber);
+				assert false;
+				return;
+			}
 
 			if (SSD == 1) locationSSD = true;
 			else if (SSD == 0) locationSSD = false;
-			else {System.out.println("Error in updating pageIndex for "+pageNumber);return;}
+			else {
+				System.out.println("Error in updating pageIndex for "+pageNumber);
+				assert false;
+				return;
+			}
 
 			if (HDFS == 1) locationHDFS = true;
 			else if (HDFS == 0) locationHDFS = false;
-			else {System.out.println("Error in updating pageIndex for "+pageNumber);return;}
+			else {
+				System.out.println("Error in updating pageIndex for "+pageNumber);
+				assert false;
+				return;
+			}
 
 			if (dirty == 1) dirtyBit = true;
 			else if (dirty == 0) dirtyBit = false;
-			else {System.out.println("Error in updating pageIndex for "+pageNumber);return;}
+			else {
+				System.out.println("Error in updating pageIndex for "+pageNumber);
+				assert false;
+				return;
+			}
 
 			pageIndex.put(pageNumber, new position(locationCache, locationSSD, locationHDFS, dirtyBit));
 		}

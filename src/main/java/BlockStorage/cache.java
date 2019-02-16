@@ -22,7 +22,7 @@ class cache{
 	ConcurrentHashMap<Long, Integer> pointersList;
 	ConcurrentHashMap<Long, Integer> wasputinpointersList;
 
-	Map.Entry<Long, cacheValue> elder = null;
+	static Map.Entry<Long, cacheValue> elder = null;
 
 	cache(SSD SSD, Utils utils){
 		this.SSD = SSD;
@@ -57,7 +57,7 @@ class cache{
 
 //		System.out.println("Reading "+pageNumber+" from cache");
 		if(!pointersList.containsKey(pageNumber)) {
-			System.out.println("Reading "+pageNumber+" from cache");
+			System.out.println("Reading "+pageNumber+" from cache "+wasputinpointersList.contains(pageNumber));
 			assert false;
 		}
 
@@ -90,7 +90,7 @@ class cache{
 			return pointer;
 		}else{
 			while (size.get() >= utils.CACHE_SIZE){
-				System.out.println("waiting for cache to have space");
+//				System.out.println("waiting for cache to have space");
 				try{Thread.sleep(100);}
 				catch(InterruptedException e){}
 			}

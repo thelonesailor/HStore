@@ -36,7 +36,7 @@ public class FileSystemOperations {
 //		System.out.println(System.getenv("HADOOP_HOME"));
 		config.addResource(new Path(HADOOP_HOME+"/etc/hadoop/core-site.xml"));
 		config.addResource(new Path(HADOOP_HOME+"/etc/hadoop/hdfs-site.xml"));
-		//config.set("fs.defaultFS", FSNAME);
+//		config.set("fs.defaultFS", FSNAME);
 //		config.setInt("dfs.replication", 2);
 		return config;
 	}

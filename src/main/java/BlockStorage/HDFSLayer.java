@@ -3,16 +3,17 @@ package BlockStorage;
 import org.apache.hadoop.conf.Configuration;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class HDFSLayer{
 
 	LinkedHashMap<Long, blockValue> HDFSBufferList;
+	LinkedHashMap<Long, blockValue> wasAddedToHDFSBufferList;
 	block[] HDFSBufferArray;
 	int writePointer;
-	HashMap<Long,Boolean> blockList ; // all the blocks which HDFS Cluster contains
+	ConcurrentHashMap<Long,Boolean> blockList ; // all the blocks which HDFS Cluster contains
 	Utils utils;
 
 	private static Map.Entry<Long, blockValue> elder = null;
@@ -29,6 +30,7 @@ public class HDFSLayer{
 		client = new FileSystemOperations(this.utils);
 		config = client.getConfiguration();
 
+		this.wasAddedToHDFSBufferList = new LinkedHashMap<>();
 		this.HDFSBufferList = new LinkedHashMap<Long, blockValue>(utils.HDFS_BUFFER_SIZE, 0.75F, false) {
 
 			/**
@@ -42,7 +44,7 @@ public class HDFSLayer{
 			}
 		};
 		this.HDFSBufferArray = new block[utils.HDFS_BUFFER_SIZE];
-		this.blockList = new HashMap<Long,Boolean>();
+		this.blockList = new ConcurrentHashMap<>();
 		this.writePointer = 0;
 	}
 
@@ -107,9 +109,19 @@ public class HDFSLayer{
 		}else{
 			// get the block from HDFS cluster
 			byte[] read;
+//			try{
+//				Thread.sleep(10);
+//			}
+//			catch(InterruptedException e){
+//				System.out.println("InterruptedException in HDFSBufferReadBlock: " + e);
+//			}
+
 			if(blockList.containsKey(blockNumber)){
 				read = client.readFile(config, blockNumber);
 			}else{
+				System.out.println(blockList.containsKey(blockNumber));
+				int lmao=34;
+				assert false;
 				read = new byte[8*utils.PAGE_SIZE];
 			}
 			tempBlock = new block(blockNumber,read, utils);
@@ -128,6 +140,7 @@ public class HDFSLayer{
 		int pointer = val.getPointer();
 		HDFSBufferList.remove(blockNumber);
 		HDFSBufferList.put(blockNumber, val);
+		wasAddedToHDFSBufferList.put(blockNumber, val);
 		return pointer;
 	}
 	/***
@@ -144,38 +157,51 @@ public class HDFSLayer{
 				// page already exists in HDFS Buffer
 				blockValue val = HDFSBufferList.get(blockNumber);
 				int pointer = val.getPointer();
-				HDFSBufferList.remove(blockNumber);
 				val.setDirtyBit(blockDirtyBit);
+				HDFSBufferList.remove(blockNumber);
 				HDFSBufferList.put(blockNumber, val);
 				return pointer;
 			}else{
 				if(writePointer == utils.HDFS_BUFFER_SIZE){
 					// victim page removal
 					blockValue val = new blockValue();
-					HDFSBufferList.put(blockNumber,val);
+					HDFSBufferList.put(blockNumber,val); //elder updated
+
+					long blockToRemove = elder.getKey();
 					if(elder.getValue().getDirtyBit()){
 						// write to HDFS cluster
-						blockList.put(elder.getKey(),true);
+						blockList.put(blockToRemove,true);
+
 						client.addFile(config, HDFSBufferArray[elder.getValue().getPointer()]);
-						long BN = elder.getKey();
+//						System.out.println(blockToRemove+" added to blockList");
 						for(int i=0;i<utils.BLOCK_SIZE;++i){
-							server.updatePageIndex((BN<<3) + i,-1,-1,1,0);
+							server.updatePageIndex((blockToRemove<<3) + i,-1,-1,1,0);
 						}
 					}
+					HDFSBufferList.remove(blockToRemove);
+
 					int emptyPointer = elder.getValue().getPointer();
 					val.setPointer(emptyPointer);
 					val.setDirtyBit(blockDirtyBit);
+
 					HDFSBufferList.remove(blockNumber);
 					HDFSBufferList.put(blockNumber,val);
+					wasAddedToHDFSBufferList.put(blockNumber, val);
 					assert (HDFSBufferList.size()<=utils.HDFS_BUFFER_SIZE);
 
 					return emptyPointer;
-				}else{
+				}else if(writePointer < utils.HDFS_BUFFER_SIZE){
 					// initial stage
 					blockValue val = new blockValue(writePointer,true);
+					assert HDFSBufferList.size() == writePointer;
 					HDFSBufferList.put(blockNumber, val);
+					wasAddedToHDFSBufferList.put(blockNumber, val);
 					writePointer++;
 					return (writePointer - 1);
+				}
+				else{
+					assert false;
+
 				}
 			}
 		}catch(IOException e){
@@ -184,7 +210,7 @@ public class HDFSLayer{
 		return 0;
 	}
 
-	public void flushHDFSbuffer(){
+	public void flushHDFSBuffer(){
 		System.out.println("flushing HDFS Buffer");
 		for(Long key : HDFSBufferList.keySet()) {
 			blockValue x = HDFSBufferList.get(key);

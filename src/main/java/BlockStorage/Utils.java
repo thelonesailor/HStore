@@ -17,7 +17,9 @@ public class Utils{
 
 //	int SSD_SIZE = 100000;//pages   ~1.6GB
 	int SSD_SIZE = 10000;//pages   ~.16GB
-	final int MAX_SSD_FULL_PERCENTAGE = 70;// %
+	final int MAX_SSD_FULL_PERCENTAGE = 60;// %
+	int MAX_SSD_FULL_SIZE;
+
 
 	String SSD_LOCATION = System.getenv("HOME") + "/ssd";
 
@@ -40,5 +42,6 @@ public class Utils{
 		HDFS_BUFFER_SIZE = hdfs_buffer_size;
 		SHOW_LOG = show_log;
 		MAX_CACHE_FULL_SIZE = (MAX_CACHE_FULL_PERCENTAGE * CACHE_SIZE)/100;
+		MAX_SSD_FULL_SIZE = (MAX_SSD_FULL_PERCENTAGE * SSD_SIZE)/100;
 	}
 }
