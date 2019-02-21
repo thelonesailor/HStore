@@ -6,7 +6,7 @@ public class blockServerTest {
 
 	@Test
 	public void demo1(){
-		Utils utils = new Utils(8, 10, 2, true);
+		Utils utils = new Utils(16, 24, 2, true);
 		HDFSLayer HDFSLayer = new HDFSLayer(utils);
 		SSD SSD = new SSD(HDFSLayer, utils);
 		cache cache = new cache(SSD, utils);
@@ -15,7 +15,7 @@ public class blockServerTest {
 		byte[] b = new byte[utils.PAGE_SIZE];
 		for (int i=0; i<utils.CACHE_SIZE + utils.SSD_SIZE + utils.HDFS_BUFFER_SIZE*utils.BLOCK_SIZE; ++i) {
 			server.writePage(i, b);
-			server.printBlockServerStatus();
+//			server.printBlockServerStatus();
 		}
 		try{Thread.sleep(100);}
 		catch(InterruptedException e){}
@@ -23,8 +23,6 @@ public class blockServerTest {
 		server.stop();
 		System.out.println("------------------------------------------------------");
 	}
-
-
 
 	@Test
 	public void correctness1(){
@@ -180,13 +178,13 @@ public class blockServerTest {
 
 	@Test
 	public void WriteAndReadFromBlockServer2(){
-		Utils utils = new Utils(1024, 2048, 128, false);
+		Utils utils = new Utils(924, 1848, 128, false);
 		HDFSLayer HDFSLayer = new HDFSLayer(utils);
 		SSD SSD = new SSD(HDFSLayer, utils);
 		cache cache = new cache(SSD, utils);
 		blockServer server = new blockServer(cache, SSD, HDFSLayer, utils);
 
-		int numPages = 3000;
+		int numPages = 2700;
 
 		double startTime = System.nanoTime();
 		byte[] b = new byte[utils.PAGE_SIZE];

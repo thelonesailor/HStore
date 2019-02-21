@@ -20,18 +20,20 @@ public class RemoveFromSSD implements Runnable {
 			SSD.recencyListLock.lock();
 			SSD.recencyList.put(m1,false); // elder gets updated here
 			SSD.recencyList.remove(m1);
-			SSD.recencyListLock.unlock();
+			SSD.recencyList.remove(m1);
+
+//			SSD.recencyListLock.unlock();
 
 			long pageNumberToRemove = SSD.elder.getKey();
 
-			SSD.recencyListLock.lock();
+//			SSD.recencyListLock.lock();
 			SSD.recencyList.remove(pageNumberToRemove);
 			SSD.recencyListLock.unlock();
-			if((int)pageNumberToRemove != -1) {
+//			if((int)pageNumberToRemove != -1) {
 				SSD.WritetoHDFSqueue.add(pageNumberToRemove);
 				if(utils.SHOW_LOG)
 					System.out.println("page " + pageNumberToRemove + " added to WritetoHDFSqueue");
-			}
+//			}
 		}
 		else{
 			Thread.sleep(10);

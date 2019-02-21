@@ -7,7 +7,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -21,7 +20,7 @@ public class SSD{
 	private Utils utils;
 	LinkedHashMap<Long, Boolean> recencyList;
 	Lock recencyListLock = new ReentrantLock();
-	List<Long> pointersList;
+	CopyOnWriteArrayList<Long> pointersList;
 
 
 	static Map.Entry<Long, Boolean> elder = null;

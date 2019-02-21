@@ -1,5 +1,7 @@
 package BlockStorage;
 
+import java.util.Map;
+
 public class RemoveFromCache implements Runnable{
 	private cache cache;
 	SSD SSD;
@@ -22,12 +24,13 @@ public class RemoveFromCache implements Runnable{
 			cache.cacheList.put(m1,val); // elder gets updated here
 			cache.cacheList.remove(m1);
 			cache.cacheList.remove(m1);
-			cache.cacheListLock.unlock();
+//			cache.cacheListLock.unlock();
 
-			long pageNumberToRemove = cache.elder.getKey();
-			int pointer = cache.elder.getValue().getPointer();
+			Map.Entry<Long, cacheValue>  eld = cache.elder;
+			long pageNumberToRemove = eld.getKey();
+			int pointer = eld.getValue().getPointer();
 
-			cache.cacheListLock.lock();
+//			cache.cacheListLock.lock();
 			cache.cacheList.remove(pageNumberToRemove);
 			cache.cacheListLock.unlock();
 

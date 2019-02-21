@@ -40,20 +40,20 @@ public class WritetoHDFS implements Runnable {
 					byte[] pageData = new byte[utils.PAGE_SIZE];
 					in.read(pageData);
 					in.close();
-//					System.out.println("Wrote "+pageNumber+" to HDFS.");
 					page page = new page(pageNumber, pageData);
 
 					HDFSlayer.writePage(page, server);
 					server.updatePageIndex(pageNumber, -1, 0, 1, -1);
+					if(utils.SHOW_LOG)
+						System.out.println("page: "+pageNumber+" written to HDFSLayer");
 				}
 				else{
 					server.updatePageIndex(pageNumber, -1, 0, -1, -1);
 				}
 
-				if(SSD.pointersList.contains(pageNumber)) {
-					SSD.pointersList.remove(pageNumber);
-//					SSD.size.getAndDecrement();// SSD.size--
-				}
+				SSD.pointersList.remove(pageNumber);
+				if(utils.SHOW_LOG)
+					System.out.println("page: "+pageNumber+" removed from SSD");
 
 			} catch (IOException e) {
 				System.out.println("Exception Occurred:");

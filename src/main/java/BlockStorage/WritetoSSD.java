@@ -32,6 +32,8 @@ public class WritetoSSD implements Runnable{
 //			System.out.println(pageNumber);
 			String fileName = SSD_LOCATION + "/" + pageNumber;
 
+			while (SSD.pointersList.size() >= utils.SSD_SIZE){} // wait for SSD to have space
+
 			try {
 				FileOutputStream out = new FileOutputStream(fileName);
 //				cache.cacheList.get(pageNumber);
@@ -51,9 +53,11 @@ public class WritetoSSD implements Runnable{
 				SSD.recencyList.put(pageNumber, true); //elder is updated
 				SSD.recencyListLock.unlock();
 
-				if(!SSD.pointersList.contains(pageNumber)){
-					SSD.pointersList.add(pageNumber);
-				}
+				SSD.pointersList.add(pageNumber);
+
+//				if((int)pageNumber == 50) {
+//					int lmaolmao=23;
+//				}
 			} catch (IOException e) {
 				System.out.println("Exception Occurred:");
 				e.printStackTrace();
@@ -75,7 +79,7 @@ public class WritetoSSD implements Runnable{
 			catch(InterruptedException e){
 				System.out.println("InterruptedException in Write to SSD thread: " + e);
 			}
-//			System.out.println("WritetoSSDqueue.size()="+SSD.WritetoSSDqueue.size()+"  cache.pointersList.size()="+cache.pointersList.size()+"  cache.cacheList.size()="+cache.cacheList.size()+"  server.writetoSSDStop="+server.writetoSSDStop);
+//			System.out.println("WritetoSSDqueue.size()="+SSD.WritetoSSDqueue.size()+"  cache.pointersList.size()="+cache.pointersList.size()+"  cache.cacheList.size()="+cache.cacheList.size()+"  SSD.recencyList.size()="+SSD.recencyList.size()+"  server.writetoSSDStop="+server.writetoSSDStop);
 
 
 			if(server.writetoSSDStop){

@@ -20,18 +20,21 @@ public class Demo {
 		catch(InterruptedException e){}
 
 		Scanner input = new Scanner(System.in);
-		System.out.println("enter input");
 		while(true){
+			System.out.println("enter input:");
 			String op = input.next();
-			int pageNumber = input.nextInt();
-			System.out.println(op+" "+pageNumber);
 
 			if(op.contentEquals("r")){
-				System.out.println("reading");
+				long pageNumber = input.nextLong();
+				System.out.println(op+" "+pageNumber);
+
 				server.readPage(pageNumber);
 				server.printBlockServerStatus();
 			}
 			else if(op.contentEquals("w")){
+				long pageNumber = input.nextLong();
+				System.out.println(op+" "+pageNumber);
+
 				server.writePage(pageNumber, b);
 				server.printBlockServerStatus();
 			}

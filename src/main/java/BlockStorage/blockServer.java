@@ -69,6 +69,7 @@ class blockServer{
 	}
 
 	void stop(){
+		stablize();
 		removeFromCacheStop = true;
 		writetoSSDStop = true;
 		removeFromSSDStop = true;
