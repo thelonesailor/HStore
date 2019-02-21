@@ -26,9 +26,9 @@ public class WritetoSSD implements Runnable{
 		if(SSD.WritetoSSDqueue.size() > 0) {
 			Pair<Long, Integer> p = SSD.WritetoSSDqueue.remove();
 			long pageNumber = p.getKey();
-			if(!server.pageIndex.get(pageNumber).isLocationCache()){
-				return;
-			}
+//			if(!server.pageIndex.get(pageNumber).isLocationCache()){
+//				return;
+//			}
 //			System.out.println(pageNumber);
 			String fileName = SSD_LOCATION + "/" + pageNumber;
 
@@ -45,7 +45,7 @@ public class WritetoSSD implements Runnable{
 //				cache.cacheList.remove(pageNumber);
 				cache.pointersList.remove(pageNumber);
 				cache.EmptyPointers.add(freePointer);
-				cache.size.getAndDecrement();// cache.size--
+//				cache.size.getAndDecrement();// cache.size--
 
 				SSD.recencyListLock.lock();
 				SSD.recencyList.put(pageNumber, true); //elder is updated
@@ -53,7 +53,6 @@ public class WritetoSSD implements Runnable{
 
 				if(!SSD.pointersList.contains(pageNumber)){
 					SSD.pointersList.add(pageNumber);
-					SSD.size.getAndIncrement();
 				}
 			} catch (IOException e) {
 				System.out.println("Exception Occurred:");
@@ -61,20 +60,23 @@ public class WritetoSSD implements Runnable{
 			}
 		}
 		else{
-			Thread.sleep(30);
+			Thread.sleep(10);
 		}
 	}
 
 	public void run(){
-		System.out.println("writetoSSDthread started.");
+
 		while (true) {
 			try{
+//				server.Lock1.lock();
 				doWork();
+//				server.Lock1.unlock();
 			}
 			catch(InterruptedException e){
 				System.out.println("InterruptedException in Write to SSD thread: " + e);
 			}
-//			System.out.println("WritetoSSDqueue.size() & cache.size & cache.cachelist.size = " + SSD.WritetoSSDqueue.size()+" "+cache.size.get()+" "+cache.cacheList.size()+" "+server.writetoSSDStop);
+//			System.out.println("WritetoSSDqueue.size()="+SSD.WritetoSSDqueue.size()+"  cache.pointersList.size()="+cache.pointersList.size()+"  cache.cacheList.size()="+cache.cacheList.size()+"  server.writetoSSDStop="+server.writetoSSDStop);
+
 
 			if(server.writetoSSDStop){
 				if(!server.removeFromCachethread.isAlive() && SSD.WritetoSSDqueue.size() == 0){

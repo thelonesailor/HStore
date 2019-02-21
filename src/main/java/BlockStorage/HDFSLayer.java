@@ -14,6 +14,8 @@ public class HDFSLayer{
 	block[] HDFSBufferArray;
 	int writePointer;
 	ConcurrentHashMap<Long,Boolean> blockList ; // all the blocks which HDFS Cluster contains
+	ConcurrentHashMap<Long,Boolean> wasAddedToblockList ; // all the blocks which HDFS Cluster contains
+
 	Utils utils;
 
 	private static Map.Entry<Long, blockValue> elder = null;
@@ -45,15 +47,16 @@ public class HDFSLayer{
 		};
 		this.HDFSBufferArray = new block[utils.HDFS_BUFFER_SIZE];
 		this.blockList = new ConcurrentHashMap<>();
+		this.wasAddedToblockList = new ConcurrentHashMap<>();
 		this.writePointer = 0;
 	}
 
 
-	public void writePage(page page, blockServer server){
+	void writePage(page page, blockServer server){
 		HDFSBufferWritePage(page, server);
 	}
 
-	public block readBlock(long pageNumber, blockServer server){
+	block readBlock(long pageNumber, blockServer server){
 		return HDFSBufferReadBlock(pageNumber, server);
 	}
 
@@ -61,7 +64,7 @@ public class HDFSLayer{
 	 * Writes or update the page to the corresponding block
 	 * @param page
 	 */
-	public void HDFSBufferWritePage(page page, blockServer server){
+	synchronized void HDFSBufferWritePage(page page, blockServer server){
 		/***
 		 * Update the page if present in the buffer else
 		 * get the block that is having this page and update the block
@@ -90,15 +93,14 @@ public class HDFSLayer{
 				int pointer = addWrite(blockNumber, true, server);
 				//System.out.println(pointer);
 				HDFSBufferArray[pointer] = tempBlock;
+			}
+		}
+		catch(IOException e){
+			e.printStackTrace();
 		}
 	}
-	catch(IOException e){
-		e.printStackTrace();
-	}
 
-	}
-
-	public block HDFSBufferReadBlock(long pageNumber, blockServer server){
+	block HDFSBufferReadBlock(long pageNumber, blockServer server){
 
 		long blockNumber = pageNumber >> 3;
 		block tempBlock = null;
@@ -110,7 +112,7 @@ public class HDFSLayer{
 			// get the block from HDFS cluster
 			byte[] read;
 //			try{
-//				Thread.sleep(10);
+//				Thread.sleep(30);
 //			}
 //			catch(InterruptedException e){
 //				System.out.println("InterruptedException in HDFSBufferReadBlock: " + e);
@@ -121,10 +123,11 @@ public class HDFSLayer{
 			}else{
 				System.out.println(blockList.containsKey(blockNumber));
 				int lmao=34;
-				assert false;
+//				assert false;
 				read = new byte[8*utils.PAGE_SIZE];
 			}
 			tempBlock = new block(blockNumber,read, utils);
+//			int pointer = addWrite(blockNumber, false, server);
 			int pointer = addWrite(blockNumber, false, server);
 			HDFSBufferArray[pointer] = tempBlock;
 		}
@@ -135,7 +138,7 @@ public class HDFSLayer{
 		return tempBlock;
 	}
 
-	public int addRead(long blockNumber){
+	int addRead(long blockNumber){
 		blockValue val = HDFSBufferList.get(blockNumber);
 		int pointer = val.getPointer();
 		HDFSBufferList.remove(blockNumber);
@@ -150,14 +153,14 @@ public class HDFSLayer{
 	 * @param server
 	 * @return pointer to the HDFSBufferArray
 	 */
-	public int addWrite(long blockNumber, boolean blockDirtyBit, blockServer server){
+	synchronized int addWrite(long blockNumber, boolean blockDirtyBit, blockServer server){
 		// int answer = 0;
 		try{
 			if(HDFSBufferList.containsKey(blockNumber)){
 				// page already exists in HDFS Buffer
 				blockValue val = HDFSBufferList.get(blockNumber);
 				int pointer = val.getPointer();
-				val.setDirtyBit(blockDirtyBit);
+				val.setDirtyBit(val.getDirtyBit() || blockDirtyBit);
 				HDFSBufferList.remove(blockNumber);
 				HDFSBufferList.put(blockNumber, val);
 				return pointer;
@@ -165,29 +168,37 @@ public class HDFSLayer{
 				if(writePointer == utils.HDFS_BUFFER_SIZE){
 					// victim page removal
 					blockValue val = new blockValue();
-					HDFSBufferList.put(blockNumber,val); //elder updated
-
+//					HDFSBufferList.put(blockNumber,val); //elder updated
+					//TODO: problem is that blockToRemove is removed from HDFSBufferList
 					long blockToRemove = elder.getKey();
 					if(elder.getValue().getDirtyBit()){
 						// write to HDFS cluster
-						blockList.put(blockToRemove,true);
 
 						client.addFile(config, HDFSBufferArray[elder.getValue().getPointer()]);
 //						System.out.println(blockToRemove+" added to blockList");
 						for(int i=0;i<utils.BLOCK_SIZE;++i){
 							server.updatePageIndex((blockToRemove<<3) + i,-1,-1,1,0);
 						}
+						//TODO: problem is that blockToRemove is added now to BlockList
+						blockList.put(blockToRemove,true);
+						wasAddedToblockList.put(blockToRemove, true);
+
 					}
 					HDFSBufferList.remove(blockToRemove);
 
-					int emptyPointer = elder.getValue().getPointer();
+					blockValue v2 = elder.getValue();
+					int emptyPointer = v2.getPointer();
 					val.setPointer(emptyPointer);
-					val.setDirtyBit(blockDirtyBit);
+					val.setDirtyBit(v2.getDirtyBit() || blockDirtyBit);
 
 					HDFSBufferList.remove(blockNumber);
 					HDFSBufferList.put(blockNumber,val);
 					wasAddedToHDFSBufferList.put(blockNumber, val);
-					assert (HDFSBufferList.size()<=utils.HDFS_BUFFER_SIZE);
+
+					if(HDFSBufferList.size() > utils.HDFS_BUFFER_SIZE){
+						System.out.println("ERROR in HDFSBufferList "+HDFSBufferList.size()+" > "+utils.HDFS_BUFFER_SIZE);
+						assert false;
+					}
 
 					return emptyPointer;
 				}else if(writePointer < utils.HDFS_BUFFER_SIZE){
@@ -201,7 +212,6 @@ public class HDFSLayer{
 				}
 				else{
 					assert false;
-
 				}
 			}
 		}catch(IOException e){
@@ -210,7 +220,7 @@ public class HDFSLayer{
 		return 0;
 	}
 
-	public void flushHDFSBuffer(){
+	void flushHDFSBuffer(){
 		System.out.println("flushing HDFS Buffer");
 		for(Long key : HDFSBufferList.keySet()) {
 			blockValue x = HDFSBufferList.get(key);

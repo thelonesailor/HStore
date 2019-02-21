@@ -21,7 +21,7 @@ public class WritetoHDFS implements Runnable {
 		this.SSD_LOCATION = utils.getSSD_LOCATION();
 	}
 
-	void doWork() throws InterruptedException{
+	synchronized void doWork() throws InterruptedException{
 		if(SSD.WritetoHDFSqueue.size() > 0) {
 			Long p = SSD.WritetoHDFSqueue.remove();
 			long pageNumber = p;
@@ -52,7 +52,7 @@ public class WritetoHDFS implements Runnable {
 
 				if(SSD.pointersList.contains(pageNumber)) {
 					SSD.pointersList.remove(pageNumber);
-					SSD.size.getAndDecrement();// SSD.size--
+//					SSD.size.getAndDecrement();// SSD.size--
 				}
 
 			} catch (IOException e) {
@@ -61,20 +61,22 @@ public class WritetoHDFS implements Runnable {
 			}
 		}
 		else{
-			Thread.sleep(30);
+			Thread.sleep(10);
 		}
 	}
 
 	public void run(){
-		System.out.println("Write to HDFS thread started.");
+
 		while (true) {
 			try{
+//				server.Lock2.lock();
 				doWork();
+//				server.Lock2.unlock();
 			}
 			catch(InterruptedException e){
 				System.out.println("InterruptedException in Write to HDFS thread: " + e);
 			}
-//			System.out.println("WritetoHDFSqueue.size() & SSD.size & SSD.recencylist.size = " + SSD.WritetoHDFSqueue.size()+" "+SSD.size.get()+" "+SSD.recencyList.size()+" "+server.writetoHDFSStop);
+//			System.out.println("WritetoHDFSqueue.size()="+SSD.WritetoHDFSqueue.size()+"  SSD.pointersList.size()="+SSD.pointersList.size()+"  SSD.recencylist.size="+SSD.recencyList.size()+" server.writetoHDFSStop="+server.writetoHDFSStop);
 
 
 			if(server.writetoHDFSStop){

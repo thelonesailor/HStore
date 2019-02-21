@@ -4,7 +4,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -14,7 +13,7 @@ class cache{
 	Lock cacheListLock = new ReentrantLock();
 
 	byte[][] cacheBuffer;
-	AtomicInteger size = new AtomicInteger(0);
+//	AtomicInteger size = new AtomicInteger(0);
 	SSD SSD;
 	Utils utils;
 
@@ -76,7 +75,7 @@ class cache{
 	 * @param pageNumber
 	 * @return pointer to the cacheBuffer
 	 */
-	public int addWrite(long pageNumber, blockServer server){
+	synchronized int addWrite(long pageNumber, blockServer server){
 		if(pointersList.containsKey(pageNumber)){
 			// page already exists in cache
 //			cacheValue val = cacheList.get(pageNumber);
@@ -89,12 +88,12 @@ class cache{
 
 			return pointer;
 		}else{
-			while (size.get() >= utils.CACHE_SIZE){
+			while (pointersList.size() >= utils.CACHE_SIZE){
 //				System.out.println("waiting for cache to have space");
 				try{Thread.sleep(100);}
 				catch(InterruptedException e){}
 			}
-			if(size.get() == utils.CACHE_SIZE){
+			if(pointersList.size() == utils.CACHE_SIZE){
 				// victim page removal
 				cacheValue val = new cacheValue();
 				cacheList.put(pageNumber,val); // elder gets updated here
@@ -123,7 +122,8 @@ class cache{
 
 //	    		System.out.println("added "+pageNumber);
 
-				size.getAndIncrement();
+//				size.getAndIncrement();
+
 //				if(size.get() == utils.CACHE_SIZE){
 //					try{Thread.sleep(1000);}
 //					catch(InterruptedException e){}
@@ -160,7 +160,7 @@ class cache{
 		int pointer = addWrite(pageNumber, server);
 		cacheBuffer[pointer] = page.getPageData();
 
-//		pointersList.remove(pageNumber);
+		pointersList.remove(pageNumber);
 		pointersList.put(pageNumber, pointer);
 		wasputinpointersList.put(pageNumber,pointer);
 

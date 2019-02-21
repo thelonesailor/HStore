@@ -39,12 +39,14 @@ public class RemoveFromCache implements Runnable{
 		}
 	}
 	public void run(){
-		System.out.println("removeFromCachethread started.");
+
 		while (true) {
 //			System.out.println("remove from cache!!"+cache.size+" "+utils.MAX_CACHE_FULL_SIZE+" "+SSD.WritetoSSDqueue.size()+" "+server.removeFromCacheStop);
 
 			try{
+//				server.Lock1.lock();
 				doWork();
+//				server.Lock1.unlock();
 			}
 			catch(InterruptedException e){
 				System.out.println("InterruptedException in removeFromCachethread: " + e);
@@ -52,7 +54,7 @@ public class RemoveFromCache implements Runnable{
 
 
 			if(server.removeFromCacheStop){
-				if(cache.size.get() == 0)
+				if(cache.pointersList.size() == 0)
 				{
 					break;
 				}

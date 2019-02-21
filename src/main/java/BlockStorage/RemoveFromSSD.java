@@ -34,25 +34,27 @@ public class RemoveFromSSD implements Runnable {
 			}
 		}
 		else{
-			Thread.sleep(20);
+			Thread.sleep(10);
 		}
 	}
 
 
 	public void run(){
-		System.out.println("Remove from SSD thread started.");
+
 		while (true){
 //			System.out.println("remove from SSD!! "+SSD.recencyList.size()+" "+SSD.size.get()+" "+utils.MAX_SSD_FULL_SIZE+" "+SSD.WritetoHDFSqueue.size()+" "+server.removeFromSSDStop);
 
 			try{
+//				server.Lock2.lock();
 				doWork();
+//				server.Lock2.unlock();
 			}
 			catch(InterruptedException e){
 				System.out.println("InterruptedException in Remove from SSD thread: " + e);
 			}
 
 			if(server.removeFromSSDStop){
-				if(!server.writeToSSDthread.isAlive() && SSD.size.get() == 0){
+				if(!server.writeToSSDthread.isAlive() && SSD.pointersList.size() == 0){
 					break;
 				}
 			}

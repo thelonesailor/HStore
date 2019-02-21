@@ -13,7 +13,7 @@ public class Utils{
 	int MAX_CACHE_FULL_SIZE;
 
 //	int HDFS_BUFFER_SIZE = 1024 * 4;//blocks for hdfs buffer(512MB)
-	int HDFS_BUFFER_SIZE = 128;//blocks for hdfs buffer(128MB)
+	int HDFS_BUFFER_SIZE ;//blocks for hdfs buffer(128MB)
 
 //	int SSD_SIZE = 100000;//pages   ~1.6GB
 	int SSD_SIZE = 10000;//pages   ~.16GB

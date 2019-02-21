@@ -48,11 +48,11 @@ public class FileSystemOperations {
 	 * @param conf
 	 * @throws IOException
 	 */
-	public void addFile(Configuration conf, block block) throws IOException {
+	synchronized public void addFile(Configuration conf, block block) throws IOException {
 
 	FileSystem fileSystem;
 
-	String file = conf.get("fs.defaultFS")+utils.HDFS_PATH+"/"+Long.toString(block.blockNumber);
+	String file = conf.get("fs.defaultFS")+utils.HDFS_PATH+"/"+(block.blockNumber);
 //	System.out.println(file);
 
 	Path path = new Path(file);
@@ -84,7 +84,7 @@ public class FileSystemOperations {
    * @param conf
    * @throws IOException
    */
-	public byte[] readFile( Configuration conf,long blockNumber) throws IOException {
+	synchronized public byte[] readFile( Configuration conf,long blockNumber) throws IOException {
 	  
 	FileSystem fileSystem = FileSystem.get(conf);
 
@@ -105,12 +105,10 @@ public class FileSystemOperations {
 	int numBytes = 0;
 	while ((numBytes = in.read(b)) > 0) {
 		in.close();
-		//out.close();
 //		fileSystem.close();
 		return b;
 	}
 	in.close();
-	//out.close();
 //	fileSystem.close();
 	return b;
 	}

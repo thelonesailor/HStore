@@ -1,1 +1,4 @@
 .idea/workspace.xml
+out/artifacts/HStore_jar/*
+out/production/HStore/BlockStorage/*
+out/testgit /HStore/BlockStorage/*

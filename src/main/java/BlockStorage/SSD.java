@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -26,7 +25,7 @@ public class SSD{
 
 
 	static Map.Entry<Long, Boolean> elder = null;
-	AtomicInteger size = new AtomicInteger(0);
+//	AtomicInteger size = new AtomicInteger(0);
 
 	ConcurrentLinkedQueue<Pair<Long,Integer>> WritetoSSDqueue = new ConcurrentLinkedQueue<>();
 	ConcurrentLinkedQueue<Long> WritetoHDFSqueue = new ConcurrentLinkedQueue<>();
@@ -123,13 +122,13 @@ public class SSD{
 
 	void writePage(long pageNumber,int pointer, blockServer server){
 
-		while (size.get() >= utils.SSD_SIZE){
+		while (pointersList.size() >= utils.SSD_SIZE){
 //			System.out.println("waiting for SSD to have space");
 			try{Thread.sleep(100);}
 			catch(InterruptedException e){}
 		}
 
-		if(size.get() >= utils.SSD_SIZE){
+		if(pointersList.size() >= utils.SSD_SIZE){
 
 			if(pointersList.contains(pageNumber)){
 				writeSSDPage(pageNumber, pointer);
