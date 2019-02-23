@@ -177,7 +177,10 @@ public class HDFSLayer{
 						client.addFile(config, HDFSBufferArray[elder.getValue().getPointer()]);
 //						System.out.println(blockToRemove+" added to blockList");
 						for(int i=0;i<utils.BLOCK_SIZE;++i){
-							server.updatePageIndex((blockToRemove<<3) + i,-1,-1,1,0);
+							long pageNumber = (blockToRemove<<3) + i;
+							if(server.pageIndex.containsKey(pageNumber)){
+								server.updatePageIndex((blockToRemove<<3) + i,-1,-1,1,0);
+							}
 						}
 						//TODO: problem is that blockToRemove is added now to BlockList
 						blockList.put(blockToRemove,true);

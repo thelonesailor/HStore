@@ -2,7 +2,43 @@ package BlockStorage;
 
 import org.junit.Test;
 
+import java.io.IOException;
+
 public class blockServerTest {
+
+	@Test
+	public void RecoveryTest(){
+		Utils utils = new Utils(2000, 4000, 256, false);
+		HDFSLayer HDFSLayer = new HDFSLayer(utils);
+		SSD SSD = new SSD(HDFSLayer, utils);
+		cache cache = new cache(SSD, utils);
+		blockServer server = new blockServer(cache, SSD, HDFSLayer, utils);
+
+		try{
+			server.recover();
+			server.printBlockServerStatus();
+		}
+		catch(IOException e){
+			System.out.println("IOException in recover() "+e);
+		}
+
+//		byte[] b = new byte[utils.PAGE_SIZE];
+//		for (int i=0; i<=utils.CACHE_SIZE ; ++i) {
+//			server.writePage(i, b);
+//		}
+//		try{Thread.sleep(100);}
+//		catch(InterruptedException e){}
+
+//		long one = 1;
+//		assert !server.pageIndex.get(one).isLocationCache();
+//		assert server.pageIndex.get(one).isLocationSSD();
+//		assert !server.pageIndex.get(one).isLocationHDFS();
+//		assert server.pageIndex.get(one).isDirty();
+
+
+		server.stop();
+		System.out.println("------------------------------------------------------");
+	}
 
 	@Test
 	public void demo1(){
@@ -49,7 +85,7 @@ public class blockServerTest {
 		server.stop();
 		System.out.println("------------------------------------------------------");
 	}
-
+	
 	@Test
 	public void correctness2(){
 		Utils utils = new Utils(512, 1024, 64, false);
@@ -150,7 +186,7 @@ public class blockServerTest {
 		cache cache = new cache(SSD, utils);
 		blockServer server = new blockServer(cache, SSD, HDFSLayer, utils);
 
-		int numPages = 2000;
+		int numPages = 1900;
 		double startTime = System.nanoTime();
 		byte[] b = new byte[utils.PAGE_SIZE];
 		for (int i=0; i<numPages; ++i) {

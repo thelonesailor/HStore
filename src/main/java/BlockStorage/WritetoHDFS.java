@@ -31,10 +31,10 @@ public class WritetoHDFS implements Runnable {
 //			}
 //			System.out.println(pageNumber);
 			String fileName = SSD_LOCATION + "/" + pageNumber;
-
+//			File file = new File(fileName);
 			try {
 
-				if(server.pageIndex.get(pageNumber).isDirty()) {
+				if(SSD.pointersList.contains(pageNumber) && server.pageIndex.get(pageNumber).isDirty()) {
 					FileInputStream in = new FileInputStream(fileName);
 //	    			System.out.println("Writing "+pageNumber+" to HDFS.");
 					byte[] pageData = new byte[utils.PAGE_SIZE];
@@ -50,7 +50,7 @@ public class WritetoHDFS implements Runnable {
 				else{
 					server.updatePageIndex(pageNumber, -1, 0, -1, -1);
 				}
-
+//				file.delete();
 				SSD.pointersList.remove(pageNumber);
 				if(utils.SHOW_LOG)
 					System.out.println("page: "+pageNumber+" removed from SSD");

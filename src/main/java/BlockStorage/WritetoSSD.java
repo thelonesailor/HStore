@@ -2,6 +2,7 @@ package BlockStorage;
 
 import javafx.util.Pair;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -31,8 +32,13 @@ public class WritetoSSD implements Runnable{
 //			}
 //			System.out.println(pageNumber);
 			String fileName = SSD_LOCATION + "/" + pageNumber;
+			File file = new File(fileName);
 
 			while (SSD.pointersList.size() >= utils.SSD_SIZE){} // wait for SSD to have space
+
+			try {
+				file.createNewFile();
+			}catch (IOException e){}
 
 			try {
 				FileOutputStream out = new FileOutputStream(fileName);

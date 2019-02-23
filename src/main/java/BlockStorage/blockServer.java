@@ -1,5 +1,13 @@
 package BlockStorage;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.LocatedFileStatus;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.RemoteIterator;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -68,6 +76,63 @@ class blockServer{
 		System.out.println("blockServer initialised");
 	}
 
+
+	void recover() throws IOException {
+
+		FileSystemOperations client = new FileSystemOperations(this.utils);
+		Configuration config = client.getConfiguration();
+		FileSystem fileSystem = FileSystem.get(config);
+
+
+		Path HDFSpath = new Path(config.get("fs.defaultFS")+utils.HDFS_PATH+"/");
+		RemoteIterator<LocatedFileStatus> fileStatusListIterator = fileSystem.listFiles(HDFSpath, false);
+
+		System.out.println("Pages found in HDFS Cluster: ");
+		String s = "";
+
+		while(fileStatusListIterator.hasNext()){
+			LocatedFileStatus fileStatus = fileStatusListIterator.next();
+			//do stuff with the file like ...
+//			System.out.println(fileStatus.getPath());
+			String str = fileStatus.getPath().toString();
+			String[] arrOfStr = str.split("/");
+			long blockNumber = (long)Integer.parseInt(arrOfStr[arrOfStr.length-1]);
+
+//			System.out.println(blockNumber);
+
+
+			HDFSLayer.blockList.put(blockNumber, true);
+
+			for(int i=0;i<utils.BLOCK_SIZE;++i){
+				long pageNumber = (blockNumber<<3) + i;
+				updatePageIndex(pageNumber, 0,0,1,0);
+				s += pageNumber+"  ";
+			}
+		}
+		System.out.println(s);
+
+
+		File SSDdirectory = new File(utils.SSD_LOCATION+"/");
+		String[] paths = SSDdirectory.list();
+		s = "Pages found in SSD:\n";
+		for(String path:paths) {
+			long pageNumber = (long)Integer.parseInt(path);
+			SSD.pointersList.add(pageNumber);
+			SSD.recencyList.put(pageNumber, true);
+//			System.out.println(pageNumber);
+			s += pageNumber+"  ";
+			updatePageIndex(pageNumber, 0,1,0,1);
+
+			if(SSD.pointersList.size() >= utils.SSD_SIZE){
+				System.out.println("ERROR max SSD size reached");
+				break;
+			}
+		}
+		System.out.println(s);
+
+	}
+
+
 	void stop(){
 		stablize();
 		removeFromCacheStop = true;
@@ -84,6 +149,14 @@ class blockServer{
 		}
 		catch(InterruptedException e){
 			System.out.println("InterruptedException in joining: " + e);
+		}
+
+		File SSDdirectory = new File(utils.SSD_LOCATION+"/");
+		String[] paths = SSDdirectory.list();
+		for(String path:paths) {
+			String fileName = utils.SSD_LOCATION + "/" + path;
+			File file = new File(fileName);
+			file.delete();
 		}
 
 		HDFSLayer.flushHDFSBuffer();
@@ -231,8 +304,9 @@ class blockServer{
 		try{Thread.sleep(100);}
 		catch(InterruptedException e){}
 
-		String s = "";
+		System.out.println("Printing BlockServer status:");
 		System.out.println("Pages in Cache["+utils.MAX_CACHE_FULL_SIZE+", "+utils.CACHE_SIZE+"]:");
+		String s = "";
 		for (long k: cache.pointersList.keySet()){
 //			System.out.println(k);
 			s += k+"  ";
