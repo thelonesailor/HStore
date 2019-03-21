@@ -78,43 +78,14 @@ class blockServer{
 
 
 	void recover() throws IOException {
-
 		FileSystemOperations client = new FileSystemOperations(this.utils);
 		Configuration config = client.getConfiguration();
 		FileSystem fileSystem = FileSystem.get(config);
 
-
-		Path HDFSpath = new Path(config.get("fs.defaultFS")+utils.HDFS_PATH+"/");
-		RemoteIterator<LocatedFileStatus> fileStatusListIterator = fileSystem.listFiles(HDFSpath, false);
-
-		System.out.println("Pages found in HDFS Cluster: ");
-		String s = "";
-
-		while(fileStatusListIterator.hasNext()){
-			LocatedFileStatus fileStatus = fileStatusListIterator.next();
-			//do stuff with the file like ...
-//			System.out.println(fileStatus.getPath());
-			String str = fileStatus.getPath().toString();
-			String[] arrOfStr = str.split("/");
-			long blockNumber = (long)Integer.parseInt(arrOfStr[arrOfStr.length-1]);
-
-//			System.out.println(blockNumber);
-
-
-			HDFSLayer.blockList.put(blockNumber, true);
-
-			for(int i=0;i<utils.BLOCK_SIZE;++i){
-				long pageNumber = (blockNumber<<3) + i;
-				updatePageIndex(pageNumber, 0,0,1,0);
-				s += pageNumber+"  ";
-			}
-		}
-		System.out.println(s);
-
-
+		System.out.println("--------------------------------------------------");
 		File SSDdirectory = new File(utils.SSD_LOCATION+"/");
 		String[] paths = SSDdirectory.list();
-		s = "Pages found in SSD:\n";
+		String s = "Pages found in SSD:\n";
 		for(String path:paths) {
 			long pageNumber = (long)Integer.parseInt(path);
 			SSD.pointersList.add(pageNumber);
@@ -122,7 +93,6 @@ class blockServer{
 //			System.out.println(pageNumber);
 			s += pageNumber+"  ";
 			updatePageIndex(pageNumber, 0,1,0,1);
-
 			if(SSD.pointersList.size() >= utils.SSD_SIZE){
 				System.out.println("ERROR max SSD size reached");
 				break;
@@ -130,6 +100,29 @@ class blockServer{
 		}
 		System.out.println(s);
 
+
+		Path HDFSpath = new Path(config.get("fs.defaultFS")+utils.HDFS_PATH+"/");
+		RemoteIterator<LocatedFileStatus> fileStatusListIterator = fileSystem.listFiles(HDFSpath, false);
+		System.out.println("Pages found in HDFS Cluster: ");
+		s = "";
+		while(fileStatusListIterator.hasNext()){
+			LocatedFileStatus fileStatus = fileStatusListIterator.next();
+			//do stuff with the file like ...
+//			System.out.println(fileStatus.getPath());
+			String str = fileStatus.getPath().toString();
+			String[] arrOfStr = str.split("/");
+			long blockNumber = (long)Integer.parseInt(arrOfStr[arrOfStr.length-1]);
+//			System.out.println(blockNumber);
+
+			HDFSLayer.blockList.put(blockNumber, true);
+			for(int i=0;i<utils.BLOCK_SIZE;++i){
+				long pageNumber = (blockNumber<<3) + i;
+				updatePageIndex(pageNumber, 0,0,1,0);
+				s += pageNumber+"  ";
+			}
+		}
+		System.out.println(s);
+		System.out.println("--------------------------------------------------");
 	}
 
 
