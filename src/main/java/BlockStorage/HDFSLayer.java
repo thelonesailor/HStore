@@ -9,16 +9,16 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class HDFSLayer{
 
-	LinkedHashMap<Long, blockValue> HDFSBufferList;
-	LinkedHashMap<Long, blockValue> wasAddedToHDFSBufferList;
+	LinkedHashMap<Integer, blockValue> HDFSBufferList;
+	LinkedHashMap<Integer, blockValue> wasAddedToHDFSBufferList;
 	block[] HDFSBufferArray;
 	int writePointer;
-	ConcurrentHashMap<Long,Boolean> blockList ; // all the blocks which HDFS Cluster contains
-	ConcurrentHashMap<Long,Boolean> wasAddedToblockList ; // all the blocks which HDFS Cluster contains
+	ConcurrentHashMap<Integer,Boolean> blockList ; // all the blocks which HDFS Cluster contains
+	ConcurrentHashMap<Integer,Boolean> wasAddedToblockList ; // all the blocks which HDFS Cluster contains
 
 	Utils utils;
 
-	private static Map.Entry<Long, blockValue> elder = null;
+	private static Map.Entry<Integer, blockValue> elder = null;
 
 	FileSystemOperations client;
 	Configuration config;
@@ -33,14 +33,14 @@ public class HDFSLayer{
 		config = client.getConfiguration();
 
 		this.wasAddedToHDFSBufferList = new LinkedHashMap<>();
-		this.HDFSBufferList = new LinkedHashMap<Long, blockValue>(utils.HDFS_BUFFER_SIZE, 0.75F, false) {
+		this.HDFSBufferList = new LinkedHashMap<Integer, blockValue>(utils.HDFS_BUFFER_SIZE, 0.75F, false) {
 
 			/**
 			 * auto generated serialVersionUID
 			 */
 			private static final long serialVersionUID = 1L;
 
-			protected boolean removeEldestEntry(Map.Entry<Long, blockValue> eldest) {
+			protected boolean removeEldestEntry(Map.Entry<Integer, blockValue> eldest) {
 				elder =  eldest;
 				return size() > utils.HDFS_BUFFER_SIZE;
 			}
@@ -56,7 +56,7 @@ public class HDFSLayer{
 		HDFSBufferWritePage(page, server);
 	}
 
-	block readBlock(long pageNumber, blockServer server){
+	block readBlock(int pageNumber, blockServer server){
 		return HDFSBufferReadBlock(pageNumber, server);
 	}
 
@@ -70,7 +70,7 @@ public class HDFSLayer{
 		 * get the block that is having this page and update the block
 		 */
 		try{
-			long blockNumber = page.getPageNumber() >> 3;
+			int blockNumber = page.getPageNumber() >> 3;
 			if(HDFSBufferList.containsKey(blockNumber)){
 
 				// System.out.println("Hello "+page.getPageNumber());
@@ -100,9 +100,9 @@ public class HDFSLayer{
 		}
 	}
 
-	block HDFSBufferReadBlock(long pageNumber, blockServer server){
+	block HDFSBufferReadBlock(int pageNumber, blockServer server){
 
-		long blockNumber = pageNumber >> 3;
+		int blockNumber = pageNumber >> 3;
 		block tempBlock = null;
 	try{
 		if(HDFSBufferList.containsKey(blockNumber)){
@@ -138,7 +138,7 @@ public class HDFSLayer{
 		return tempBlock;
 	}
 
-	int addRead(long blockNumber){
+	int addRead(int blockNumber){
 		blockValue val = HDFSBufferList.get(blockNumber);
 		int pointer = val.getPointer();
 		HDFSBufferList.remove(blockNumber);
@@ -153,7 +153,7 @@ public class HDFSLayer{
 	 * @param server
 	 * @return pointer to the HDFSBufferArray
 	 */
-	synchronized int addWrite(long blockNumber, boolean blockDirtyBit, blockServer server){
+	synchronized int addWrite(int blockNumber, boolean blockDirtyBit, blockServer server){
 		// int answer = 0;
 		try{
 			if(HDFSBufferList.containsKey(blockNumber)){
@@ -170,16 +170,16 @@ public class HDFSLayer{
 					blockValue val = new blockValue();
 //					HDFSBufferList.put(blockNumber,val); //elder updated
 					//TODO: problem is that blockToRemove is removed from HDFSBufferList
-					long blockToRemove = elder.getKey();
+					int blockToRemove = elder.getKey();
 					if(elder.getValue().getDirtyBit()){
 						// write to HDFS cluster
 
 						client.addFile(config, HDFSBufferArray[elder.getValue().getPointer()]);
 //						System.out.println(blockToRemove+" added to blockList");
 						for(int i=0;i<utils.BLOCK_SIZE;++i){
-							long pageNumber = (blockToRemove<<3) + i;
-							if(server.pageIndex.containsKey(pageNumber)){
-								server.updatePageIndex((blockToRemove<<3) + i,-1,-1,1,0);
+							int pageNumber = (blockToRemove<<3) + i;
+							if(server.pageIndex.pageIndex[pageNumber] != null){
+								server.pageIndex.updatePageIndex((blockToRemove<<3) + i,-1,-1,1,0);
 							}
 						}
 						//TODO: problem is that blockToRemove is added now to BlockList
@@ -225,7 +225,7 @@ public class HDFSLayer{
 
 	void flushHDFSBuffer(){
 		System.out.println("flushing HDFS Buffer");
-		for(Long key : HDFSBufferList.keySet()) {
+		for(Integer key : HDFSBufferList.keySet()) {
 			blockValue x = HDFSBufferList.get(key);
 			if(x.getDirtyBit()) {
 				try {

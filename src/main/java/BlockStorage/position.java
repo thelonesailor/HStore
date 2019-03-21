@@ -5,12 +5,18 @@ public class position{
 	boolean locationSSD;
 	boolean locationHDFS;
 	boolean diryBit;
+	boolean present = false;    //tells page is in pageindex or not
 
 	public position(boolean locationCache, boolean locationSSD, boolean locationHDFS, boolean dirtyBit){
 		this.locationCache = locationCache;
 		this.locationSSD = locationSSD;
 		this.locationHDFS = locationHDFS;
 		this.diryBit = dirtyBit;
+		this.present = true;
+	}
+
+	public position(){
+		this.present = false;
 	}
 
 	boolean isLocationCache(){

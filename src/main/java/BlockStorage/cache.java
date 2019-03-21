@@ -9,7 +9,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 class cache{
 
-	LinkedHashMap<Long, cacheValue> cacheList;
+	LinkedHashMap<Integer, cacheValue> cacheList;
 	Lock cacheListLock = new ReentrantLock();
 
 	byte[][] cacheBuffer;
@@ -18,19 +18,19 @@ class cache{
 	Utils utils;
 
 	ConcurrentLinkedQueue<Integer> EmptyPointers;
-	ConcurrentHashMap<Long, Integer> pointersList;
-	ConcurrentHashMap<Long, Integer> wasputinpointersList;
+	ConcurrentHashMap<Integer, Integer> pointersList;
+	ConcurrentHashMap<Integer, Integer> wasputinpointersList;
 
-	static Map.Entry<Long, cacheValue> elder = null;
+	static Map.Entry<Integer, cacheValue> elder = null;
 
 	cache(SSD SSD, Utils utils){
 		this.SSD = SSD;
 		this.utils = utils;
-		this.cacheList = new LinkedHashMap<Long, cacheValue>(utils.CACHE_SIZE, 0.75F, false) {
+		this.cacheList = new LinkedHashMap<Integer, cacheValue>(utils.CACHE_SIZE, 0.75F, false) {
 
 			private static final long serialVersionUID = 1L;
 			@Override
-			protected boolean removeEldestEntry(Map.Entry<Long, cacheValue> eldest) {
+			protected boolean removeEldestEntry(Map.Entry<Integer, cacheValue> eldest) {
 				elder =  eldest;
 				return size() > utils.CACHE_SIZE;
 			}
@@ -51,7 +51,7 @@ class cache{
 	 * @return pointer to the cacheBuffer
 	 * Even if page was already in cache remove and add for LRU
 	 */
-	public int addRead(long pageNumber, boolean forQueue){
+	public int addRead(int pageNumber, boolean forQueue){
 //		cacheValue val = cacheList.get(pageNumber);
 
 //		System.out.println("Reading "+pageNumber+" from cache");
@@ -75,7 +75,7 @@ class cache{
 	 * @param pageNumber
 	 * @return pointer to the cacheBuffer
 	 */
-	synchronized int addWrite(long pageNumber, blockServer server){
+	synchronized int addWrite(int pageNumber, blockServer server){
 		if(pointersList.containsKey(pageNumber)){
 			// page already exists in cache
 //			cacheValue val = cacheList.get(pageNumber);
@@ -97,9 +97,9 @@ class cache{
 				// victim page removal
 				cacheValue val = new cacheValue();
 				cacheList.put(pageNumber,val); // elder gets updated here
-				long pageNumberToRemove = elder.getKey();
+				int pageNumberToRemove = elder.getKey();
 				int freePointer= elder.getValue().getPointer();
-				if(server.pageIndex.get(pageNumberToRemove).isDirty() /*elder.getValue().getDirtyBit()*/){
+				if(server.pageIndex.pageIndex[pageNumberToRemove].isDirty() /*elder.getValue().getDirtyBit()*/){
 					SSD.writePage(pageNumberToRemove, freePointer, server);
 				}
 //				server.updatePageIndex(pageNumberToRemove, 0, 1, -1, -1);
@@ -149,14 +149,14 @@ class cache{
 	 * It is guaranteed that page is already in the cache
 	 * @return page
 	 */
-	page readPage(long pageNumber, boolean forQueue){
+	page readPage(int pageNumber, boolean forQueue){
 		int pointer = addRead(pageNumber, forQueue);
 		return new page(pageNumber, cacheBuffer[pointer]);
 	}
 
 	boolean writePage(page page, blockServer server){
 		// System.out.println("CACHE");
-		long pageNumber = page.getPageNumber();
+		int pageNumber = page.getPageNumber();
 		int pointer = addWrite(pageNumber, server);
 		cacheBuffer[pointer] = page.getPageData();
 

@@ -1,18 +1,18 @@
 package BlockStorage;
 
 class block{
-	long blockNumber;
+	int blockNumber;
 	byte[] blockData;
 
 	Utils utils;
 
-	block(long blockNumber, byte[] blockData, Utils utils){
+	block(int blockNumber, byte[] blockData, Utils utils){
 		this.blockNumber = blockNumber;
 		this.blockData = blockData;
 		this.utils = utils;
 	}
 
-	page readPage(long pageNumber){
+	page readPage(int pageNumber){
 		int offset = (int) (pageNumber % utils.BLOCK_SIZE);
 		byte[] temp = new byte[utils.PAGE_SIZE];
 		System.arraycopy(blockData,offset*utils.PAGE_SIZE,temp,0,utils.PAGE_SIZE);

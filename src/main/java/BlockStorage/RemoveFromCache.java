@@ -7,7 +7,7 @@ public class RemoveFromCache implements Runnable{
 	SSD SSD;
 	blockServer server;
 	private Utils utils;
-	private long m1 = -1;
+	private int m1 = -1;
 
 	RemoveFromCache(cache cache, SSD SSD, blockServer server, Utils utils){
 		this.cache = cache;
@@ -26,8 +26,8 @@ public class RemoveFromCache implements Runnable{
 			cache.cacheList.remove(m1);
 //			cache.cacheListLock.unlock();
 
-			Map.Entry<Long, cacheValue>  eld = cache.elder;
-			long pageNumberToRemove = eld.getKey();
+			Map.Entry<Integer, cacheValue>  eld = cache.elder;
+			int pageNumberToRemove = eld.getKey();
 			int pointer = eld.getValue().getPointer();
 
 //			cache.cacheListLock.lock();

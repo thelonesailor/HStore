@@ -8,7 +8,6 @@ import org.apache.hadoop.fs.RemoteIterator;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -17,7 +16,8 @@ class blockServer{
 	cache cache;
 	SSD SSD;
 	HDFSLayer HDFSLayer;
-	ConcurrentHashMap<Long, position> pageIndex;
+//	ConcurrentHashMap<Long, position> pageIndex;
+	PageIndex pageIndex;
 	private Utils utils;
 
 	RemoveFromCache removeFromCache;
@@ -39,8 +39,9 @@ class blockServer{
 	boolean writetoHDFSStop = false;
 
 	blockServer(cache cache, SSD SSD, HDFSLayer HDFSLayer, Utils utils){
-		pageIndex = new ConcurrentHashMap<>();
-		pageIndex.clear();
+//		pageIndex = new ConcurrentHashMap<>();
+//		pageIndex.clear();
+		pageIndex = new PageIndex();
 		this.cache = cache;
 		this.SSD = SSD;
 		this.HDFSLayer = HDFSLayer;
@@ -87,12 +88,12 @@ class blockServer{
 		String[] paths = SSDdirectory.list();
 		String s = "Pages found in SSD:\n";
 		for(String path:paths) {
-			long pageNumber = (long)Integer.parseInt(path);
+			int pageNumber = Integer.parseInt(path);
 			SSD.pointersList.add(pageNumber);
 			SSD.recencyList.put(pageNumber, true);
 //			System.out.println(pageNumber);
 			s += pageNumber+"  ";
-			updatePageIndex(pageNumber, 0,1,0,1);
+			pageIndex.updatePageIndex(pageNumber, 0,1,0,1);
 			if(SSD.pointersList.size() >= utils.SSD_SIZE){
 				System.out.println("ERROR max SSD size reached");
 				break;
@@ -111,13 +112,13 @@ class blockServer{
 //			System.out.println(fileStatus.getPath());
 			String str = fileStatus.getPath().toString();
 			String[] arrOfStr = str.split("/");
-			long blockNumber = (long)Integer.parseInt(arrOfStr[arrOfStr.length-1]);
+			int blockNumber = Integer.parseInt(arrOfStr[arrOfStr.length-1]);
 //			System.out.println(blockNumber);
 
 			HDFSLayer.blockList.put(blockNumber, true);
 			for(int i=0;i<utils.BLOCK_SIZE;++i){
-				long pageNumber = (blockNumber<<3) + i;
-				updatePageIndex(pageNumber, 0,0,1,0);
+				int pageNumber = (blockNumber<<3) + i;
+				pageIndex.updatePageIndex(pageNumber, 0,0,1,0);
 				s += pageNumber+"  ";
 			}
 		}
@@ -159,9 +160,9 @@ class blockServer{
 	/**
 	 * @param pageNumber is 1 indexed
 	 * */
-	page readPage(long pageNumber){
+	page readPage(int pageNumber){
 		page returnPage = null;
-		position pos = pageIndex.get(pageNumber);
+		position pos = pageIndex.pageIndex[pageNumber];
 
 		if(pos.isLocationCache())
 		{
@@ -171,7 +172,7 @@ class blockServer{
 		{
 			returnPage = SSD.readPage(pageNumber);
 			cache.writePage(returnPage,this);
-			updatePageIndex(pageNumber, 1, -1, -1, -1);
+			pageIndex.updatePageIndex(pageNumber, 1, -1, -1, -1);
 		}
 		else if(pos.isLocationHDFS()){
 			if(utils.SHOW_LOG)
@@ -185,11 +186,11 @@ class blockServer{
 			page[] returnAllPages = returnBlock.getAllPages();
 			for (int i = 0; i < utils.BLOCK_SIZE; i++){
 				// if condition to be added to check the validity
-				long temp = ((returnBlock.blockNumber)<<3)+(long)i;
-				position p = pageIndex.get(temp);
+				int temp = ((returnBlock.blockNumber)<<3)+i;
+				position p = pageIndex.pageIndex[temp];
 				if(p!=null && p.isLocationHDFS() && !p.isDirty() && !p.isLocationCache() && cache.pointersList.get(temp)==null) {
 					cache.writePage(returnAllPages[i],this);
-					updatePageIndex(temp, 1, -1, 1, -1);
+					pageIndex.updatePageIndex(temp, 1, -1, 1, -1);
 				}
 			}
 		}else {
@@ -201,12 +202,12 @@ class blockServer{
 	/**
 	 * @param pageNumber is 0 indexed
 	 * */
-	void writePage(long pageNumber, byte[] pageData){
+	void writePage(int pageNumber, byte[] pageData){
 		page newPage = new page(pageNumber, pageData);
 		boolean written = cache.writePage(newPage, this);
 
 		if(written){
-			updatePageIndex(pageNumber, 1, 0, 0, 1);
+			pageIndex.updatePageIndex(pageNumber, 1, 0, 0, 1);
 			if(utils.SHOW_LOG)
 				System.out.println("page: "+pageNumber+" written to BlockServer");
 		}
@@ -216,67 +217,67 @@ class blockServer{
 	}
 
 
-	synchronized void updatePageIndex(long pageNumber,int Cache, int SSD, int HDFS, int dirty){
-		boolean locationCache, locationSSD, locationHDFS, dirtyBit;
-		if(pageIndex.containsKey(pageNumber)) {
-			position po = pageIndex.get(pageNumber);
-
-			if (Cache == 1) locationCache = true;
-			else if (Cache == 0) locationCache = false;
-			else locationCache = po.locationCache;
-
-			if (SSD == 1) locationSSD = true;
-			else if (SSD == 0) locationSSD = false;
-			else locationSSD = po.locationSSD;
-
-			if (HDFS == 1) locationHDFS = true;
-			else if (HDFS == 0) locationHDFS = false;
-			else locationHDFS = po.locationHDFS;
-
-			if (dirty == 1) dirtyBit = true;
-			else if (dirty == 0) dirtyBit = false;
-			else dirtyBit = po.diryBit;
-
-			pageIndex.remove(pageNumber);
-			pageIndex.put(pageNumber, new position(locationCache, locationSSD, locationHDFS, dirtyBit));
-		}
-		else {
-
-			if (Cache == 1) locationCache = true;
-			else if (Cache == 0) locationCache = false;
-			else {
-				System.out.println("Error in updating pageIndex for "+pageNumber);
-				assert false;
-				return;
-			}
-
-			if (SSD == 1) locationSSD = true;
-			else if (SSD == 0) locationSSD = false;
-			else {
-				System.out.println("Error in updating pageIndex for "+pageNumber);
-				assert false;
-				return;
-			}
-
-			if (HDFS == 1) locationHDFS = true;
-			else if (HDFS == 0) locationHDFS = false;
-			else {
-				System.out.println("Error in updating pageIndex for "+pageNumber);
-				assert false;
-				return;
-			}
-
-			if (dirty == 1) dirtyBit = true;
-			else if (dirty == 0) dirtyBit = false;
-			else {
-				System.out.println("Error in updating pageIndex for "+pageNumber);
-				assert false;
-				return;
-			}
-
-			pageIndex.put(pageNumber, new position(locationCache, locationSSD, locationHDFS, dirtyBit));
-		}
-	}
+//	void updatePageIndex(long pageNumber,int Cache, int SSD, int HDFS, int dirty){
+//		boolean locationCache, locationSSD, locationHDFS, dirtyBit;
+//		if(pageIndex.containsKey(pageNumber)) {
+//			position po = pageIndex.get(pageNumber);
+//
+//			if (Cache == 1) locationCache = true;
+//			else if (Cache == 0) locationCache = false;
+//			else locationCache = po.locationCache;
+//
+//			if (SSD == 1) locationSSD = true;
+//			else if (SSD == 0) locationSSD = false;
+//			else locationSSD = po.locationSSD;
+//
+//			if (HDFS == 1) locationHDFS = true;
+//			else if (HDFS == 0) locationHDFS = false;
+//			else locationHDFS = po.locationHDFS;
+//
+//			if (dirty == 1) dirtyBit = true;
+//			else if (dirty == 0) dirtyBit = false;
+//			else dirtyBit = po.diryBit;
+//
+//			pageIndex.remove(pageNumber);
+//			pageIndex.put(pageNumber, new position(locationCache, locationSSD, locationHDFS, dirtyBit));
+//		}
+//		else {
+//
+//			if (Cache == 1) locationCache = true;
+//			else if (Cache == 0) locationCache = false;
+//			else {
+//				System.out.println("Error in updating pageIndex for "+pageNumber);
+//				assert false;
+//				return;
+//			}
+//
+//			if (SSD == 1) locationSSD = true;
+//			else if (SSD == 0) locationSSD = false;
+//			else {
+//				System.out.println("Error in updating pageIndex for "+pageNumber);
+//				assert false;
+//				return;
+//			}
+//
+//			if (HDFS == 1) locationHDFS = true;
+//			else if (HDFS == 0) locationHDFS = false;
+//			else {
+//				System.out.println("Error in updating pageIndex for "+pageNumber);
+//				assert false;
+//				return;
+//			}
+//
+//			if (dirty == 1) dirtyBit = true;
+//			else if (dirty == 0) dirtyBit = false;
+//			else {
+//				System.out.println("Error in updating pageIndex for "+pageNumber);
+//				assert false;
+//				return;
+//			}
+//
+//			pageIndex.put(pageNumber, new position(locationCache, locationSSD, locationHDFS, dirtyBit));
+//		}
+//	}
 
 	void stablize(){
 //		while (cache.cacheList.size() > utils.MAX_CACHE_FULL_SIZE){}
@@ -318,10 +319,10 @@ class blockServer{
 
 		s = "";
 		System.out.println("Pages in HDFS Buffer["+utils.HDFS_BUFFER_SIZE+" Blocks, " +utils.HDFS_BUFFER_SIZE*8+" Pages]:");
-		for (long k: HDFSLayer.HDFSBufferList.keySet()){
-			for (long i=0;i<utils.BLOCK_SIZE;++i){
-				long pageNumber = (k<<3) + i;
-				if(pageIndex.containsKey(pageNumber) && pageIndex.get(pageNumber).isLocationHDFS()){
+		for (int k: HDFSLayer.HDFSBufferList.keySet()){
+			for (int i=0;i<utils.BLOCK_SIZE;++i){
+				int pageNumber = (k<<3) + i;
+				if(pageIndex.pageIndex[pageNumber].present && pageIndex.pageIndex[pageNumber].isLocationHDFS()){
 //					System.out.println(pageNumber);
 					s += pageNumber+" ";
 				}
@@ -332,10 +333,10 @@ class blockServer{
 
 		s = "";
 		System.out.println("Pages in HDFS Cluster:");
-		for (long k: HDFSLayer.blockList.keySet()){
-			for (long i=0;i<utils.BLOCK_SIZE;++i){
-				long pageNumber = (k<<3) + i;
-				if(pageIndex.containsKey(pageNumber) && pageIndex.get(pageNumber).isLocationHDFS()){
+		for (int k: HDFSLayer.blockList.keySet()){
+			for (int i=0;i<utils.BLOCK_SIZE;++i){
+				int pageNumber = (k<<3) + i;
+				if(pageIndex.pageIndex[pageNumber].present && pageIndex.pageIndex[pageNumber].isLocationHDFS()){
 //					System.out.println(pageNumber);
 					s += pageNumber+" ";
 				}

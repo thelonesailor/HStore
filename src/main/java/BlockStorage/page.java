@@ -1,15 +1,15 @@
 package BlockStorage;
 
 public class page{
-	private long pageNumber;
+	private int pageNumber;
 	private byte[] pageData;
 
-	public page(long pageNumber, byte[] pageData){
+	public page(int pageNumber, byte[] pageData){
 		this.pageNumber = pageNumber;
 		this.pageData = pageData;
 	}
 
-	public long getPageNumber(){
+	public int getPageNumber(){
 		return pageNumber;
 	}
 

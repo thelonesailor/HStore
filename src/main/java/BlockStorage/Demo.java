@@ -25,14 +25,14 @@ public class Demo {
 			String op = input.next();
 
 			if(op.contentEquals("r")){
-				long pageNumber = input.nextLong();
+				int pageNumber = input.nextInt();
 				System.out.println(op+" "+pageNumber);
 
 				server.readPage(pageNumber);
 				server.printBlockServerStatus();
 			}
 			else if(op.contentEquals("w")){
-				long pageNumber = input.nextLong();
+				int pageNumber = input.nextInt();
 				System.out.println(op+" "+pageNumber);
 
 				server.writePage(pageNumber, b);

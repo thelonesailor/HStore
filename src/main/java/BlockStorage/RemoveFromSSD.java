@@ -6,7 +6,7 @@ public class RemoveFromSSD implements Runnable {
 	blockServer server;
 	//	boolean stp;
 	private Utils utils;
-	long m1 = -1;
+	int m1 = -1;
 	RemoveFromSSD(cache cache, SSD SSD, blockServer server, Utils utils){
 		this.cache = cache;
 		this.SSD = SSD;
@@ -24,7 +24,7 @@ public class RemoveFromSSD implements Runnable {
 
 //			SSD.recencyListLock.unlock();
 
-			long pageNumberToRemove = SSD.elder.getKey();
+			int pageNumberToRemove = SSD.elder.getKey();
 
 //			SSD.recencyListLock.lock();
 			SSD.recencyList.remove(pageNumberToRemove);

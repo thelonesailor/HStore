@@ -25,8 +25,8 @@ public class WritetoSSD implements Runnable{
 
 	void doWork() throws InterruptedException{
 		if(SSD.WritetoSSDqueue.size() > 0) {
-			Pair<Long, Integer> p = SSD.WritetoSSDqueue.remove();
-			long pageNumber = p.getKey();
+			Pair<Integer, Integer> p = SSD.WritetoSSDqueue.remove();
+			int pageNumber = p.getKey();
 //			if(!server.pageIndex.get(pageNumber).isLocationCache()){
 //				return;
 //			}
@@ -49,7 +49,7 @@ public class WritetoSSD implements Runnable{
 				out.close();
 //				System.out.println("Wrote "+pageNumber+" to SSD.");
 
-				server.updatePageIndex(pageNumber, 0, 1, -1, -1);
+				server.pageIndex.updatePageIndex(pageNumber, 0, 1, -1, -1);
 //				cache.cacheList.remove(pageNumber);
 				cache.pointersList.remove(pageNumber);
 				cache.EmptyPointers.add(freePointer);

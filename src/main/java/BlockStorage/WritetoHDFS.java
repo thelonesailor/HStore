@@ -23,8 +23,8 @@ public class WritetoHDFS implements Runnable {
 
 	synchronized void doWork() throws InterruptedException{
 		if(SSD.WritetoHDFSqueue.size() > 0) {
-			Long p = SSD.WritetoHDFSqueue.remove();
-			long pageNumber = p;
+			Integer p = SSD.WritetoHDFSqueue.remove();
+			int pageNumber = p;
 //			if(!server.pageIndex.get(pageNumber).isLocationSSD()){
 //                System.out.println("page "+pageNumber+" not in SSD.");
 //				return;
@@ -34,7 +34,7 @@ public class WritetoHDFS implements Runnable {
 //			File file = new File(fileName);
 			try {
 
-				if(SSD.pointersList.contains(pageNumber) && server.pageIndex.get(pageNumber).isDirty()) {
+				if(SSD.pointersList.contains(pageNumber) && server.pageIndex.pageIndex[pageNumber].isDirty()) {
 					FileInputStream in = new FileInputStream(fileName);
 //	    			System.out.println("Writing "+pageNumber+" to HDFS.");
 					byte[] pageData = new byte[utils.PAGE_SIZE];
@@ -43,15 +43,15 @@ public class WritetoHDFS implements Runnable {
 					page page = new page(pageNumber, pageData);
 
 					HDFSlayer.writePage(page, server);
-					server.updatePageIndex(pageNumber, -1, 0, 1, -1);
+					server.pageIndex.updatePageIndex(pageNumber, -1, 0, 1, -1);
 					if(utils.SHOW_LOG)
 						System.out.println("page: "+pageNumber+" written to HDFSLayer");
 				}
 				else{
-					server.updatePageIndex(pageNumber, -1, 0, -1, -1);
+					server.pageIndex.updatePageIndex(pageNumber, -1, 0, -1, -1);
 				}
 //				file.delete();
-				SSD.pointersList.remove(pageNumber);
+				SSD.pointersList.remove((Integer)pageNumber);
 				if(utils.SHOW_LOG)
 					System.out.println("page: "+pageNumber+" removed from SSD");
 
