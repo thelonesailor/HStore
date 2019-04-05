@@ -34,7 +34,7 @@ public class WritetoHDFS implements Runnable {
 //			File file = new File(fileName);
 			try {
 
-				if(SSD.pointersList.contains(pageNumber) && server.pageIndex.pageIndex[pageNumber].isDirty()) {
+				if(SSD.pointersList.contains(pageNumber) && server.pageIndex.get(pageNumber).isDirty()) {
 					FileInputStream in = new FileInputStream(fileName);
 //	    			System.out.println("Writing "+pageNumber+" to HDFS.");
 					byte[] pageData = new byte[utils.PAGE_SIZE];

@@ -178,7 +178,7 @@ public class HDFSLayer{
 //						System.out.println(blockToRemove+" added to blockList");
 						for(int i=0;i<utils.BLOCK_SIZE;++i){
 							int pageNumber = (blockToRemove<<3) + i;
-							if(server.pageIndex.pageIndex[pageNumber] != null){
+							if(server.pageIndex.get(pageNumber) != null){
 								server.pageIndex.updatePageIndex((blockToRemove<<3) + i,-1,-1,1,0);
 							}
 						}

@@ -1,21 +1,36 @@
 package BlockStorage;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PageIndex {
-	position[] pageIndex;
+//	private position[] pageIndex;
+	List<position[]> pageIndex ;
+	int localPageNumberMask = (1<<26) - 1;
+	int VMIDmask = ((1<<31) - 1) - localPageNumberMask;
 
 	PageIndex(){
-		pageIndex = new position[4000];
+		pageIndex = new ArrayList<>();
+	}
+
+	void addVM(int VMID,int pagesWanted){
+		pageIndex.add(new position[pagesWanted]);
+	}
+
+	position get(int pageNumber){
+		int localPageNumber = pageNumber & localPageNumberMask;
+		int VMID = pageNumber & VMIDmask;
+		return (pageIndex.get(VMID)[localPageNumber]);
 	}
 
 	synchronized void updatePageIndex(int pageNumber,int Cache, int SSD, int HDFS, int dirty){
 		boolean locationCache, locationSSD, locationHDFS, dirtyBit;
 
-//		long mask = (1<<31 - 1);
-//		int pageNumber = (int)(pageNumberLong & mask); //take last 30 bits
-//		System.out.println(pageNumber + " " + pageIndex[pageNumber]);
+		int localPageNumber = pageNumber & localPageNumberMask;
+		int VMID = pageNumber & VMIDmask;
 
-		if(pageIndex[pageNumber] != null) {
-			position po = pageIndex[pageNumber];
+		if(pageIndex.get(VMID)[localPageNumber] != null) {
+			position po = pageIndex.get(VMID)[localPageNumber];
 
 			if (Cache == 1) locationCache = true;
 			else if (Cache == 0) locationCache = false;
@@ -33,7 +48,7 @@ public class PageIndex {
 			else if (dirty == 0) dirtyBit = false;
 			else dirtyBit = po.diryBit;
 
-			pageIndex[pageNumber] = new position(locationCache, locationSSD, locationHDFS, dirtyBit);
+			pageIndex.get(VMID)[localPageNumber] = new position(locationCache, locationSSD, locationHDFS, dirtyBit);
 		}
 		else {
 
@@ -69,7 +84,7 @@ public class PageIndex {
 				return;
 			}
 
-			pageIndex[pageNumber] = new position(locationCache, locationSSD, locationHDFS, dirtyBit);
+			pageIndex.get(VMID)[localPageNumber] = new position(locationCache, locationSSD, locationHDFS, dirtyBit);
 		}
 	}
 

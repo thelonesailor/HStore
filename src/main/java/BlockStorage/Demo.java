@@ -44,7 +44,7 @@ public class Demo {
 			else{}
 		}
 
-		server.stop();
+		server.normalShutdown();
 		System.out.println("------------------------------------------------------");
 	}
 }

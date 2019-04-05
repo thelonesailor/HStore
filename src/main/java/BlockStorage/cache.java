@@ -99,7 +99,7 @@ class cache{
 				cacheList.put(pageNumber,val); // elder gets updated here
 				int pageNumberToRemove = elder.getKey();
 				int freePointer= elder.getValue().getPointer();
-				if(server.pageIndex.pageIndex[pageNumberToRemove].isDirty() /*elder.getValue().getDirtyBit()*/){
+				if(server.pageIndex.get(pageNumberToRemove).isDirty() /*elder.getValue().getDirtyBit()*/){
 					SSD.writePage(pageNumberToRemove, freePointer, server);
 				}
 //				server.updatePageIndex(pageNumberToRemove, 0, 1, -1, -1);

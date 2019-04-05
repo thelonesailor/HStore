@@ -16,9 +16,10 @@ class blockServer{
 	cache cache;
 	SSD SSD;
 	HDFSLayer HDFSLayer;
-//	ConcurrentHashMap<Long, position> pageIndex;
-	PageIndex pageIndex;
 	private Utils utils;
+	PageIndex pageIndex;
+	VMmanager vMmanager;
+
 
 	RemoveFromCache removeFromCache;
 	WritetoSSD writetoSSD;
@@ -39,13 +40,12 @@ class blockServer{
 	boolean writetoHDFSStop = false;
 
 	blockServer(cache cache, SSD SSD, HDFSLayer HDFSLayer, Utils utils){
-//		pageIndex = new ConcurrentHashMap<>();
-//		pageIndex.clear();
-		pageIndex = new PageIndex();
 		this.cache = cache;
 		this.SSD = SSD;
 		this.HDFSLayer = HDFSLayer;
 		this.utils = utils;
+		this.pageIndex = new PageIndex();
+		this.vMmanager = new VMmanager(this);
 
 		this.removeFromCache = new RemoveFromCache(this.cache, this.SSD, this, this.utils);
 		removeFromCachethread = new Thread(this.removeFromCache);
@@ -127,7 +127,7 @@ class blockServer{
 	}
 
 
-	void stop(){
+	void normalShutdown(){
 		stablize();
 		removeFromCacheStop = true;
 		writetoSSDStop = true;
@@ -162,7 +162,7 @@ class blockServer{
 	 * */
 	page readPage(int pageNumber){
 		page returnPage = null;
-		position pos = pageIndex.pageIndex[pageNumber];
+		position pos = pageIndex.get(pageNumber);
 
 		if(pos.isLocationCache())
 		{
@@ -187,7 +187,7 @@ class blockServer{
 			for (int i = 0; i < utils.BLOCK_SIZE; i++){
 				// if condition to be added to check the validity
 				int temp = ((returnBlock.blockNumber)<<3)+i;
-				position p = pageIndex.pageIndex[temp];
+				position p = pageIndex.get(temp);
 				if(p!=null && p.isLocationHDFS() && !p.isDirty() && !p.isLocationCache() && cache.pointersList.get(temp)==null) {
 					cache.writePage(returnAllPages[i],this);
 					pageIndex.updatePageIndex(temp, 1, -1, 1, -1);
@@ -322,7 +322,8 @@ class blockServer{
 		for (int k: HDFSLayer.HDFSBufferList.keySet()){
 			for (int i=0;i<utils.BLOCK_SIZE;++i){
 				int pageNumber = (k<<3) + i;
-				if(pageIndex.pageIndex[pageNumber].present && pageIndex.pageIndex[pageNumber].isLocationHDFS()){
+				position pos = pageIndex.get(pageNumber);
+				if(pos.present && pos.isLocationHDFS()){
 //					System.out.println(pageNumber);
 					s += pageNumber+" ";
 				}
@@ -336,7 +337,8 @@ class blockServer{
 		for (int k: HDFSLayer.blockList.keySet()){
 			for (int i=0;i<utils.BLOCK_SIZE;++i){
 				int pageNumber = (k<<3) + i;
-				if(pageIndex.pageIndex[pageNumber].present && pageIndex.pageIndex[pageNumber].isLocationHDFS()){
+				position pos = pageIndex.get(pageNumber);
+				if(pos.present && pos.isLocationHDFS()){
 //					System.out.println(pageNumber);
 					s += pageNumber+" ";
 				}
