@@ -1,4 +1,6 @@
-package BlockStorage;
+package blockstorage;
+
+import org.jetbrains.annotations.NotNull;
 
 public class Utils{
 
@@ -33,7 +35,7 @@ public class Utils{
 
 	String HADOOP_USER_NAME = System.getProperty("user.name");
 
-	String HDFS_PATH = "/HStore/"+HADOOP_USER_NAME;
+	@NotNull String HDFS_PATH = "/HStore/"+HADOOP_USER_NAME;
 
 
 	public Utils(int cache_size, int ssd_size, int hdfs_buffer_size, boolean show_log){

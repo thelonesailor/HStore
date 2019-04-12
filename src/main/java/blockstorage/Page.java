@@ -1,10 +1,10 @@
-package BlockStorage;
+package blockstorage;
 
-public class page{
+public class Page {
 	private int pageNumber;
 	private byte[] pageData;
 
-	public page(int pageNumber, byte[] pageData){
+	public Page(int pageNumber, byte[] pageData){
 		this.pageNumber = pageNumber;
 		this.pageData = pageData;
 	}

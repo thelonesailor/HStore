@@ -1,4 +1,4 @@
-package BlockStorage;
+package blockstorage;
 
 import javafx.util.Pair;
 
@@ -7,15 +7,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 // Assumption: all writes to SSD happen from Cache
-public class WritetoSSD implements Runnable{
-	private cache cache;
+public class WriteToSSD implements Runnable{
+	private Cache cache;
 	private SSD SSD;
-	private blockServer server;
+	private BlockServer server;
 	private Utils utils;
 	String SSD_LOCATION;
 
 
-	WritetoSSD(cache cache,SSD SSD, blockServer server, Utils utils){
+	WriteToSSD(Cache cache, SSD SSD, BlockServer server, Utils utils){
 		this.cache = cache;
 		this.SSD = SSD;
 		this.server = server;
@@ -24,8 +24,8 @@ public class WritetoSSD implements Runnable{
 	}
 
 	void doWork() throws InterruptedException{
-		if(SSD.WritetoSSDqueue.size() > 0) {
-			Pair<Integer, Integer> p = SSD.WritetoSSDqueue.remove();
+		if(SSD.writeToSSDQueue.size() > 0) {
+			Pair<Integer, Integer> p = SSD.writeToSSDQueue.remove();
 			int pageNumber = p.getKey();
 //			if(!server.pageIndex.get(pageNumber).isLocationCache()){
 //				return;
@@ -42,7 +42,7 @@ public class WritetoSSD implements Runnable{
 
 			try {
 				FileOutputStream out = new FileOutputStream(fileName);
-//				cache.cacheList.get(pageNumber);
+//				Cache.cacheList.get(pageNumber);
 //				System.out.println("Writing "+pageNumber+" to SSD.");
 				int freePointer = p.getValue();
 				out.write(cache.readPage(pageNumber, true).getPageData());
@@ -50,10 +50,10 @@ public class WritetoSSD implements Runnable{
 //				System.out.println("Wrote "+pageNumber+" to SSD.");
 
 				server.pageIndex.updatePageIndex(pageNumber, 0, 1, -1, -1);
-//				cache.cacheList.remove(pageNumber);
+//				Cache.cacheList.remove(pageNumber);
 				cache.pointersList.remove(pageNumber);
 				cache.EmptyPointers.add(freePointer);
-//				cache.size.getAndDecrement();// cache.size--
+//				Cache.size.getAndDecrement();// Cache.size--
 
 				SSD.recencyListLock.lock();
 				SSD.recencyList.put(pageNumber, true); //elder is updated
@@ -85,11 +85,11 @@ public class WritetoSSD implements Runnable{
 			catch(InterruptedException e){
 				System.out.println("InterruptedException in Write to SSD thread: " + e);
 			}
-//			System.out.println("WritetoSSDqueue.size()="+SSD.WritetoSSDqueue.size()+"  cache.pointersList.size()="+cache.pointersList.size()+"  cache.cacheList.size()="+cache.cacheList.size()+"  SSD.recencyList.size()="+SSD.recencyList.size()+"  server.writetoSSDStop="+server.writetoSSDStop);
+//			System.out.println("writeToSSDQueue.size()="+SSD.writeToSSDQueue.size()+"  Cache.pointersList.size()="+Cache.pointersList.size()+"  Cache.cacheList.size()="+Cache.cacheList.size()+"  SSD.recencyList.size()="+SSD.recencyList.size()+"  server.writeToSSDStop="+server.writeToSSDStop);
 
 
-			if(server.writetoSSDStop){
-				if(!server.removeFromCachethread.isAlive() && SSD.WritetoSSDqueue.size() == 0){
+			if(server.writeToSSDStop){
+				if(!server.removeFromCacheThread.isAlive() && SSD.writeToSSDQueue.size() == 0){
 					break;
 				}
 			}

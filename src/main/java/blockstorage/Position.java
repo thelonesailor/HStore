@@ -1,13 +1,13 @@
-package BlockStorage;
+package blockstorage;
 
-public class position{
+public class Position {
 	boolean locationCache;
 	boolean locationSSD;
 	boolean locationHDFS;
 	boolean diryBit;
-	boolean present = false;    //tells page is in pageindex or not
+	boolean present = false;    //tells Page is in pageindex or not
 
-	public position(boolean locationCache, boolean locationSSD, boolean locationHDFS, boolean dirtyBit){
+	public Position(boolean locationCache, boolean locationSSD, boolean locationHDFS, boolean dirtyBit){
 		this.locationCache = locationCache;
 		this.locationSSD = locationSSD;
 		this.locationHDFS = locationHDFS;
@@ -15,7 +15,7 @@ public class position{
 		this.present = true;
 	}
 
-	public position(){
+	public Position(){
 		this.present = false;
 	}
 

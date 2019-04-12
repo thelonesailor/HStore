@@ -1,6 +1,8 @@
-package BlockStorage;
+package blockstorage;
 
 import javafx.util.Pair;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,15 +21,15 @@ public class SSD{
 	private HDFSLayer HDFSLayer;
 	private Utils utils;
 	LinkedHashMap<Integer, Boolean> recencyList;
-	Lock recencyListLock = new ReentrantLock();
+	@NotNull Lock recencyListLock = new ReentrantLock();
 	CopyOnWriteArrayList<Integer> pointersList;
 
 
+	@Nullable
 	static Map.Entry<Integer, Boolean> elder = null;
-//	AtomicInteger size = new AtomicInteger(0);
 
-	ConcurrentLinkedQueue<Pair<Integer,Integer>> WritetoSSDqueue = new ConcurrentLinkedQueue<>();
-	ConcurrentLinkedQueue<Integer> WritetoHDFSqueue = new ConcurrentLinkedQueue<>();
+	@NotNull ConcurrentLinkedQueue<Pair<Integer,Integer>> writeToSSDQueue = new ConcurrentLinkedQueue<>();
+	@NotNull ConcurrentLinkedQueue<Integer> writeToHDFSQueue = new ConcurrentLinkedQueue<>();
 
 	SSD(HDFSLayer HDFSLayer, Utils utils){
 		this.HDFSLayer = HDFSLayer;
@@ -50,12 +52,12 @@ public class SSD{
 
 
 	void writeSSDPage(int pageNumber, int pointer) {
-		WritetoSSDqueue.add(new Pair<>(pageNumber, pointer));
+		writeToSSDQueue.add(new Pair<>(pageNumber, pointer));
 		if(utils.SHOW_LOG)
-			System.out.println("page " + pageNumber + " added to WritetoSSDqueue");
+			System.out.println("Page " + pageNumber + " added to writeToSSDQueue");
 	}
 
-	page readSSDPage(int pageNumber){
+	@NotNull Page readSSDPage(int pageNumber){
 		File file = new File(SSD_LOCATION + "/" + pageNumber);
 		byte[] pageData = new byte[utils.PAGE_SIZE];
 		try
@@ -73,10 +75,10 @@ public class SSD{
 			System.out.println("Exception while reading the file " + ioe);
 		}
 
-		return new page(pageNumber, pageData);
+		return new Page(pageNumber, pageData);
 	}
 
-	page readPage(int pageNumber) {
+	@NotNull Page readPage(int pageNumber) {
 		recencyListLock.lock();
 		recencyList.remove(pageNumber);
 		recencyList.put(pageNumber, true);
@@ -84,42 +86,7 @@ public class SSD{
 		return readSSDPage(pageNumber);
 	}
 
-
-//	void WritetoHDFSthread(blockServer server){
-//		long pageNumber = WritetoHDFSqueue.remove();
-//		File file = new File(SSD_LOCATION + "/" + pageNumber);
-//		byte[] pageData = new byte[utils.PAGE_SIZE];
-//		try
-//		{
-//			FileInputStream in = new FileInputStream(file);
-//			in.read(pageData);
-//			in.close();
-//		}
-//		catch(FileNotFoundException e)
-//		{
-//			System.out.println("File not found" + e);
-//		}
-//		catch(IOException ioe)
-//		{
-//			System.out.println("Exception while reading the file " + ioe);
-//		}
-//		page page = new page(pageNumber, pageData);
-//
-//		if(server.pageIndex.get(pageNumber).isDirty()) {
-//			HDFSLayer.writePage(page, server);
-//			server.updatePageIndex(pageNumber, -1, 0, 1, -1);
-//		}
-//		else {
-//			server.updatePageIndex(pageNumber, -1, 0, -1, -1);
-//		}
-//
-//		recencyList.remove(pageNumber);
-//		size.getAndDecrement();
-////		System.out.println(pageNumber+" removed from SSD.");
-//		file.delete(); //remove the file from actual SSD
-//	}
-
-	void writePage(int pageNumber,int pointer, blockServer server){
+	void writePage(int pageNumber,int pointer, BlockServer server){
 
 		while (pointersList.size() >= utils.SSD_SIZE){
 //			System.out.println("waiting for SSD to have space");
@@ -134,7 +101,7 @@ public class SSD{
 			}else{
 				//assume elder is always updated
 				/*
-				page temp = readSSDPage(elder.getKey());
+				Page temp = readSSDPage(elder.getKey());
 				long tempPageNumber= temp.getPageNumber();
 				if(server.pageIndex.get(tempPageNumber).isDirty()) {
 					HDFSLayer.writePage(temp, server);
@@ -145,7 +112,7 @@ public class SSD{
 				long zero = 0;
 //				recencyList.put(zero, true);
 //				recencyList.remove(zero);
-//				WritetoHDFSqueue.add(elder.getKey());
+//				writeToHDFSQueue.add(elder.getKey());
 //				WritetoHDFSthread(server);
 
 //				writeSSDPage(pageNumber, pointer);
@@ -161,15 +128,4 @@ public class SSD{
 //		System.out.println("size & max_size = "+size+" "+utils.SSD_SIZE);
 
 	}
-
-//	public void resetSSD(blockServer server){
-//		for(Long key : recencyList.keySet()) {
-//			page temp = readSSDPage(key);
-//			HDFSLayer.writePage(temp, server);
-//		}
-//
-//		size=0;
-//		recencyList.clear();
-//	}
-
 }

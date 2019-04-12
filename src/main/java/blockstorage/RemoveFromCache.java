@@ -1,15 +1,15 @@
-package BlockStorage;
+package blockstorage;
 
 import java.util.Map;
 
 public class RemoveFromCache implements Runnable{
-	private cache cache;
+	private Cache cache;
 	SSD SSD;
-	blockServer server;
+	BlockServer server;
 	private Utils utils;
 	private int m1 = -1;
 
-	RemoveFromCache(cache cache, SSD SSD, blockServer server, Utils utils){
+	RemoveFromCache(Cache cache, SSD SSD, BlockServer server, Utils utils){
 		this.cache = cache;
 		this.SSD = SSD;
 		this.server = server;
@@ -18,19 +18,19 @@ public class RemoveFromCache implements Runnable{
 
 	private void doWork() throws InterruptedException{
 		if((cache.cacheList.size() > utils.MAX_CACHE_FULL_SIZE )||( server.removeFromCacheStop && (cache.cacheList.size() > 0))) {
-			cacheValue val = new cacheValue();
+			CacheValue val = new CacheValue();
 
 			cache.cacheListLock.lock();
 			cache.cacheList.put(m1,val); // elder gets updated here
 			cache.cacheList.remove(m1);
 			cache.cacheList.remove(m1);
-//			cache.cacheListLock.unlock();
+//			Cache.cacheListLock.unlock();
 
-			Map.Entry<Integer, cacheValue>  eld = cache.elder;
+			Map.Entry<Integer, CacheValue>  eld = Cache.elder;
 			int pageNumberToRemove = eld.getKey();
 			int pointer = eld.getValue().getPointer();
 
-//			cache.cacheListLock.lock();
+//			Cache.cacheListLock.lock();
 			cache.cacheList.remove(pageNumberToRemove);
 			cache.cacheListLock.unlock();
 
@@ -44,7 +44,7 @@ public class RemoveFromCache implements Runnable{
 	public void run(){
 
 		while (true) {
-//			System.out.println("remove from cache!!"+cache.size+" "+utils.MAX_CACHE_FULL_SIZE+" "+SSD.WritetoSSDqueue.size()+" "+server.removeFromCacheStop);
+//			System.out.println("remove from Cache!!"+Cache.size+" "+utils.MAX_CACHE_FULL_SIZE+" "+SSD.writeToSSDQueue.size()+" "+server.removeFromCacheStop);
 
 			try{
 //				server.Lock1.lock();
@@ -52,7 +52,7 @@ public class RemoveFromCache implements Runnable{
 //				server.Lock1.unlock();
 			}
 			catch(InterruptedException e){
-				System.out.println("InterruptedException in removeFromCachethread: " + e);
+				System.out.println("InterruptedException in removeFromCacheThread: " + e);
 			}
 
 
@@ -63,6 +63,6 @@ public class RemoveFromCache implements Runnable{
 				}
 			}
 		}
-		System.out.println("removeFromCachethread ended.");
+		System.out.println("removeFromCacheThread ended.");
 	}
 }

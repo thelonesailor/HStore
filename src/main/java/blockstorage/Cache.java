@@ -1,4 +1,7 @@
-package BlockStorage;
+package blockstorage;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -7,10 +10,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-class cache{
+class Cache {
 
-	LinkedHashMap<Integer, cacheValue> cacheList;
-	Lock cacheListLock = new ReentrantLock();
+	LinkedHashMap<Integer, CacheValue> cacheList;
+	@NotNull Lock cacheListLock = new ReentrantLock();
 
 	byte[][] cacheBuffer;
 //	AtomicInteger size = new AtomicInteger(0);
@@ -21,16 +24,17 @@ class cache{
 	ConcurrentHashMap<Integer, Integer> pointersList;
 	ConcurrentHashMap<Integer, Integer> wasputinpointersList;
 
-	static Map.Entry<Integer, cacheValue> elder = null;
+	@Nullable
+	static Map.Entry<Integer, CacheValue> elder = null;
 
-	cache(SSD SSD, Utils utils){
+	Cache(SSD SSD, Utils utils){
 		this.SSD = SSD;
 		this.utils = utils;
-		this.cacheList = new LinkedHashMap<Integer, cacheValue>(utils.CACHE_SIZE, 0.75F, false) {
+		this.cacheList = new LinkedHashMap<Integer, CacheValue>(utils.CACHE_SIZE, 0.75F, false) {
 
 			private static final long serialVersionUID = 1L;
 			@Override
-			protected boolean removeEldestEntry(Map.Entry<Integer, cacheValue> eldest) {
+			protected boolean removeEldestEntry(Map.Entry<Integer, CacheValue> eldest) {
 				elder =  eldest;
 				return size() > utils.CACHE_SIZE;
 			}
@@ -46,17 +50,17 @@ class cache{
 	}
 
 	/***
-	 * Adding a recently read page to the list
+	 * Adding a recently read Page to the list
 	 * @param pageNumber
 	 * @return pointer to the cacheBuffer
-	 * Even if page was already in cache remove and add for LRU
+	 * Even if Page was already in Cache remove and add for LRU
 	 */
 	public int addRead(int pageNumber, boolean forQueue){
-//		cacheValue val = cacheList.get(pageNumber);
+//		CacheValue val = cacheList.get(pageNumber);
 
-//		System.out.println("Reading "+pageNumber+" from cache");
+//		System.out.println("Reading "+pageNumber+" from Cache");
 		if(!pointersList.containsKey(pageNumber)) {
-			System.out.println("Reading "+pageNumber+" from cache "+wasputinpointersList.contains(pageNumber));
+			System.out.println("Reading "+pageNumber+" from Cache "+wasputinpointersList.contains(pageNumber));
 			assert false;
 		}
 
@@ -64,38 +68,38 @@ class cache{
 		if(!forQueue){
 			cacheListLock.lock();
 			cacheList.remove(pageNumber);
-			cacheList.put(pageNumber,new cacheValue(pointer));
+			cacheList.put(pageNumber,new CacheValue(pointer));
 			cacheListLock.unlock();
 		}
 
 		return pointer;
 	}
 	/***
-	 * Adding a recently write page to the list
+	 * Adding a recently write Page to the list
 	 * @param pageNumber
 	 * @return pointer to the cacheBuffer
 	 */
-	synchronized int addWrite(int pageNumber, blockServer server){
+	synchronized int addWrite(int pageNumber, @NotNull BlockServer server){
 		if(pointersList.containsKey(pageNumber)){
-			// page already exists in cache
-//			cacheValue val = cacheList.get(pageNumber);
+			// Page already exists in Cache
+//			CacheValue val = cacheList.get(pageNumber);
 			int pointer = pointersList.get(pageNumber);
 
 			cacheListLock.lock();
 			cacheList.remove(pageNumber);
-			cacheList.put(pageNumber,new cacheValue(pointer));
+			cacheList.put(pageNumber,new CacheValue(pointer));
 			cacheListLock.unlock();
 
 			return pointer;
 		}else{
 			while (pointersList.size() >= utils.CACHE_SIZE){
-//				System.out.println("waiting for cache to have space");
+//				System.out.println("waiting for Cache to have space");
 				try{Thread.sleep(100);}
 				catch(InterruptedException e){}
 			}
 			if(pointersList.size() == utils.CACHE_SIZE){
-				// victim page removal
-				cacheValue val = new cacheValue();
+				// victim Page removal
+				CacheValue val = new CacheValue();
 				cacheList.put(pageNumber,val); // elder gets updated here
 				int pageNumberToRemove = elder.getKey();
 				int freePointer= elder.getValue().getPointer();
@@ -107,17 +111,17 @@ class cache{
 
 
 //				cacheList.remove(pageNumber);
-//				cacheList.put(pageNumber,new cacheValue(freePointer));
+//				cacheList.put(pageNumber,new CacheValue(freePointer));
 
 				return elder.getValue().getPointer();
 			}else{
 				// initial stage
-//				cacheValue val = new cacheValue(writePointer);
+//				CacheValue val = new CacheValue(writePointer);
 				int freePointer = EmptyPointers.remove();
 
 				cacheListLock.lock();
 				cacheList.remove(pageNumber);
-				cacheList.put(pageNumber, new cacheValue(freePointer));
+				cacheList.put(pageNumber, new CacheValue(freePointer));
 				cacheListLock.unlock();
 
 //	    		System.out.println("added "+pageNumber);
@@ -134,10 +138,10 @@ class cache{
 		}
 	}
 
-//	public void resetCache(blockServer server){
+//	public void resetCache(BlockServer server){
 //		for(Long key : cacheList.keySet()) {
-//			cacheValue x = cacheList.get(key);
-//			SSD.writePage(new page(key, cacheBuffer[x.getPointer()]), server);
+//			CacheValue x = cacheList.get(key);
+//			SSD.writePage(new Page(key, cacheBuffer[x.getPointer()]), server);
 //		}
 //
 //		writePointer=0;
@@ -146,15 +150,15 @@ class cache{
 
 
 	/***
-	 * It is guaranteed that page is already in the cache
-	 * @return page
+	 * It is guaranteed that Page is already in the Cache
+	 * @return Page
 	 */
-	page readPage(int pageNumber, boolean forQueue){
+	@NotNull Page readPage(int pageNumber, boolean forQueue){
 		int pointer = addRead(pageNumber, forQueue);
-		return new page(pageNumber, cacheBuffer[pointer]);
+		return new Page(pageNumber, cacheBuffer[pointer]);
 	}
 
-	boolean writePage(page page, blockServer server){
+	boolean writePage(@NotNull Page page, @NotNull BlockServer server){
 		// System.out.println("CACHE");
 		int pageNumber = page.getPageNumber();
 		int pointer = addWrite(pageNumber, server);
@@ -164,7 +168,7 @@ class cache{
 		pointersList.put(pageNumber, pointer);
 		wasputinpointersList.put(pageNumber,pointer);
 
-//		System.out.println("Wrote "+pageNumber+" to cache");
+//		System.out.println("Wrote "+pageNumber+" to Cache");
 		return true;
 	}
 }

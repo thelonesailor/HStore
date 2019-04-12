@@ -1,80 +1,86 @@
-package BlockStorage;
+package blockstorage;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.LocatedFileStatus;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.RemoteIterator;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-class blockServer{
+class BlockServer {
 	
-	cache cache;
+	Cache cache;
 	SSD SSD;
 	HDFSLayer HDFSLayer;
 	private Utils utils;
 	PageIndex pageIndex;
-	VMmanager vMmanager;
+	VMManager vMmanager;
 
+	@NotNull ConcurrentLinkedQueue<Integer> readFromSSDQueue = new ConcurrentLinkedQueue<>();
+	@NotNull ConcurrentLinkedQueue<Integer> readFromHDFSQueue = new ConcurrentLinkedQueue<>();
+	@NotNull ConcurrentLinkedQueue<Page> readOutputQueue = new ConcurrentLinkedQueue<>();
 
 	RemoveFromCache removeFromCache;
-	WritetoSSD writetoSSD;
+	WriteToSSD writeToSSD;
 	RemoveFromSSD removeFromSSD;
-	WritetoHDFS writetoHDFS;
+	WriteToHDFS writeToHDFS;
 
-	Thread removeFromCachethread;
-	Thread writeToSSDthread;
-	Thread removeFromSSDthread;
-	Thread writeToHDFSthread;
+	Thread removeFromCacheThread;
+	Thread writeToSSDThread;
+	Thread removeFromSSDThread;
+	Thread writeToHDFSThread;
 
-	Lock Lock1 = new ReentrantLock();
-	Lock Lock2 = new ReentrantLock();
+	@NotNull Lock Lock1 = new ReentrantLock();
+	@NotNull Lock Lock2 = new ReentrantLock();
 
 	boolean removeFromCacheStop = false;
-	boolean writetoSSDStop = false;
+	boolean writeToSSDStop = false;
 	boolean removeFromSSDStop = false;
-	boolean writetoHDFSStop = false;
+	boolean writeToHDFSStop = false;
 
-	blockServer(cache cache, SSD SSD, HDFSLayer HDFSLayer, Utils utils){
+	BlockServer(Cache cache, SSD SSD, HDFSLayer HDFSLayer, Utils utils){
 		this.cache = cache;
 		this.SSD = SSD;
 		this.HDFSLayer = HDFSLayer;
 		this.utils = utils;
 		this.pageIndex = new PageIndex();
-		this.vMmanager = new VMmanager(this);
+		this.vMmanager = new VMManager(this);
 
 		this.removeFromCache = new RemoveFromCache(this.cache, this.SSD, this, this.utils);
-		removeFromCachethread = new Thread(this.removeFromCache);
-		removeFromCachethread.start();
-		System.out.println("removeFromCachethread started.");
-		removeFromCachethread.setName("removeFromCachethread");
+		removeFromCacheThread = new Thread(this.removeFromCache);
+		removeFromCacheThread.start();
+		System.out.println("removeFromCacheThread started.");
+		removeFromCacheThread.setName("removeFromCacheThread");
 
-		this.writetoSSD = new WritetoSSD(this.cache, this.SSD, this, this.utils);
-		writeToSSDthread = new Thread(this.writetoSSD);
-		writeToSSDthread.start();
+		this.writeToSSD = new WriteToSSD(this.cache, this.SSD, this, this.utils);
+		writeToSSDThread = new Thread(this.writeToSSD);
+		writeToSSDThread.start();
 		System.out.println("writetoSSDthread started.");
-		writeToSSDthread.setName("writetoSSDthread");
+		writeToSSDThread.setName("writetoSSDthread");
 
 		this.removeFromSSD = new RemoveFromSSD(this.cache, this.SSD, this, this.utils);
-		removeFromSSDthread = new Thread(this.removeFromSSD);
-		removeFromSSDthread.start();
-		System.out.println("removeFromSSDthread started.");
-		removeFromSSDthread.setName("removeFromSSDthread");
+		removeFromSSDThread = new Thread(this.removeFromSSD);
+		removeFromSSDThread.start();
+		System.out.println("removeFromSSDThread started.");
+		removeFromSSDThread.setName("removeFromSSDThread");
 
-		this.writetoHDFS = new WritetoHDFS(this.cache, this.SSD, this.HDFSLayer, this, this.utils);
-		writeToHDFSthread = new Thread(this.writetoHDFS);
-		writeToHDFSthread.start();
-		System.out.println("writeToHDFSthread started.");
-		writeToHDFSthread.setName("writetoHDFSthread");
+		this.writeToHDFS = new WriteToHDFS(this.cache, this.SSD, this.HDFSLayer, this, this.utils);
+		writeToHDFSThread = new Thread(this.writeToHDFS);
+		writeToHDFSThread.start();
+		System.out.println("writeToHDFSThread started.");
+		writeToHDFSThread.setName("writetoHDFSthread");
 
 		try{Thread.sleep(100);}
 		catch(InterruptedException e){}
 
-		System.out.println("blockServer initialised");
+		System.out.println("BlockServer initialised");
 	}
 
 
@@ -128,18 +134,18 @@ class blockServer{
 
 
 	void normalShutdown(){
-		stablize();
+		stabilize();
 		removeFromCacheStop = true;
-		writetoSSDStop = true;
+		writeToSSDStop = true;
 		removeFromSSDStop = true;
-		writetoHDFSStop = true;
+		writeToHDFSStop = true;
 
 		System.out.println("Stop function called, threads signalled to stop, waiting for threads to join");
 		try{
-			removeFromCachethread.join();
-			writeToSSDthread.join();
-			removeFromSSDthread.join();
-			writeToHDFSthread.join();
+			removeFromCacheThread.join();
+			writeToSSDThread.join();
+			removeFromSSDThread.join();
+			writeToHDFSThread.join();
 		}
 		catch(InterruptedException e){
 			System.out.println("InterruptedException in joining: " + e);
@@ -157,62 +163,72 @@ class blockServer{
 		HDFSLayer.closeFS();
 	}
 
-	/**
-	 * @param pageNumber is 1 indexed
-	 * */
-	page readPage(int pageNumber){
-		page returnPage = null;
-		position pos = pageIndex.get(pageNumber);
+	void readFromSSD(int pageNumber){
+		Page returnPage = SSD.readPage(pageNumber);
+		cache.writePage(returnPage,this);
+		pageIndex.updatePageIndex(pageNumber, 1, -1, -1, -1);
+		readOutputQueue.add(returnPage);
+	}
 
-		if(pos.isLocationCache())
-		{
-			returnPage =  cache.readPage(pageNumber, false);
+	void readFromHDFS(int pageNumber){
+		Block returnBlock = HDFSLayer.readBlock(pageNumber, this);
+		Page returnPage = returnBlock.readPage(pageNumber);
+
+		Page[] returnAllPages = returnBlock.getAllPages();
+		for (int i = 0; i < utils.BLOCK_SIZE; i++){
+			// if condition to be added to check the validity
+			int temp = ((returnBlock.blockNumber)<<3)+i;
+			Position p = pageIndex.get(temp);
+			if(p!=null && p.isLocationHDFS() && !p.isDirty() && !p.isLocationCache() && cache.pointersList.get(temp)==null) {
+				cache.writePage(returnAllPages[i],this);
+				pageIndex.updatePageIndex(temp, 1, -1, 1, -1);
+			}
 		}
-		else if(pos.isLocationSSD())
-		{
-			returnPage = SSD.readPage(pageNumber);
-			cache.writePage(returnPage,this);
-			pageIndex.updatePageIndex(pageNumber, 1, -1, -1, -1);
+		readOutputQueue.add(returnPage);
+	}
+
+	@Nullable void readPage(int pageNumber){
+		Page returnPage = null;
+		Position pos = pageIndex.get(pageNumber);
+
+		if(pos.isLocationCache()) {
+			returnPage =  cache.readPage(pageNumber, false);
+			readOutputQueue.add(returnPage);
+		}
+		else if(pos.isLocationSSD()) {
+			readFromSSDQueue.add(pageNumber);
+
+			if(utils.SHOW_LOG)
+				System.out.println("Reading Page " + pageNumber + " from HDFS Layer");
+
+			readFromSSD(pageNumber);
 		}
 		else if(pos.isLocationHDFS()){
+			readFromHDFSQueue.add(pageNumber);
+
 			if(utils.SHOW_LOG)
-				System.out.println("Reading page " + pageNumber + " from HDFS Layer");
+				System.out.println("Reading Page " + pageNumber + " from HDFS Layer");
 
-//			printBlockServerStatus();
-
-			block returnBlock = HDFSLayer.readBlock(pageNumber, this);
-			returnPage = returnBlock.readPage(pageNumber);
-
-			page[] returnAllPages = returnBlock.getAllPages();
-			for (int i = 0; i < utils.BLOCK_SIZE; i++){
-				// if condition to be added to check the validity
-				int temp = ((returnBlock.blockNumber)<<3)+i;
-				position p = pageIndex.get(temp);
-				if(p!=null && p.isLocationHDFS() && !p.isDirty() && !p.isLocationCache() && cache.pointersList.get(temp)==null) {
-					cache.writePage(returnAllPages[i],this);
-					pageIndex.updatePageIndex(temp, 1, -1, 1, -1);
-				}
-			}
+			readFromHDFS(pageNumber);
 		}else {
-			System.out.println("Error finding page: "+pageNumber);
+			System.out.println("Error finding Page: "+pageNumber);
 		}
-		return returnPage;
 	}
 
 	/**
 	 * @param pageNumber is 0 indexed
 	 * */
 	void writePage(int pageNumber, byte[] pageData){
-		page newPage = new page(pageNumber, pageData);
+		Page newPage = new Page(pageNumber, pageData);
 		boolean written = cache.writePage(newPage, this);
 
 		if(written){
 			pageIndex.updatePageIndex(pageNumber, 1, 0, 0, 1);
 			if(utils.SHOW_LOG)
-				System.out.println("page: "+pageNumber+" written to BlockServer");
+				System.out.println("Page: "+pageNumber+" written to BlockServer");
 		}
 		else{
-			System.out.println("Error in writing page to cache");
+			System.out.println("Error in writing Page to Cache");
 		}
 	}
 
@@ -220,7 +236,7 @@ class blockServer{
 //	void updatePageIndex(long pageNumber,int Cache, int SSD, int HDFS, int dirty){
 //		boolean locationCache, locationSSD, locationHDFS, dirtyBit;
 //		if(pageIndex.containsKey(pageNumber)) {
-//			position po = pageIndex.get(pageNumber);
+//			Position po = pageIndex.get(pageNumber);
 //
 //			if (Cache == 1) locationCache = true;
 //			else if (Cache == 0) locationCache = false;
@@ -239,7 +255,7 @@ class blockServer{
 //			else dirtyBit = po.diryBit;
 //
 //			pageIndex.remove(pageNumber);
-//			pageIndex.put(pageNumber, new position(locationCache, locationSSD, locationHDFS, dirtyBit));
+//			pageIndex.put(pageNumber, new Position(locationCache, locationSSD, locationHDFS, dirtyBit));
 //		}
 //		else {
 //
@@ -275,16 +291,16 @@ class blockServer{
 //				return;
 //			}
 //
-//			pageIndex.put(pageNumber, new position(locationCache, locationSSD, locationHDFS, dirtyBit));
+//			pageIndex.put(pageNumber, new Position(locationCache, locationSSD, locationHDFS, dirtyBit));
 //		}
 //	}
 
-	void stablize(){
-//		while (cache.cacheList.size() > utils.MAX_CACHE_FULL_SIZE){}
-		while (SSD.WritetoSSDqueue.size() > 0){}
+	void stabilize(){
+//		while (Cache.cacheList.size() > utils.MAX_CACHE_FULL_SIZE){}
+		while (SSD.writeToSSDQueue.size() > 0){}
 		while (cache.pointersList.size() > utils.MAX_CACHE_FULL_SIZE){}
 //		while (SSD.recencyList.size() > utils.MAX_SSD_FULL_SIZE){}
-		while (SSD.WritetoHDFSqueue.size() > 0){}
+		while (SSD.writeToHDFSQueue.size() > 0){}
 		while (SSD.pointersList.size() > utils.MAX_SSD_FULL_SIZE){}
 	}
 
@@ -292,8 +308,8 @@ class blockServer{
 		while (cache.pointersList.size() > utils.MAX_CACHE_FULL_SIZE){}
 		while (SSD.pointersList.size() > utils.MAX_SSD_FULL_SIZE){}
 
-		while (SSD.WritetoSSDqueue.size() > 0){}
-		while (SSD.WritetoHDFSqueue.size() > 0){}
+		while (SSD.writeToSSDQueue.size() > 0){}
+		while (SSD.writeToHDFSQueue.size() > 0){}
 
 		try{Thread.sleep(100);}
 		catch(InterruptedException e){}
@@ -322,7 +338,7 @@ class blockServer{
 		for (int k: HDFSLayer.HDFSBufferList.keySet()){
 			for (int i=0;i<utils.BLOCK_SIZE;++i){
 				int pageNumber = (k<<3) + i;
-				position pos = pageIndex.get(pageNumber);
+				Position pos = pageIndex.get(pageNumber);
 				if(pos.present && pos.isLocationHDFS()){
 //					System.out.println(pageNumber);
 					s += pageNumber+" ";
@@ -337,7 +353,7 @@ class blockServer{
 		for (int k: HDFSLayer.blockList.keySet()){
 			for (int i=0;i<utils.BLOCK_SIZE;++i){
 				int pageNumber = (k<<3) + i;
-				position pos = pageIndex.get(pageNumber);
+				Position pos = pageIndex.get(pageNumber);
 				if(pos.present && pos.isLocationHDFS()){
 //					System.out.println(pageNumber);
 					s += pageNumber+" ";

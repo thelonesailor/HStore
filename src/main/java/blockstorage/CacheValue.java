@@ -1,13 +1,13 @@
-package BlockStorage;
+package blockstorage;
 
-public class cacheValue{
+public class CacheValue {
 	int pointer;
 
-	public cacheValue(){
+	public CacheValue(){
 
 	}
 
-	public cacheValue(int pointer){
+	public CacheValue(int pointer){
 		this.pointer = pointer;
 	}
 

@@ -1,13 +1,13 @@
-package BlockStorage;
+package blockstorage;
 
 public class RemoveFromSSD implements Runnable {
-	cache cache;
+	Cache cache;
 	SSD SSD;
-	blockServer server;
+	BlockServer server;
 	//	boolean stp;
 	private Utils utils;
 	int m1 = -1;
-	RemoveFromSSD(cache cache, SSD SSD, blockServer server, Utils utils){
+	RemoveFromSSD(Cache cache, SSD SSD, BlockServer server, Utils utils){
 		this.cache = cache;
 		this.SSD = SSD;
 		this.server = server;
@@ -24,15 +24,15 @@ public class RemoveFromSSD implements Runnable {
 
 //			SSD.recencyListLock.unlock();
 
-			int pageNumberToRemove = SSD.elder.getKey();
+			int pageNumberToRemove = blockstorage.SSD.elder.getKey();
 
 //			SSD.recencyListLock.lock();
 			SSD.recencyList.remove(pageNumberToRemove);
 			SSD.recencyListLock.unlock();
 //			if((int)pageNumberToRemove != -1) {
-				SSD.WritetoHDFSqueue.add(pageNumberToRemove);
+				SSD.writeToHDFSQueue.add(pageNumberToRemove);
 				if(utils.SHOW_LOG)
-					System.out.println("page " + pageNumberToRemove + " added to WritetoHDFSqueue");
+					System.out.println("Page " + pageNumberToRemove + " added to writeToHDFSQueue");
 //			}
 		}
 		else{
@@ -44,7 +44,7 @@ public class RemoveFromSSD implements Runnable {
 	public void run(){
 
 		while (true){
-//			System.out.println("remove from SSD!! "+SSD.recencyList.size()+" "+SSD.size.get()+" "+utils.MAX_SSD_FULL_SIZE+" "+SSD.WritetoHDFSqueue.size()+" "+server.removeFromSSDStop);
+//			System.out.println("remove from SSD!! "+SSD.recencyList.size()+" "+SSD.size.get()+" "+utils.MAX_SSD_FULL_SIZE+" "+SSD.writeToHDFSQueue.size()+" "+server.removeFromSSDStop);
 
 			try{
 //				server.Lock2.lock();
@@ -56,7 +56,7 @@ public class RemoveFromSSD implements Runnable {
 			}
 
 			if(server.removeFromSSDStop){
-				if(!server.writeToSSDthread.isAlive() && SSD.pointersList.size() == 0){
+				if(!server.writeToSSDThread.isAlive() && SSD.pointersList.size() == 0){
 					break;
 				}
 			}

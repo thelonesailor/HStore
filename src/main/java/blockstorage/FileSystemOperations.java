@@ -1,10 +1,11 @@
-package BlockStorage;
+package blockstorage;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
@@ -18,7 +19,7 @@ public class FileSystemOperations {
 		this.utils = utils;
 	}
 
-	void closeFS(Configuration conf){
+	void closeFS(@NotNull Configuration conf){
 		try {
 			FileSystem fileSystem = FileSystem.get(conf);
 			fileSystem.close();
@@ -27,6 +28,7 @@ public class FileSystemOperations {
 		}
 	}
 
+	@NotNull
 	public  Configuration getConfiguration(){
 		Configuration config = new Configuration();
 		System.setProperty("HADOOP_USER_NAME", utils.HADOOP_USER_NAME);
@@ -48,7 +50,7 @@ public class FileSystemOperations {
 	 * @param conf
 	 * @throws IOException
 	 */
-	synchronized public void addFile(Configuration conf, block block) throws IOException {
+	synchronized public void addFile(@NotNull Configuration conf, @NotNull Block block) throws IOException {
 
 	FileSystem fileSystem;
 
@@ -59,7 +61,7 @@ public class FileSystemOperations {
 //	if (fileSystem.exists(path)) {
 //
 //		// delete the old file and write new file.
-//		deleteFile(block.blockNumber,conf);
+//		deleteFile(Block.blockNumber,conf);
 //	}
 
 	fileSystem = FileSystem.get(conf);
@@ -68,7 +70,7 @@ public class FileSystemOperations {
 	FSDataOutputStream out = fileSystem.create(path);
 	//InputStream in = new BufferedInputStream(new FileInputStream(new File(source)));
 
-	// convert block to byte array
+	// convert Block to byte array
 	int numBytes = utils.PAGE_SIZE;
 
 	out.write(block.blockData, 0, 8*numBytes);
@@ -84,11 +86,12 @@ public class FileSystemOperations {
    * @param conf
    * @throws IOException
    */
-	synchronized public byte[] readFile( Configuration conf,long blockNumber) throws IOException {
+	@NotNull
+	synchronized public byte[] readFile(@NotNull Configuration conf, long blockNumber) throws IOException {
 	  
 	FileSystem fileSystem = FileSystem.get(conf);
 
-	String file = conf.get("fs.defaultFS")+utils.HDFS_PATH+"/"+Long.toString(blockNumber);
+	String file = conf.get("fs.defaultFS")+utils.HDFS_PATH+"/"+ blockNumber;
 //	System.out.println(file);
 
 	Path path = new Path(file);
@@ -118,10 +121,10 @@ public class FileSystemOperations {
    * @param blockNumber
    * @throws IOException
    */
-	public void deleteFile(long blockNumber, Configuration conf) throws IOException {
+	public void deleteFile(long blockNumber, @NotNull Configuration conf) throws IOException {
 	FileSystem fileSystem = FileSystem.get(conf);
 
-	String file = conf.get("fs.defaultFS")+utils.HDFS_PATH+"/"+Long.toString(blockNumber);
+	String file = conf.get("fs.defaultFS")+utils.HDFS_PATH+"/"+ blockNumber;
 //	System.out.println(file);
 
 		Path path = new Path(file);
@@ -141,7 +144,7 @@ public class FileSystemOperations {
 	* @param dir
 	* @throws IOException
 	*/
-	public void mkdir(String dir, Configuration conf) throws IOException {
+	public void mkdir(@NotNull String dir, @NotNull Configuration conf) throws IOException {
 	FileSystem fileSystem = FileSystem.get(conf);
 
 	Path path = new Path(dir);

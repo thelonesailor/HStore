@@ -1,4 +1,4 @@
-package BlockStorage;
+package blockstorage;
 
 public class HDFSLayerTest {
 //	private Utils utils = new Utils();
@@ -7,20 +7,20 @@ public class HDFSLayerTest {
 //	public void WriteAndReadFromHDFSClusterDirectly1() {
 //		HDFSLayer HDFSLayer = new HDFSLayer();
 //		SSD SSD = new SSD(HDFSLayer);
-//		cache cache = new cache(SSD);
+//		Cache Cache = new Cache(SSD);
 //
 //		int numPages = 100;
 //		int numBlocks = numPages>>3;
-//		blockServer server = new blockServer(cache, SSD, HDFSLayer);
+//		BlockServer server = new BlockServer(Cache, SSD, HDFSLayer);
 //		System.out.println("Block Server made");
 //
 //		FileSystemOperations client = new FileSystemOperations();
 //		double startTime = System.nanoTime();
 //
 //		for(int i=1;i<=numBlocks;++i){
-//			block block = new block(i, new byte[8 * utils.PAGE_SIZE]);
+//			Block Block = new Block(i, new byte[8 * utils.PAGE_SIZE]);
 //			try {
-//				client.addFile(HDFSLayer.config, block);
+//				client.addFile(HDFSLayer.config, Block);
 //			} catch (IOException e) {
 //				e.printStackTrace();
 //			}
@@ -49,20 +49,20 @@ public class HDFSLayerTest {
 //	public void WriteAndReadFromHDFSClusterDirectly2() {
 //		HDFSLayer HDFSLayer = new HDFSLayer();
 //		SSD SSD = new SSD(HDFSLayer);
-//		cache cache = new cache(SSD);
+//		Cache Cache = new Cache(SSD);
 //
 //		int numPages = 1000;
 //		int numBlocks = numPages>>3;
-//		blockServer server = new blockServer(cache, SSD, HDFSLayer);
+//		BlockServer server = new BlockServer(Cache, SSD, HDFSLayer);
 //		System.out.println("Block Server made");
 //
 //		FileSystemOperations client = new FileSystemOperations();
 //		double startTime = System.nanoTime();
 //
 //		for(int i=1;i<=numBlocks;++i){
-//			block block = new block(i, new byte[8 * utils.PAGE_SIZE]);
+//			Block Block = new Block(i, new byte[8 * utils.PAGE_SIZE]);
 //			try {
-//				client.addFile(HDFSLayer.config, block);
+//				client.addFile(HDFSLayer.config, Block);
 //			} catch (IOException e) {
 //				e.printStackTrace();
 //			}
@@ -91,16 +91,16 @@ public class HDFSLayerTest {
 //	public void WriteAndReadFromHDFSLayer1() {
 //		HDFSLayer HDFSLayer = new HDFSLayer();
 //		SSD SSD = new SSD(HDFSLayer);
-//		cache cache = new cache(SSD);
+//		Cache Cache = new Cache(SSD);
 //
 //		int numPages = 1000;
 //
-//		blockServer server = new blockServer(cache, SSD, HDFSLayer);
+//		BlockServer server = new BlockServer(Cache, SSD, HDFSLayer);
 //		System.out.println("Block Server made");
 //		byte[] b = new byte[utils.PAGE_SIZE];
 //		double startTime = System.nanoTime();
 //		for(int i=1;i<=numPages;++i){
-//			HDFSLayer.writePage(new page(i, b), server);
+//			HDFSLayer.writePage(new Page(i, b), server);
 //		}
 //		double endTime = System.nanoTime();
 //		double time=(endTime - startTime) / 1000000000L;
@@ -122,16 +122,16 @@ public class HDFSLayerTest {
 //	public void WriteAndReadFromHDFSLayer2() {
 //		HDFSLayer HDFSLayer = new HDFSLayer();
 //		SSD SSD = new SSD(HDFSLayer);
-//		cache cache = new cache(SSD);
+//		Cache Cache = new Cache(SSD);
 //
 //		int numPages = 10000;
 //
-//		blockServer server = new blockServer(cache, SSD, HDFSLayer);
+//		BlockServer server = new BlockServer(Cache, SSD, HDFSLayer);
 //		System.out.println("Block Server made");
 //		byte[] b = new byte[utils.PAGE_SIZE];
 //		double startTime = System.nanoTime();
 //		for(int i=1;i<=numPages;++i){
-//			HDFSLayer.writePage(new page(i, b), server);
+//			HDFSLayer.writePage(new Page(i, b), server);
 //			server.updatePageIndex(i, 0, 0, 1, 1);
 //		}
 //		double endTime = System.nanoTime();
@@ -154,16 +154,16 @@ public class HDFSLayerTest {
 //	public void WriteAndRevReadFromHDFSLayer1() {
 //		HDFSLayer HDFSLayer = new HDFSLayer();
 //		SSD SSD = new SSD(HDFSLayer);
-//		cache cache = new cache(SSD);
+//		Cache Cache = new Cache(SSD);
 //
 //		int numPages = 1000;
 //
-//		blockServer server = new blockServer(cache, SSD, HDFSLayer);
+//		BlockServer server = new BlockServer(Cache, SSD, HDFSLayer);
 //		System.out.println("Block Server made");
 //		byte[] b = new byte[utils.PAGE_SIZE];
 //		double startTime = System.nanoTime();
 //		for(int i=0;i<numPages;++i){
-//			HDFSLayer.writePage(new page(i, b), server);
+//			HDFSLayer.writePage(new Page(i, b), server);
 //			server.updatePageIndex(i, 0, 0, 1, 1);
 //		}
 //		double endTime = System.nanoTime();
@@ -186,16 +186,16 @@ public class HDFSLayerTest {
 //	public void WriteAndRevReadFromHDFSLayer2() {
 //		HDFSLayer HDFSLayer = new HDFSLayer();
 //		SSD SSD = new SSD(HDFSLayer);
-//		cache cache = new cache(SSD);
+//		Cache Cache = new Cache(SSD);
 //
 //		int numPages = 10000;
 //
-//		blockServer server = new blockServer(cache, SSD, HDFSLayer);
+//		BlockServer server = new BlockServer(Cache, SSD, HDFSLayer);
 //		System.out.println("Block Server made");
 //		byte[] b = new byte[utils.PAGE_SIZE];
 //		double startTime = System.nanoTime();
 //		for(int i=0;i<numPages;++i){
-//			HDFSLayer.writePage(new page(i, b), server);
+//			HDFSLayer.writePage(new Page(i, b), server);
 //			server.updatePageIndex(i, 0, 0, 1, 1);
 //		}
 //		double endTime = System.nanoTime();

@@ -1,14 +1,16 @@
-package BlockStorage;
+package blockstorage;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class VMmanager {
-	blockServer server;
+public class VMManager {
+	BlockServer server;
 	int VMIDMax = 0;
-	List<Integer> pagesForEachVM = new ArrayList<>();
+	@NotNull List<Integer> pagesForEachVM = new ArrayList<>();
 
-	VMmanager(blockServer server){
+	VMManager(BlockServer server){
 		this.server = server;
 
 		VMIDMax = 0;

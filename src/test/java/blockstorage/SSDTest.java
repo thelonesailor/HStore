@@ -1,4 +1,4 @@
-package BlockStorage;
+package blockstorage;
 
 public class SSDTest {
 //	private Utils utils = new Utils();
@@ -8,16 +8,16 @@ public class SSDTest {
 //
 //		HDFSLayer HDFSLayer = new HDFSLayer();
 //		SSD SSD = new SSD(HDFSLayer);
-//		cache cache = new cache(SSD);
+//		Cache Cache = new Cache(SSD);
 //
 //		int numPages = 1000;
 //
-//		blockServer server = new blockServer(cache, SSD, HDFSLayer);
+//		BlockServer server = new BlockServer(Cache, SSD, HDFSLayer);
 //		System.out.println("Block Server made");
 //		byte[] b = new byte[utils.PAGE_SIZE];
 //		double startTime = System.nanoTime();
 //		for(int i=1;i<=numPages;++i){
-//			SSD.writePage(new page(i, b), server);
+//			SSD.writePage(new Page(i, b), server);
 //			server.updatePageIndex(i, 0, 1, 0, 1);
 //		}
 //		double endTime = System.nanoTime();
@@ -40,16 +40,16 @@ public class SSDTest {
 //
 //		HDFSLayer HDFSLayer = new HDFSLayer();
 //		SSD SSD = new SSD(HDFSLayer);
-//		cache cache = new cache(SSD);
+//		Cache Cache = new Cache(SSD);
 //
 //		int numPages = 10000;
 //
-//		blockServer server = new blockServer(cache, SSD, HDFSLayer);
+//		BlockServer server = new BlockServer(Cache, SSD, HDFSLayer);
 //		System.out.println("Block Server made");
 //		byte[] b = new byte[utils.PAGE_SIZE];
 //		double startTime = System.nanoTime();
 //		for(int i=1;i<=numPages;++i){
-//			SSD.writePage(new page(i, b), server);
+//			SSD.writePage(new Page(i, b), server);
 //			server.updatePageIndex(i, 0, 1, 0, 1);
 //		}
 //		double endTime = System.nanoTime();
@@ -72,16 +72,16 @@ public class SSDTest {
 //
 //		HDFSLayer HDFSLayer = new HDFSLayer();
 //		SSD SSD = new SSD(HDFSLayer);
-//		cache cache = new cache(SSD);
+//		Cache Cache = new Cache(SSD);
 //
 //		int numPages = 100000;
 //
-//		blockServer server = new blockServer(cache, SSD, HDFSLayer);
+//		BlockServer server = new BlockServer(Cache, SSD, HDFSLayer);
 //		System.out.println("Block Server made");
 //		byte[] b = new byte[utils.PAGE_SIZE];
 //		double startTime = System.nanoTime();
 //		for(int i=1;i<=numPages;++i){
-//			SSD.writePage(new page(i, b), server);
+//			SSD.writePage(new Page(i, b), server);
 //			server.updatePageIndex(i, 0, 1, 0, 1);
 //		}
 //		double endTime = System.nanoTime();

@@ -1,18 +1,18 @@
-package BlockStorage;
+package blockstorage;
 
 import org.junit.Test;
 
 import java.io.IOException;
 
-public class blockServerTest {
+public class BlockServerTest {
 
 	@Test
 	public void RecoveryTest(){
 		Utils utils = new Utils(2000, 4000, 256, false);
 		HDFSLayer HDFSLayer = new HDFSLayer(utils);
 		SSD SSD = new SSD(HDFSLayer, utils);
-		cache cache = new cache(SSD, utils);
-		blockServer server = new blockServer(cache, SSD, HDFSLayer, utils);
+		Cache cache = new Cache(SSD, utils);
+		BlockServer server = new BlockServer(cache, SSD, HDFSLayer, utils);
 		server.vMmanager.registerVM(4000);
 
 		try{
@@ -32,8 +32,8 @@ public class blockServerTest {
 		Utils utils = new Utils(16, 24, 2, true);
 		HDFSLayer HDFSLayer = new HDFSLayer(utils);
 		SSD SSD = new SSD(HDFSLayer, utils);
-		cache cache = new cache(SSD, utils);
-		blockServer server = new blockServer(cache, SSD, HDFSLayer, utils);
+		Cache cache = new Cache(SSD, utils);
+		BlockServer server = new BlockServer(cache, SSD, HDFSLayer, utils);
 		server.vMmanager.registerVM(4000);
 
 		byte[] b = new byte[utils.PAGE_SIZE];
@@ -53,8 +53,8 @@ public class blockServerTest {
 		Utils utils = new Utils(256, 512, 64, false);
 		HDFSLayer HDFSLayer = new HDFSLayer(utils);
 		SSD SSD = new SSD(HDFSLayer, utils);
-		cache cache = new cache(SSD, utils);
-		blockServer server = new blockServer(cache, SSD, HDFSLayer, utils);
+		Cache cache = new Cache(SSD, utils);
+		BlockServer server = new BlockServer(cache, SSD, HDFSLayer, utils);
 		server.vMmanager.registerVM(4000);
 
 		byte[] b = new byte[utils.PAGE_SIZE];
@@ -80,8 +80,8 @@ public class blockServerTest {
 		Utils utils = new Utils(512, 1024, 64, false);
 		HDFSLayer HDFSLayer = new HDFSLayer(utils);
 		SSD SSD = new SSD(HDFSLayer, utils);
-		cache cache = new cache(SSD, utils);
-		blockServer server = new blockServer(cache, SSD, HDFSLayer, utils);
+		Cache cache = new Cache(SSD, utils);
+		BlockServer server = new BlockServer(cache, SSD, HDFSLayer, utils);
 		server.vMmanager.registerVM(4000);
 
 		byte[] b = new byte[utils.PAGE_SIZE];
@@ -90,7 +90,7 @@ public class blockServerTest {
 		}
 		try{Thread.sleep(100);}
 		catch(InterruptedException e){}
-		server.stablize();
+		server.stabilize();
 
 		int one = 1;
 		assert !server.pageIndex.get(one).isLocationCache();
@@ -103,7 +103,7 @@ public class blockServerTest {
 		}
 		try{Thread.sleep(4000);}
 		catch(InterruptedException e){}
-		server.stablize();
+		server.stabilize();
 
 		assert !server.pageIndex.get(one).isLocationCache();
 		assert !server.pageIndex.get(one).isLocationSSD();
@@ -120,8 +120,8 @@ public class blockServerTest {
 		Utils utils = new Utils(1024, 1648, 64, false);
 		HDFSLayer HDFSLayer = new HDFSLayer(utils);
 		SSD SSD = new SSD(HDFSLayer, utils);
-		cache cache = new cache(SSD, utils);
-		blockServer server = new blockServer(cache, SSD, HDFSLayer, utils);
+		Cache cache = new Cache(SSD, utils);
+		BlockServer server = new BlockServer(cache, SSD, HDFSLayer, utils);
 		server.vMmanager.registerVM(4000);
 
 		byte[] b = new byte[utils.PAGE_SIZE];
@@ -154,7 +154,7 @@ public class blockServerTest {
 
 		try{Thread.sleep(3000);}
 		catch(InterruptedException e){}
-		server.stablize();
+		server.stabilize();
 
 		assert !server.pageIndex.get(one).isLocationCache();
 		assert !server.pageIndex.get(one).isLocationSSD();
@@ -176,8 +176,8 @@ public class blockServerTest {
 		Utils utils = new Utils(200, 400, 64, false);
 		HDFSLayer HDFSLayer = new HDFSLayer(utils);
 		SSD SSD = new SSD(HDFSLayer, utils);
-		cache cache = new cache(SSD, utils);
-		blockServer server = new blockServer(cache, SSD, HDFSLayer, utils);
+		Cache cache = new Cache(SSD, utils);
+		BlockServer server = new BlockServer(cache, SSD, HDFSLayer, utils);
 		server.vMmanager.registerVM(4000);
 
 		int numPages = 1300;
@@ -190,7 +190,7 @@ public class blockServerTest {
 		double time=(endTime - startTime) / 1000000000L;
 		System.out.println("Wrote "+numPages +" pages in "+time+" seconds at "+(16*numPages*1.0)/time+"kB/s");
 
-		server.stablize();
+		server.stabilize();
 		server.printBlockServerStatus();
 
 		startTime = System.nanoTime();
@@ -210,8 +210,8 @@ public class blockServerTest {
 		Utils utils = new Utils(924, 1848, 128, false);
 		HDFSLayer HDFSLayer = new HDFSLayer(utils);
 		SSD SSD = new SSD(HDFSLayer, utils);
-		cache cache = new cache(SSD, utils);
-		blockServer server = new blockServer(cache, SSD, HDFSLayer, utils);
+		Cache cache = new Cache(SSD, utils);
+		BlockServer server = new BlockServer(cache, SSD, HDFSLayer, utils);
 		server.vMmanager.registerVM(4000);
 
 		int numPages = 2700;
@@ -225,7 +225,7 @@ public class blockServerTest {
 		double time=(endTime - startTime) / 1000000000L;
 		System.out.println("Wrote "+numPages +" pages in "+time+" seconds at "+(16*numPages*1.0)/time+"kB/s");
 
-		server.stablize();
+		server.stabilize();
 
 		startTime = System.nanoTime();
 		for(int i=0;i<numPages;++i){
@@ -244,8 +244,8 @@ public class blockServerTest {
 		Utils utils = new Utils(256, 512, 64, false);
 		HDFSLayer HDFSLayer = new HDFSLayer(utils);
 		SSD SSD = new SSD(HDFSLayer, utils);
-		cache cache = new cache(SSD, utils);
-		blockServer server = new blockServer(cache, SSD, HDFSLayer, utils);
+		Cache cache = new Cache(SSD, utils);
+		BlockServer server = new BlockServer(cache, SSD, HDFSLayer, utils);
 		server.vMmanager.registerVM(4000);
 
 		int numPages = 1400;
@@ -260,7 +260,7 @@ public class blockServerTest {
 
 		try{Thread.sleep(4000);}
 		catch(InterruptedException e){}
-		server.stablize();
+		server.stabilize();
 
 		startTime = System.nanoTime();
 		for(int i=numPages-1;i>=0;--i){

@@ -1,14 +1,14 @@
-package BlockStorage;
+package blockstorage;
 
-public class blockValue{
+public class BlockValue {
 	int pointer;
 	boolean dirtyBit; // true-> dirty, false-> nondirty
 
-	public blockValue(){
+	public BlockValue(){
 
 	}
 
-	public blockValue(int pointer, boolean dirtyBit){
+	public BlockValue(int pointer, boolean dirtyBit){
 		this.pointer = pointer;
 		this.dirtyBit = dirtyBit;
 	}

@@ -1,6 +1,8 @@
-package BlockStorage;
+package blockstorage;
 
 import org.apache.hadoop.conf.Configuration;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -9,16 +11,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class HDFSLayer{
 
-	LinkedHashMap<Integer, blockValue> HDFSBufferList;
-	LinkedHashMap<Integer, blockValue> wasAddedToHDFSBufferList;
-	block[] HDFSBufferArray;
+	LinkedHashMap<Integer, BlockValue> HDFSBufferList;
+	LinkedHashMap<Integer, BlockValue> wasAddedToHDFSBufferList;
+	Block[] HDFSBufferArray;
 	int writePointer;
 	ConcurrentHashMap<Integer,Boolean> blockList ; // all the blocks which HDFS Cluster contains
 	ConcurrentHashMap<Integer,Boolean> wasAddedToblockList ; // all the blocks which HDFS Cluster contains
 
 	Utils utils;
 
-	private static Map.Entry<Integer, blockValue> elder = null;
+	@Nullable
+	private static Map.Entry<Integer, BlockValue> elder = null;
 
 	FileSystemOperations client;
 	Configuration config;
@@ -33,53 +36,53 @@ public class HDFSLayer{
 		config = client.getConfiguration();
 
 		this.wasAddedToHDFSBufferList = new LinkedHashMap<>();
-		this.HDFSBufferList = new LinkedHashMap<Integer, blockValue>(utils.HDFS_BUFFER_SIZE, 0.75F, false) {
+		this.HDFSBufferList = new LinkedHashMap<Integer, BlockValue>(utils.HDFS_BUFFER_SIZE, 0.75F, false) {
 
 			/**
 			 * auto generated serialVersionUID
 			 */
 			private static final long serialVersionUID = 1L;
 
-			protected boolean removeEldestEntry(Map.Entry<Integer, blockValue> eldest) {
+			protected boolean removeEldestEntry(Map.Entry<Integer, BlockValue> eldest) {
 				elder =  eldest;
 				return size() > utils.HDFS_BUFFER_SIZE;
 			}
 		};
-		this.HDFSBufferArray = new block[utils.HDFS_BUFFER_SIZE];
+		this.HDFSBufferArray = new Block[utils.HDFS_BUFFER_SIZE];
 		this.blockList = new ConcurrentHashMap<>();
 		this.wasAddedToblockList = new ConcurrentHashMap<>();
 		this.writePointer = 0;
 	}
 
 
-	void writePage(page page, blockServer server){
+	void writePage(@NotNull Page page, @NotNull BlockServer server){
 		HDFSBufferWritePage(page, server);
 	}
 
-	block readBlock(int pageNumber, blockServer server){
+	@Nullable Block readBlock(int pageNumber, @NotNull BlockServer server){
 		return HDFSBufferReadBlock(pageNumber, server);
 	}
 
 	/***
-	 * Writes or update the page to the corresponding block
+	 * Writes or update the Page to the corresponding Block
 	 * @param page
 	 */
-	synchronized void HDFSBufferWritePage(page page, blockServer server){
+	synchronized void HDFSBufferWritePage(@NotNull Page page, @NotNull BlockServer server){
 		/***
-		 * Update the page if present in the buffer else
-		 * get the block that is having this page and update the block
+		 * Update the Page if present in the buffer else
+		 * get the Block that is having this Page and update the Block
 		 */
 		try{
 			int blockNumber = page.getPageNumber() >> 3;
 			if(HDFSBufferList.containsKey(blockNumber)){
 
-				// System.out.println("Hello "+page.getPageNumber());
+				// System.out.println("Hello "+Page.getPageNumber());
 				int pointer = addWrite(blockNumber, true, server);
 				//System.out.println(pointer);
 				HDFSBufferArray[pointer].addPageToBlock(page);
 			}
 			else{
-				// System.out.println("Hello "+page.getPageNumber());
+				// System.out.println("Hello "+Page.getPageNumber());
 				byte[] read;
 				if(blockList.containsKey(blockNumber)){
 					read = client.readFile(config, blockNumber);
@@ -87,9 +90,9 @@ public class HDFSLayer{
 					read = new byte[8*utils.PAGE_SIZE];
 				}
 
-				System.arraycopy(page.getPageData(), 0, read, ((int)(page.getPageNumber()%8))*utils.PAGE_SIZE, utils.PAGE_SIZE);
+				System.arraycopy(page.getPageData(), 0, read, page.getPageNumber()%8 *utils.PAGE_SIZE, utils.PAGE_SIZE);
 
-				block tempBlock = new block(blockNumber,read, utils);
+				Block tempBlock = new Block(blockNumber,read, utils);
 				int pointer = addWrite(blockNumber, true, server);
 				//System.out.println(pointer);
 				HDFSBufferArray[pointer] = tempBlock;
@@ -100,16 +103,16 @@ public class HDFSLayer{
 		}
 	}
 
-	block HDFSBufferReadBlock(int pageNumber, blockServer server){
+	@Nullable Block HDFSBufferReadBlock(int pageNumber, @NotNull BlockServer server){
 
 		int blockNumber = pageNumber >> 3;
-		block tempBlock = null;
+		Block tempBlock = null;
 	try{
 		if(HDFSBufferList.containsKey(blockNumber)){
 			int pointer = addRead(blockNumber);
 			tempBlock =  HDFSBufferArray[pointer];
 		}else{
-			// get the block from HDFS cluster
+			// get the Block from HDFS cluster
 			byte[] read;
 //			try{
 //				Thread.sleep(30);
@@ -126,7 +129,7 @@ public class HDFSLayer{
 //				assert false;
 				read = new byte[8*utils.PAGE_SIZE];
 			}
-			tempBlock = new block(blockNumber,read, utils);
+			tempBlock = new Block(blockNumber,read, utils);
 //			int pointer = addWrite(blockNumber, false, server);
 			int pointer = addWrite(blockNumber, false, server);
 			HDFSBufferArray[pointer] = tempBlock;
@@ -139,7 +142,7 @@ public class HDFSLayer{
 	}
 
 	int addRead(int blockNumber){
-		blockValue val = HDFSBufferList.get(blockNumber);
+		BlockValue val = HDFSBufferList.get(blockNumber);
 		int pointer = val.getPointer();
 		HDFSBufferList.remove(blockNumber);
 		HDFSBufferList.put(blockNumber, val);
@@ -147,18 +150,18 @@ public class HDFSLayer{
 		return pointer;
 	}
 	/***
-	 * Adding a recently write page to the list
+	 * Adding a recently write Page to the list
 	 * @param blockNumber (pageNumber)
 	 * @param blockDirtyBit
 	 * @param server
 	 * @return pointer to the HDFSBufferArray
 	 */
-	synchronized int addWrite(int blockNumber, boolean blockDirtyBit, blockServer server){
+	synchronized int addWrite(int blockNumber, boolean blockDirtyBit, @NotNull BlockServer server){
 		// int answer = 0;
 		try{
 			if(HDFSBufferList.containsKey(blockNumber)){
-				// page already exists in HDFS Buffer
-				blockValue val = HDFSBufferList.get(blockNumber);
+				// Page already exists in HDFS Buffer
+				BlockValue val = HDFSBufferList.get(blockNumber);
 				int pointer = val.getPointer();
 				val.setDirtyBit(val.getDirtyBit() || blockDirtyBit);
 				HDFSBufferList.remove(blockNumber);
@@ -166,8 +169,8 @@ public class HDFSLayer{
 				return pointer;
 			}else{
 				if(writePointer == utils.HDFS_BUFFER_SIZE){
-					// victim page removal
-					blockValue val = new blockValue();
+					// victim Page removal
+					BlockValue val = new BlockValue();
 //					HDFSBufferList.put(blockNumber,val); //elder updated
 					//TODO: problem is that blockToRemove is removed from HDFSBufferList
 					int blockToRemove = elder.getKey();
@@ -189,7 +192,7 @@ public class HDFSLayer{
 					}
 					HDFSBufferList.remove(blockToRemove);
 
-					blockValue v2 = elder.getValue();
+					BlockValue v2 = elder.getValue();
 					int emptyPointer = v2.getPointer();
 					val.setPointer(emptyPointer);
 					val.setDirtyBit(v2.getDirtyBit() || blockDirtyBit);
@@ -206,7 +209,7 @@ public class HDFSLayer{
 					return emptyPointer;
 				}else if(writePointer < utils.HDFS_BUFFER_SIZE){
 					// initial stage
-					blockValue val = new blockValue(writePointer,true);
+					BlockValue val = new BlockValue(writePointer,true);
 					assert HDFSBufferList.size() == writePointer;
 					HDFSBufferList.put(blockNumber, val);
 					wasAddedToHDFSBufferList.put(blockNumber, val);
@@ -226,7 +229,7 @@ public class HDFSLayer{
 	void flushHDFSBuffer(){
 		System.out.println("flushing HDFS Buffer");
 		for(Integer key : HDFSBufferList.keySet()) {
-			blockValue x = HDFSBufferList.get(key);
+			BlockValue x = HDFSBufferList.get(key);
 			if(x.getDirtyBit()) {
 				try {
 					client.addFile(config, HDFSBufferArray[x.getPointer()]);
