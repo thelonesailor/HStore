@@ -263,6 +263,9 @@ class BlockServer {
 
 		while (SSD.writeToHDFSQueue.size() > 0){}
 		while (SSD.pointersList.size() > utils.MAX_SSD_FULL_SIZE){}
+
+		while (SSD.writeToSSDQueue.size() > 0){}
+		while (cache.pointersList.size() > utils.MAX_CACHE_FULL_SIZE){}
 	}
 
 	void stabilize(){

@@ -60,7 +60,7 @@ class Cache {
 
 //		System.out.println("Reading "+pageNumber+" from Cache");
 		if(pointersList.get(pageNumber) == null) {
-			System.out.println("Reading "+pageNumber+" from Cache "+wasputinpointersList.contains(pageNumber));
+			System.out.println("Reading "+pageNumber+" from Cache "+wasputinpointersList.contains(pageNumber)+" "+forQueue);
 			assert false;
 		}
 
