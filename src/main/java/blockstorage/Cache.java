@@ -59,7 +59,7 @@ class Cache {
 //		CacheValue val = cacheList.get(pageNumber);
 
 //		System.out.println("Reading "+pageNumber+" from Cache");
-		if(!pointersList.containsKey(pageNumber)) {
+		if(pointersList.get(pageNumber) == null) {
 			System.out.println("Reading "+pageNumber+" from Cache "+wasputinpointersList.contains(pageNumber));
 			assert false;
 		}
@@ -117,6 +117,10 @@ class Cache {
 			}else{
 				// initial stage
 //				CacheValue val = new CacheValue(writePointer);
+				while (EmptyPointers.isEmpty()){
+					try{Thread.sleep(100);}
+					catch(InterruptedException e){}
+				}
 				int freePointer = EmptyPointers.remove();
 
 				cacheListLock.lock();

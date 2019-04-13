@@ -81,8 +81,10 @@ public class SSD{
 
 	@NotNull Page readPage(int pageNumber) {
 		recencyListLock.lock();
-		recencyList.remove(pageNumber);
-		recencyList.put(pageNumber, true);
+		if(recencyList.containsKey(pageNumber)){
+			recencyList.remove(pageNumber);
+			recencyList.put(pageNumber, true);
+		}
 		recencyListLock.unlock();
 		return readSSDPage(pageNumber);
 	}

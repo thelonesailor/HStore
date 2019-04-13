@@ -13,10 +13,15 @@ public class ReadFromSSD implements Runnable {
 	private void doWork() throws InterruptedException{
 		if(server.readFromSSDQueue.size() > 0){
 			int pageNumber = server.readFromSSDQueue.remove();
-			Page returnPage = SSD.readPage(pageNumber);
-			cache.writePage(returnPage,server);
-			server.pageIndex.updatePageIndex(pageNumber, 1, -1, -1, -1);
-			server.readOutputQueue.add(returnPage);
+			if(SSD.pointersList.contains(pageNumber)){
+				Page returnPage = SSD.readPage(pageNumber);
+				cache.writePage(returnPage,server);
+				server.pageIndex.updatePageIndex(pageNumber, 1, -1, -1, -1);
+				server.readOutputQueue.add(returnPage);
+			}
+			else{
+				server.readFromHDFSQueue.add(pageNumber);
+			}
 		}
 		else{
 			Thread.sleep(10);
