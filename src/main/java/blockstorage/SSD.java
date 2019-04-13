@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -22,7 +22,8 @@ public class SSD{
 	private Utils utils;
 	LinkedHashMap<Integer, Boolean> recencyList;
 	@NotNull Lock recencyListLock = new ReentrantLock();
-	CopyOnWriteArrayList<Integer> pointersList;
+	CopyOnWriteArraySet<Integer> pointersList;
+	@NotNull Lock pointersListLock = new ReentrantLock();
 
 
 	@Nullable
@@ -43,7 +44,7 @@ public class SSD{
 				return size() > utils.SSD_SIZE;
 			}
 		};
-		this.pointersList = new CopyOnWriteArrayList<>();
+		this.pointersList = new CopyOnWriteArraySet<>();
 	}
 
 	void setSSD_LOCATION(){

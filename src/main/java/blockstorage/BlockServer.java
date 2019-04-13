@@ -85,13 +85,13 @@ class BlockServer {
 
 		this.readFromSSD = new ReadFromSSD(this.cache, this.SSD, this);
 		readFromSSDThread = new Thread(this.readFromSSD);
-		readFromSSDThread.start();
+//		readFromSSDThread.start();
 		System.out.println("readFromSSDThread started.");
 		readFromSSDThread.setName("readFromSSDThread");
 
 		this.readFromHDFS = new ReadFromHDFS(this.cache, this.SSD, this.HDFSLayer, this, utils);
 		readFromHDFSThread = new Thread(this.readFromHDFS);
-		readFromHDFSThread.start();
+//		readFromHDFSThread.start();
 		System.out.println("readFromHDFSThread started.");
 		readFromHDFSThread.setName("readFromHDFSThread");
 
@@ -185,29 +185,29 @@ class BlockServer {
 		HDFSLayer.closeFS();
 	}
 
-//	void readFromSSD(int pageNumber){
-//		Page returnPage = SSD.readPage(pageNumber);
-//		cache.writePage(returnPage,this);
-//		pageIndex.updatePageIndex(pageNumber, 1, -1, -1, -1);
-//		readOutputQueue.add(returnPage);
-//	}
+	void readFromSSD(int pageNumber){
+		Page returnPage = SSD.readPage(pageNumber);
+		cache.writePage(returnPage,this);
+		pageIndex.updatePageIndex(pageNumber, 1, -1, -1, -1);
+		readOutputQueue.add(returnPage);
+	}
 
-//	void readFromHDFS(int pageNumber){
-//		Block returnBlock = HDFSLayer.readBlock(pageNumber, this);
-//		Page returnPage = returnBlock.readPage(pageNumber);
-//
-//		Page[] returnAllPages = returnBlock.getAllPages();
-//		for (int i = 0; i < utils.BLOCK_SIZE; i++){
-//			// if condition to be added to check the validity
-//			int temp = ((returnBlock.blockNumber)<<3)+i;
-//			Position p = pageIndex.get(temp);
-//			if(p!=null && p.isLocationHDFS() && !p.isDirty() && !p.isLocationCache() && cache.pointersList.get(temp)==null) {
-//				cache.writePage(returnAllPages[i],this);
-//				pageIndex.updatePageIndex(temp, 1, -1, 1, -1);
-//			}
-//		}
-//		readOutputQueue.add(returnPage);
-//	}
+	void readFromHDFS(int pageNumber){
+		Block returnBlock = HDFSLayer.readBlock(pageNumber, this);
+		Page returnPage = returnBlock.readPage(pageNumber);
+
+		Page[] returnAllPages = returnBlock.getAllPages();
+		for (int i = 0; i < utils.BLOCK_SIZE; i++){
+			// if condition to be added to check the validity
+			int temp = ((returnBlock.blockNumber)<<3)+i;
+			Position p = pageIndex.get(temp);
+			if(p!=null && p.isLocationHDFS() && !p.isDirty() && !p.isLocationCache() && cache.pointersList.get(temp)==null) {
+				cache.writePage(returnAllPages[i],this);
+				pageIndex.updatePageIndex(temp, 1, -1, 1, -1);
+			}
+		}
+		readOutputQueue.add(returnPage);
+	}
 
 	@Nullable void readPage(int pageNumber){
 		Page returnPage;
@@ -218,20 +218,20 @@ class BlockServer {
 			readOutputQueue.add(returnPage);
 		}
 		else if(pos.isLocationSSD()) {
-			readFromSSDQueue.add(pageNumber);
+//			readFromSSDQueue.add(pageNumber);
 
 			if(utils.SHOW_LOG)
 				System.out.println("Reading Page " + pageNumber + " from SSD Layer");
 
-//			readFromSSD(pageNumber);
+			readFromSSD(pageNumber);
 		}
 		else if(pos.isLocationHDFS()){
-			readFromHDFSQueue.add(pageNumber);
+//			readFromHDFSQueue.add(pageNumber);
 
-//			if(utils.SHOW_LOG)
+			if(utils.SHOW_LOG)
 				System.out.println("Reading Page " + pageNumber + " from HDFS Layer");
 
-//			readFromHDFS(pageNumber);
+			readFromHDFS(pageNumber);
 		}else {
 			System.out.println("Error finding Page: "+pageNumber);
 		}
@@ -256,10 +256,12 @@ class BlockServer {
 
 
 	void stabilize(){
-//		while (Cache.cacheList.size() > utils.MAX_CACHE_FULL_SIZE){}
+		try{Thread.sleep(100);}
+		catch(InterruptedException e){}
+
 		while (SSD.writeToSSDQueue.size() > 0){}
 		while (cache.pointersList.size() > utils.MAX_CACHE_FULL_SIZE){}
-//		while (SSD.recencyList.size() > utils.MAX_SSD_FULL_SIZE){}
+
 		while (SSD.writeToHDFSQueue.size() > 0){}
 		while (SSD.pointersList.size() > utils.MAX_SSD_FULL_SIZE){}
 		while (readFromSSDQueue.size() > 0){}

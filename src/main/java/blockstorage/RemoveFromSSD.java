@@ -15,7 +15,8 @@ public class RemoveFromSSD implements Runnable {
 	}
 
 	void doWork() throws InterruptedException{
-		if((SSD.recencyList.size() > utils.MAX_SSD_FULL_SIZE )||( server.removeFromSSDStop && (SSD.recencyList.size() > 0))) {
+		if((SSD.recencyList.size() > utils.MAX_SSD_FULL_SIZE )
+				||( server.removeFromSSDStop && (SSD.recencyList.size() > 0))) {
 
 			SSD.recencyListLock.lock();
 			SSD.recencyList.put(m1,false); // elder gets updated here
@@ -28,12 +29,13 @@ public class RemoveFromSSD implements Runnable {
 
 //			SSD.recencyListLock.lock();
 			SSD.recencyList.remove(pageNumberToRemove);
-			SSD.recencyListLock.unlock();
 //			if((int)pageNumberToRemove != -1) {
 				SSD.writeToHDFSQueue.add(pageNumberToRemove);
 				if(utils.SHOW_LOG)
 					System.out.println("Page " + pageNumberToRemove + " added to writeToHDFSQueue");
 //			}
+
+			SSD.recencyListLock.unlock();
 		}
 		else{
 			Thread.sleep(10);
@@ -44,7 +46,7 @@ public class RemoveFromSSD implements Runnable {
 	public void run(){
 
 		while (true){
-//			System.out.println("remove from SSD!! "+SSD.recencyList.size()+" "+SSD.size.get()+" "+utils.MAX_SSD_FULL_SIZE+" "+SSD.writeToHDFSQueue.size()+" "+server.removeFromSSDStop);
+//			System.out.println("remove from SSD!! "+SSD.recencyList.size()+" "+SSD.pointersList.size()+" "+utils.MAX_SSD_FULL_SIZE+" "+SSD.writeToHDFSQueue.size()+" "+server.removeFromSSDStop);
 
 			try{
 //				server.Lock2.lock();

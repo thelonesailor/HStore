@@ -55,11 +55,16 @@ public class WriteToSSD implements Runnable{
 				cache.EmptyPointers.add(freePointer);
 //				Cache.size.getAndDecrement();// Cache.size--
 
+
 				SSD.recencyListLock.lock();
+				SSD.pointersListLock.lock();
+
 				SSD.recencyList.put(pageNumber, true); //elder is updated
+				SSD.pointersList.add(pageNumber);
+
+				SSD.pointersListLock.unlock();
 				SSD.recencyListLock.unlock();
 
-				SSD.pointersList.add(pageNumber);
 
 //				if((int)pageNumber == 50) {
 //					int lmaolmao=23;

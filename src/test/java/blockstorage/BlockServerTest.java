@@ -162,7 +162,7 @@ public class BlockServerTest {
 //		assert server.pageIndex.get(one).isDirty();
 
 		server.readPage(one);
-		try{Thread.sleep(20000);}
+		try{Thread.sleep(1000);}
 		catch(InterruptedException e){}
 		server.stabilize();
 		assert server.pageIndex.get(one).isLocationCache();
@@ -200,6 +200,7 @@ public class BlockServerTest {
 		for(int i=0;i<numPages;++i){
 			server.readPage(i);
 		}
+		server.stabilize();
 		endTime = System.nanoTime();
 		time=(endTime - startTime) / 1000000000L;
 		System.out.println("Read "+numPages +" pages in "+time+" seconds at "+(16*numPages*1.0)/time+"kB/s");
@@ -234,6 +235,7 @@ public class BlockServerTest {
 		for(int i=0;i<numPages;++i){
 			server.readPage(i);
 		}
+		server.stabilize();
 		endTime = System.nanoTime();
 		time=(endTime - startTime) / 1000000000L;
 		System.out.println("Read "+numPages +" pages in "+time+" seconds at "+(16*numPages*1.0)/time+"kB/s");
@@ -269,6 +271,7 @@ public class BlockServerTest {
 		for(int i=numPages-1;i>=0;--i){
 			server.readPage(i);
 		}
+		server.stabilize();
 		endTime = System.nanoTime();
 		time=(endTime - startTime) / 1000000000L;
 		System.out.println("Read "+numPages +" pages in "+time+" seconds at "+(16*numPages*1.0)/time+"kB/s");

@@ -31,7 +31,7 @@ public class ReadFromHDFS implements Runnable {
 				if(p!=null && p.isLocationHDFS() && !p.isDirty() && !p.isLocationCache() && cache.pointersList.get(temp)==null) {
 					cache.writePage(returnAllPages[i],server);
 				if(utils.SHOW_LOG)
-					System.out.println("Page " + temp + " written to cache");
+					System.out.println("Page " + temp + " written to cache by readFromHDFSThread");
 
 					server.pageIndex.updatePageIndex(temp, 1, -1, 1, -1);
 				}
