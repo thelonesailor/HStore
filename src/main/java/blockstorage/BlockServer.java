@@ -31,11 +31,15 @@ class BlockServer {
 	WriteToSSD writeToSSD;
 	RemoveFromSSD removeFromSSD;
 	WriteToHDFS writeToHDFS;
+	ReadFromSSD readFromSSD;
+	ReadFromHDFS readFromHDFS;
 
 	Thread removeFromCacheThread;
 	Thread writeToSSDThread;
 	Thread removeFromSSDThread;
 	Thread writeToHDFSThread;
+	Thread readFromSSDThread;
+	Thread readFromHDFSThread;
 
 	@NotNull Lock Lock1 = new ReentrantLock();
 	@NotNull Lock Lock2 = new ReentrantLock();
@@ -44,6 +48,8 @@ class BlockServer {
 	boolean writeToSSDStop = false;
 	boolean removeFromSSDStop = false;
 	boolean writeToHDFSStop = false;
+	boolean readFromSSDStop = false;
+	boolean readFromHDFSStop = false;
 
 	BlockServer(Cache cache, SSD SSD, HDFSLayer HDFSLayer, Utils utils){
 		this.cache = cache;
@@ -76,6 +82,18 @@ class BlockServer {
 		writeToHDFSThread.start();
 		System.out.println("writeToHDFSThread started.");
 		writeToHDFSThread.setName("writetoHDFSthread");
+
+		this.readFromSSD = new ReadFromSSD(this.cache, this.SSD, this);
+		readFromSSDThread = new Thread(this.readFromSSD);
+		readFromSSDThread.start();
+		System.out.println("readFromSSDThread started.");
+		readFromSSDThread.setName("readFromSSDThread");
+
+		this.readFromHDFS = new ReadFromHDFS(this.cache, this.SSD, this.HDFSLayer, this, utils);
+		readFromHDFSThread = new Thread(this.readFromHDFS);
+		readFromHDFSThread.start();
+		System.out.println("readFromHDFSThread started.");
+		readFromHDFSThread.setName("readFromHDFSThread");
 
 		try{Thread.sleep(100);}
 		catch(InterruptedException e){}
@@ -139,6 +157,8 @@ class BlockServer {
 		writeToSSDStop = true;
 		removeFromSSDStop = true;
 		writeToHDFSStop = true;
+		readFromSSDStop = true;
+		readFromHDFSStop = true;
 
 		System.out.println("Stop function called, threads signalled to stop, waiting for threads to join");
 		try{
@@ -146,6 +166,8 @@ class BlockServer {
 			writeToSSDThread.join();
 			removeFromSSDThread.join();
 			writeToHDFSThread.join();
+			readFromSSDThread.join();
+			readFromHDFSThread.join();
 		}
 		catch(InterruptedException e){
 			System.out.println("InterruptedException in joining: " + e);
@@ -163,32 +185,32 @@ class BlockServer {
 		HDFSLayer.closeFS();
 	}
 
-	void readFromSSD(int pageNumber){
-		Page returnPage = SSD.readPage(pageNumber);
-		cache.writePage(returnPage,this);
-		pageIndex.updatePageIndex(pageNumber, 1, -1, -1, -1);
-		readOutputQueue.add(returnPage);
-	}
+//	void readFromSSD(int pageNumber){
+//		Page returnPage = SSD.readPage(pageNumber);
+//		cache.writePage(returnPage,this);
+//		pageIndex.updatePageIndex(pageNumber, 1, -1, -1, -1);
+//		readOutputQueue.add(returnPage);
+//	}
 
-	void readFromHDFS(int pageNumber){
-		Block returnBlock = HDFSLayer.readBlock(pageNumber, this);
-		Page returnPage = returnBlock.readPage(pageNumber);
-
-		Page[] returnAllPages = returnBlock.getAllPages();
-		for (int i = 0; i < utils.BLOCK_SIZE; i++){
-			// if condition to be added to check the validity
-			int temp = ((returnBlock.blockNumber)<<3)+i;
-			Position p = pageIndex.get(temp);
-			if(p!=null && p.isLocationHDFS() && !p.isDirty() && !p.isLocationCache() && cache.pointersList.get(temp)==null) {
-				cache.writePage(returnAllPages[i],this);
-				pageIndex.updatePageIndex(temp, 1, -1, 1, -1);
-			}
-		}
-		readOutputQueue.add(returnPage);
-	}
+//	void readFromHDFS(int pageNumber){
+//		Block returnBlock = HDFSLayer.readBlock(pageNumber, this);
+//		Page returnPage = returnBlock.readPage(pageNumber);
+//
+//		Page[] returnAllPages = returnBlock.getAllPages();
+//		for (int i = 0; i < utils.BLOCK_SIZE; i++){
+//			// if condition to be added to check the validity
+//			int temp = ((returnBlock.blockNumber)<<3)+i;
+//			Position p = pageIndex.get(temp);
+//			if(p!=null && p.isLocationHDFS() && !p.isDirty() && !p.isLocationCache() && cache.pointersList.get(temp)==null) {
+//				cache.writePage(returnAllPages[i],this);
+//				pageIndex.updatePageIndex(temp, 1, -1, 1, -1);
+//			}
+//		}
+//		readOutputQueue.add(returnPage);
+//	}
 
 	@Nullable void readPage(int pageNumber){
-		Page returnPage = null;
+		Page returnPage;
 		Position pos = pageIndex.get(pageNumber);
 
 		if(pos.isLocationCache()) {
@@ -199,17 +221,17 @@ class BlockServer {
 			readFromSSDQueue.add(pageNumber);
 
 			if(utils.SHOW_LOG)
-				System.out.println("Reading Page " + pageNumber + " from HDFS Layer");
+				System.out.println("Reading Page " + pageNumber + " from SSD Layer");
 
-			readFromSSD(pageNumber);
+//			readFromSSD(pageNumber);
 		}
 		else if(pos.isLocationHDFS()){
 			readFromHDFSQueue.add(pageNumber);
 
-			if(utils.SHOW_LOG)
+//			if(utils.SHOW_LOG)
 				System.out.println("Reading Page " + pageNumber + " from HDFS Layer");
 
-			readFromHDFS(pageNumber);
+//			readFromHDFS(pageNumber);
 		}else {
 			System.out.println("Error finding Page: "+pageNumber);
 		}
@@ -233,68 +255,6 @@ class BlockServer {
 	}
 
 
-//	void updatePageIndex(long pageNumber,int Cache, int SSD, int HDFS, int dirty){
-//		boolean locationCache, locationSSD, locationHDFS, dirtyBit;
-//		if(pageIndex.containsKey(pageNumber)) {
-//			Position po = pageIndex.get(pageNumber);
-//
-//			if (Cache == 1) locationCache = true;
-//			else if (Cache == 0) locationCache = false;
-//			else locationCache = po.locationCache;
-//
-//			if (SSD == 1) locationSSD = true;
-//			else if (SSD == 0) locationSSD = false;
-//			else locationSSD = po.locationSSD;
-//
-//			if (HDFS == 1) locationHDFS = true;
-//			else if (HDFS == 0) locationHDFS = false;
-//			else locationHDFS = po.locationHDFS;
-//
-//			if (dirty == 1) dirtyBit = true;
-//			else if (dirty == 0) dirtyBit = false;
-//			else dirtyBit = po.diryBit;
-//
-//			pageIndex.remove(pageNumber);
-//			pageIndex.put(pageNumber, new Position(locationCache, locationSSD, locationHDFS, dirtyBit));
-//		}
-//		else {
-//
-//			if (Cache == 1) locationCache = true;
-//			else if (Cache == 0) locationCache = false;
-//			else {
-//				System.out.println("Error in updating pageIndex for "+pageNumber);
-//				assert false;
-//				return;
-//			}
-//
-//			if (SSD == 1) locationSSD = true;
-//			else if (SSD == 0) locationSSD = false;
-//			else {
-//				System.out.println("Error in updating pageIndex for "+pageNumber);
-//				assert false;
-//				return;
-//			}
-//
-//			if (HDFS == 1) locationHDFS = true;
-//			else if (HDFS == 0) locationHDFS = false;
-//			else {
-//				System.out.println("Error in updating pageIndex for "+pageNumber);
-//				assert false;
-//				return;
-//			}
-//
-//			if (dirty == 1) dirtyBit = true;
-//			else if (dirty == 0) dirtyBit = false;
-//			else {
-//				System.out.println("Error in updating pageIndex for "+pageNumber);
-//				assert false;
-//				return;
-//			}
-//
-//			pageIndex.put(pageNumber, new Position(locationCache, locationSSD, locationHDFS, dirtyBit));
-//		}
-//	}
-
 	void stabilize(){
 //		while (Cache.cacheList.size() > utils.MAX_CACHE_FULL_SIZE){}
 		while (SSD.writeToSSDQueue.size() > 0){}
@@ -302,6 +262,8 @@ class BlockServer {
 //		while (SSD.recencyList.size() > utils.MAX_SSD_FULL_SIZE){}
 		while (SSD.writeToHDFSQueue.size() > 0){}
 		while (SSD.pointersList.size() > utils.MAX_SSD_FULL_SIZE){}
+		while (readFromSSDQueue.size() > 0){}
+		while (readFromHDFSQueue.size() > 0){}
 	}
 
 	void printBlockServerStatus(){

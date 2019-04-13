@@ -162,6 +162,9 @@ public class BlockServerTest {
 //		assert server.pageIndex.get(one).isDirty();
 
 		server.readPage(one);
+		try{Thread.sleep(20000);}
+		catch(InterruptedException e){}
+		server.stabilize();
 		assert server.pageIndex.get(one).isLocationCache();
 		assert !server.pageIndex.get(one).isLocationSSD();
 		assert server.pageIndex.get(one).isLocationHDFS();

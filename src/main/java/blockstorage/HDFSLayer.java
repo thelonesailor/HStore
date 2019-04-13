@@ -8,10 +8,13 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class HDFSLayer{
 
 	LinkedHashMap<Integer, BlockValue> HDFSBufferList;
+	@NotNull Lock HDFSBufferListLock = new ReentrantLock();
 	LinkedHashMap<Integer, BlockValue> wasAddedToHDFSBufferList;
 	Block[] HDFSBufferArray;
 	int writePointer;
@@ -109,7 +112,9 @@ public class HDFSLayer{
 		Block tempBlock = null;
 	try{
 		if(HDFSBufferList.containsKey(blockNumber)){
+			HDFSBufferListLock.lock();
 			int pointer = addRead(blockNumber);
+			HDFSBufferListLock.unlock();
 			tempBlock =  HDFSBufferArray[pointer];
 		}else{
 			// get the Block from HDFS cluster
@@ -159,6 +164,7 @@ public class HDFSLayer{
 	synchronized int addWrite(int blockNumber, boolean blockDirtyBit, @NotNull BlockServer server){
 		// int answer = 0;
 		try{
+			HDFSBufferListLock.lock();
 			if(HDFSBufferList.containsKey(blockNumber)){
 				// Page already exists in HDFS Buffer
 				BlockValue val = HDFSBufferList.get(blockNumber);
@@ -166,6 +172,7 @@ public class HDFSLayer{
 				val.setDirtyBit(val.getDirtyBit() || blockDirtyBit);
 				HDFSBufferList.remove(blockNumber);
 				HDFSBufferList.put(blockNumber, val);
+				HDFSBufferListLock.unlock();
 				return pointer;
 			}else{
 				if(writePointer == utils.HDFS_BUFFER_SIZE){
@@ -206,6 +213,7 @@ public class HDFSLayer{
 						assert false;
 					}
 
+					HDFSBufferListLock.unlock();
 					return emptyPointer;
 				}else if(writePointer < utils.HDFS_BUFFER_SIZE){
 					// initial stage
@@ -214,12 +222,16 @@ public class HDFSLayer{
 					HDFSBufferList.put(blockNumber, val);
 					wasAddedToHDFSBufferList.put(blockNumber, val);
 					writePointer++;
+
+					HDFSBufferListLock.unlock();
 					return (writePointer - 1);
 				}
 				else{
+					HDFSBufferListLock.unlock();
 					assert false;
 				}
 			}
+
 		}catch(IOException e){
 			e.printStackTrace();
 		}
