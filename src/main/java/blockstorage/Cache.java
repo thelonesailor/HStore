@@ -16,7 +16,6 @@ class Cache {
 	@NotNull Lock cacheListLock = new ReentrantLock();
 
 	byte[][] cacheBuffer;
-//	AtomicInteger size = new AtomicInteger(0);
 	SSD SSD;
 	Utils utils;
 
@@ -142,16 +141,6 @@ class Cache {
 		}
 	}
 
-//	public void resetCache(BlockServer server){
-//		for(Long key : cacheList.keySet()) {
-//			CacheValue x = cacheList.get(key);
-//			SSD.writePage(new Page(key, cacheBuffer[x.getPointer()]), server);
-//		}
-//
-//		writePointer=0;
-//		cacheList.clear();
-//	}
-
 
 	/***
 	 * It is guaranteed that Page is already in the Cache
@@ -162,17 +151,18 @@ class Cache {
 		return new Page(pageNumber, cacheBuffer[pointer]);
 	}
 
-	boolean writePage(@NotNull Page page, @NotNull BlockServer server){
-		// System.out.println("CACHE");
+	synchronized boolean writePage(@NotNull Page page, @NotNull BlockServer server){
 		int pageNumber = page.getPageNumber();
 		int pointer = addWrite(pageNumber, server);
 		cacheBuffer[pointer] = page.getPageData();
 
-		pointersList.remove(pageNumber);
-		pointersList.put(pageNumber, pointer);
+//		pointersList.remove(pageNumber);
+//		pointersList.put(pageNumber, pointer);
+		pointersList.replace(pageNumber, pointer);
+		pointersList.putIfAbsent(pageNumber, pointer);
 		wasputinpointersList.put(pageNumber,pointer);
 
-//		System.out.println("Wrote "+pageNumber+" to Cache");
+		server.debugLog("cache,1,"+pageNumber+",Page: "+pageNumber+" written to Cache");
 		return true;
 	}
 }

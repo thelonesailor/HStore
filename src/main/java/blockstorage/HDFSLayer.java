@@ -111,11 +111,11 @@ public class HDFSLayer{
 		int blockNumber = pageNumber >> 3;
 		Block tempBlock = null;
 	try{
+		HDFSBufferListLock.lock();
 		if(HDFSBufferList.containsKey(blockNumber)){
-			HDFSBufferListLock.lock();
 			int pointer = addRead(blockNumber);
-			HDFSBufferListLock.unlock();
 			tempBlock =  HDFSBufferArray[pointer];
+			HDFSBufferListLock.unlock();
 		}else{
 			// get the Block from HDFS cluster
 			byte[] read;
@@ -136,9 +136,11 @@ public class HDFSLayer{
 			}
 			tempBlock = new Block(blockNumber,read, utils);
 //			int pointer = addWrite(blockNumber, false, server);
+			HDFSBufferListLock.unlock();
 			int pointer = addWrite(blockNumber, false, server);
 			HDFSBufferArray[pointer] = tempBlock;
 		}
+
 	}catch(IOException e){
 	  e.printStackTrace();
 	}

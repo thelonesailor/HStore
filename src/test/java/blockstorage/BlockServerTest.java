@@ -28,27 +28,6 @@ public class BlockServerTest {
 	}
 
 	@Test
-	public void demo1(){
-		Utils utils = new Utils(16, 24, 2, true);
-		HDFSLayer HDFSLayer = new HDFSLayer(utils);
-		SSD SSD = new SSD(HDFSLayer, utils);
-		Cache cache = new Cache(SSD, utils);
-		BlockServer server = new BlockServer(cache, SSD, HDFSLayer, utils);
-		server.vMmanager.registerVM(4000);
-
-		byte[] b = new byte[utils.PAGE_SIZE];
-		for (int i=0; i<utils.CACHE_SIZE + utils.SSD_SIZE + utils.HDFS_BUFFER_SIZE*utils.BLOCK_SIZE; ++i) {
-			server.writePage(i, b);
-//			server.printBlockServerStatus();
-		}
-		try{Thread.sleep(100);}
-		catch(InterruptedException e){}
-
-		server.normalShutdown();
-		System.out.println("------------------------------------------------------");
-	}
-
-	@Test
 	public void correctness1(){
 		Utils utils = new Utils(256, 512, 64, false);
 		HDFSLayer HDFSLayer = new HDFSLayer(utils);
@@ -117,7 +96,7 @@ public class BlockServerTest {
 
 	@Test
 	public void correctness3(){
-		Utils utils = new Utils(1024, 1648, 64, false);
+		Utils utils = new Utils(924, 1648, 64, false);
 		HDFSLayer HDFSLayer = new HDFSLayer(utils);
 		SSD SSD = new SSD(HDFSLayer, utils);
 		Cache cache = new Cache(SSD, utils);
@@ -176,14 +155,14 @@ public class BlockServerTest {
 
 	@Test
 	public void WriteAndReadFromBlockServer1(){
-		Utils utils = new Utils(200, 400, 64, false);
+		Utils utils = new Utils(200, 400, 64, true);
 		HDFSLayer HDFSLayer = new HDFSLayer(utils);
 		SSD SSD = new SSD(HDFSLayer, utils);
 		Cache cache = new Cache(SSD, utils);
 		BlockServer server = new BlockServer(cache, SSD, HDFSLayer, utils);
 		server.vMmanager.registerVM(4000);
 
-		int numPages = 1300;
+		int numPages = 1000;
 		double startTime = System.nanoTime();
 		byte[] b = new byte[utils.PAGE_SIZE];
 		for (int i=0; i<numPages; ++i) {
@@ -218,7 +197,7 @@ public class BlockServerTest {
 		BlockServer server = new BlockServer(cache, SSD, HDFSLayer, utils);
 		server.vMmanager.registerVM(4000);
 
-		int numPages = 2700;
+		int numPages = 2000;
 
 		double startTime = System.nanoTime();
 		byte[] b = new byte[utils.PAGE_SIZE];

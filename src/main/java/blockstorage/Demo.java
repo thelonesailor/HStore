@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Demo {
 	public static void main(String[] args){
-		System.out.println("Main Running");
+		System.out.println("Main of Demo Running");
 		Utils utils = new Utils(14, 16, 2, true);
 		HDFSLayer HDFSLayer = new HDFSLayer(utils);
 		SSD SSD = new SSD(HDFSLayer, utils);
@@ -27,6 +27,10 @@ public class Demo {
 			try{Thread.sleep(200);}
 			catch(InterruptedException e){}
 			server.stabilize();
+			server.printBlockServerStatus();
+
+			server.pageIndex.writeToFilePageIndex();
+			server.writeToFileBlockServerStatus();
 
 			System.out.println("enter input:");
 			String op = input.next();
@@ -36,14 +40,12 @@ public class Demo {
 				System.out.println(op+" "+pageNumber);
 
 				server.readPage(pageNumber);
-				server.printBlockServerStatus();
 			}
 			else if(op.contentEquals("w")){
 				int pageNumber = input.nextInt();
 				System.out.println(op+" "+pageNumber);
 
 				server.writePage(pageNumber, b);
-				server.printBlockServerStatus();
 			}
 			else if(op.contentEquals("p")){
 				server.printBlockServerStatus();

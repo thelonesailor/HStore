@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -221,17 +222,13 @@ class BlockServer {
 		}
 		else if(pos.isLocationSSD()) {
 			readFromSSDQueue.add(pageNumber);
-
-			if(utils.SHOW_LOG)
-				System.out.println("Reading Page " + pageNumber + " from SSD Layer");
+			debugLog("Reading Page " + pageNumber + " from SSD Layer");
 
 //			readFromSSD(pageNumber);
 		}
 		else if(pos.isLocationHDFS()){
 			readFromHDFSQueue.add(pageNumber);
-
-			if(utils.SHOW_LOG)
-				System.out.println("Reading Page " + pageNumber + " from HDFS Layer");
+			debugLog("Reading Page " + pageNumber + " from HDFS Layer");
 
 //			readFromHDFS(pageNumber);
 		}else {
@@ -248,14 +245,17 @@ class BlockServer {
 
 		if(written){
 			pageIndex.updatePageIndex(pageNumber, 1, 0, 0, 1);
-			if(utils.SHOW_LOG)
-				System.out.println("Page: "+pageNumber+" written to BlockServer");
 		}
 		else{
-			System.out.println("Error in writing Page to Cache");
+			debugLog("Error in writing Page: "+pageNumber+" to Cache");
 		}
 	}
 
+	void debugLog(String log){
+		if(utils.SHOW_LOG){
+			System.out.println(log);
+		}
+	}
 
 	void partiallyStabilize(){
 		while (SSD.writeToSSDQueue.size() > 0){}
@@ -279,6 +279,67 @@ class BlockServer {
 		while (SSD.pointersList.size() > utils.MAX_SSD_FULL_SIZE){}
 		while (readFromSSDQueue.size() > 0){}
 		while (readFromHDFSQueue.size() > 0){}
+	}
+
+	void writeToFileBlockServerStatus(){
+		System.out.println("Printing BlockServer status:");
+		System.out.println("Pages in Cache["+utils.MAX_CACHE_FULL_SIZE+", "+utils.CACHE_SIZE+"]:");
+		String s;
+		try {
+			PrintWriter out = new PrintWriter("cacheContents.txt");
+			s = "MAX_CACHE_FULL_SIZE="+utils.MAX_CACHE_FULL_SIZE+" CACHE_SIZE="+utils.CACHE_SIZE+"\n";
+			for (int k: cache.pointersList.keySet()){
+				s += k+"\n";
+			}
+			out.print(s);
+			out.close();
+		}catch(Exception e){e.printStackTrace();}
+
+		while (cache.pointersList.size() > utils.MAX_CACHE_FULL_SIZE){}
+		while (SSD.pointersList.size() > utils.MAX_SSD_FULL_SIZE){}
+		try {
+			PrintWriter out = new PrintWriter("SSDContents.txt");
+			s = "MAX_SSD_FULL_SIZE="+utils.MAX_SSD_FULL_SIZE+" SSD_SIZE="+utils.SSD_SIZE+"\n";
+			for (int k: SSD.pointersList){
+				s += k+"\n";
+			}
+			out.print(s);
+			out.close();
+		}catch(Exception e){e.printStackTrace();}
+
+
+		try {
+			PrintWriter out = new PrintWriter("HDFSBufferContents.txt");
+			s = "HDFS_BUFFER_SIZE="+utils.HDFS_BUFFER_SIZE*8+"\n";
+			for (int k: HDFSLayer.HDFSBufferList.keySet()){
+				for (int i=0;i<utils.BLOCK_SIZE;++i){
+					int pageNumber = (k<<3) + i;
+					Position pos = pageIndex.get(pageNumber);
+					if(pos.present && pos.isLocationHDFS()){
+						s += pageNumber+"\n";
+					}
+				}
+			}
+			out.print(s);
+			out.close();
+		}catch(Exception e){e.printStackTrace();}
+
+
+		try {
+			PrintWriter out = new PrintWriter("HDFSClusterContents.txt");
+			s = "Infinite\n";
+			for (int k: HDFSLayer.blockList.keySet()){
+				for (int i=0;i<utils.BLOCK_SIZE;++i){
+					int pageNumber = (k<<3) + i;
+					Position pos = pageIndex.get(pageNumber);
+					if(pos.present && pos.isLocationHDFS()){
+						s += pageNumber+"\n";
+					}
+				}
+			}
+			out.print(s);
+			out.close();
+		}catch(Exception e){e.printStackTrace();}
 	}
 
 	void printBlockServerStatus(){

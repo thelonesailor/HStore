@@ -4,7 +4,6 @@ public class RemoveFromSSD implements Runnable {
 	Cache cache;
 	SSD SSD;
 	BlockServer server;
-	//	boolean stp;
 	private Utils utils;
 	int m1 = -1;
 	RemoveFromSSD(Cache cache, SSD SSD, BlockServer server, Utils utils){
@@ -31,8 +30,7 @@ public class RemoveFromSSD implements Runnable {
 			SSD.recencyList.remove(pageNumberToRemove);
 //			if((int)pageNumberToRemove != -1) {
 				SSD.writeToHDFSQueue.add(pageNumberToRemove);
-				if(utils.SHOW_LOG)
-					System.out.println("Page " + pageNumberToRemove + " added to writeToHDFSQueue");
+				server.debugLog("SSD,2,"+pageNumberToRemove+",Page " + pageNumberToRemove + " added to writeToHDFSQueue");
 //			}
 
 			SSD.recencyListLock.unlock();

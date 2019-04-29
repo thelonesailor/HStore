@@ -54,8 +54,6 @@ public class SSD{
 
 	void writeSSDPage(int pageNumber, int pointer) {
 		writeToSSDQueue.add(new Pair<>(pageNumber, pointer));
-		if(utils.SHOW_LOG)
-			System.out.println("Page " + pageNumber + " added to writeToSSDQueue");
 	}
 
 	@NotNull Page readSSDPage(int pageNumber){
@@ -101,6 +99,7 @@ public class SSD{
 
 			if(pointersList.contains(pageNumber)){
 				writeSSDPage(pageNumber, pointer);
+				server.debugLog("cache,2,"+pageNumber+",Page: " + pageNumber + " added to writeToSSDQueue");
 			}else{
 				//assume elder is always updated
 				/*
@@ -126,6 +125,7 @@ public class SSD{
 //			}else{
 //				size.getAndIncrement();
 				writeSSDPage(pageNumber, pointer);
+				server.debugLog("cache,2,"+pageNumber+",Page: " + pageNumber + " added to writeToSSDQueue");
 //			}
 		}
 //		System.out.println("size & max_size = "+size+" "+utils.SSD_SIZE);

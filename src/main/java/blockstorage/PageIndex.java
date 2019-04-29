@@ -1,11 +1,12 @@
 package blockstorage;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PageIndex {
 //	private Position[] pageIndex;
-	List<Position[]> pageIndex ;
+	List<Position[]> pageIndex;
 	int localPageNumberMask = (1<<26) - 1;
 	int VMIDmask = ((1<<31) - 1) - localPageNumberMask;
 
@@ -21,6 +22,42 @@ public class PageIndex {
 		int localPageNumber = pageNumber & localPageNumberMask;
 		int VMID = pageNumber & VMIDmask;
 		return (pageIndex.get(VMID)[localPageNumber]);
+	}
+
+	void writeToFilePageIndex(){
+		try {
+			PrintWriter out = new PrintWriter("pageIndex.txt");
+			for(int VMID=0;VMID<pageIndex.size();++VMID){
+				Position[] positions = pageIndex.get(VMID);
+				for(int localPageNumber=0;localPageNumber<positions.length;++localPageNumber){
+					int pageNumber = (VMID<<25)|localPageNumber;
+					Position position = positions[localPageNumber];
+
+					if(position != null){
+						out.println(pageNumber);
+						if(position.locationCache){
+							out.print("1 ");
+						}
+						else{
+							out.print("0 ");
+						}
+						if(position.locationSSD){
+							out.print("1 ");
+						}
+						else{
+							out.print("0 ");
+						}
+						if(position.locationHDFS){
+							out.println("1");
+						}
+						else{
+							out.println("0");
+						}
+					}
+				}
+			}
+			out.close();
+		}catch(Exception e){e.printStackTrace();}
 	}
 
 	synchronized void updatePageIndex(int pageNumber,int Cache, int SSD, int HDFS, int dirty){
