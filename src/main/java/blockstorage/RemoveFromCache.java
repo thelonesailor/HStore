@@ -21,20 +21,25 @@ public class RemoveFromCache implements Runnable{
 			CacheValue val = new CacheValue();
 
 			cache.cacheListLock.lock();
+			cache.pointersListLock.lock();
 			cache.cacheList.put(m1,val); // elder gets updated here
 			cache.cacheList.remove(m1);
 			cache.cacheList.remove(m1);
 //			Cache.cacheListLock.unlock();
 
-			Map.Entry<Integer, CacheValue>  eld = Cache.elder;
+			Map.Entry<Integer, CacheValue>  eld = cache.elder;
 			int pageNumberToRemove = eld.getKey();
 			int pointer = eld.getValue().getPointer();
 
 //			Cache.cacheListLock.lock();
 			cache.cacheList.remove(pageNumberToRemove);
+			cache.pointersListLock.unlock();
 			cache.cacheListLock.unlock();
 
-			SSD.writePage(pageNumberToRemove, pointer, server);
+			if(pageNumberToRemove!=-1)
+				SSD.writePage(pageNumberToRemove, pointer, server);
+			else
+				cache.pointersList.remove(-1);
 
 		}
 		else{
@@ -47,9 +52,12 @@ public class RemoveFromCache implements Runnable{
 //			System.out.println("remove from Cache!!"+Cache.size+" "+utils.MAX_CACHE_FULL_SIZE+" "+SSD.writeToSSDQueue.size()+" "+server.removeFromCacheStop);
 
 			try{
-//				server.Lock1.lock();
 				doWork();
-//				server.Lock1.unlock();
+//				String s = "";
+//				for(int pageNumber : cache.pointersList.keySet()){
+//					s += pageNumber + " ";
+//				}
+//				System.out.println(s);
 			}
 			catch(InterruptedException e){
 				System.out.println("InterruptedException in removeFromCacheThread: " + e);

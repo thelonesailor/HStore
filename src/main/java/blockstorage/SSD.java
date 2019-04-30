@@ -24,6 +24,7 @@ public class SSD{
 	@NotNull Lock recencyListLock = new ReentrantLock();
 	CopyOnWriteArraySet<Integer> pointersList;
 	@NotNull Lock pointersListLock = new ReentrantLock();
+	Lock writeToSSDQueueLock = new ReentrantLock();
 
 
 	@Nullable

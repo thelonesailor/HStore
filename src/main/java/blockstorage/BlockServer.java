@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -30,6 +31,7 @@ class BlockServer {
 
 	RemoveFromCache removeFromCache;
 	WriteToSSD writeToSSD;
+	WriteToSSD writeToSSD2;
 	RemoveFromSSD removeFromSSD;
 	WriteToHDFS writeToHDFS;
 	ReadFromSSD readFromSSD;
@@ -37,6 +39,7 @@ class BlockServer {
 
 	Thread removeFromCacheThread;
 	Thread writeToSSDThread;
+	Thread writeToSSDThread2;
 	Thread removeFromSSDThread;
 	Thread writeToHDFSThread;
 	Thread readFromSSDThread;
@@ -72,6 +75,12 @@ class BlockServer {
 		System.out.println("writetoSSDthread started.");
 		writeToSSDThread.setName("writetoSSDthread");
 
+		this.writeToSSD2 = new WriteToSSD(this.cache, this.SSD, this, this.utils);
+		writeToSSDThread2 = new Thread(this.writeToSSD2);
+		writeToSSDThread2.start();
+		System.out.println("writetoSSDthread2 started.");
+		writeToSSDThread2.setName("writetoSSDthread2");
+
 		this.removeFromSSD = new RemoveFromSSD(this.cache, this.SSD, this, this.utils);
 		removeFromSSDThread = new Thread(this.removeFromSSD);
 		removeFromSSDThread.start();
@@ -98,6 +107,9 @@ class BlockServer {
 
 		try{Thread.sleep(100);}
 		catch(InterruptedException e){}
+
+		File file = new File("debugLog.txt");
+		file.delete();
 
 		System.out.println("BlockServer initialised");
 	}
@@ -153,6 +165,7 @@ class BlockServer {
 
 
 	void normalShutdown(){
+		System.out.println("Shutting down...");
 		stabilize();
 		removeFromCacheStop = true;
 		writeToSSDStop = true;
@@ -217,7 +230,11 @@ class BlockServer {
 		partiallyStabilize();
 
 		if(pos.isLocationCache()) {
+			cache.cacheListLock.lock();
+			cache.pointersListLock.lock();
 			returnPage =  cache.readPage(pageNumber, false);
+			cache.pointersListLock.unlock();
+			cache.cacheListLock.unlock();
 			readOutputQueue.add(returnPage);
 		}
 		else if(pos.isLocationSSD()) {
@@ -254,7 +271,18 @@ class BlockServer {
 	void debugLog(String log){
 		if(utils.SHOW_LOG){
 			System.out.println(log);
+			try{
+				FileWriter fileWriter = new FileWriter("debugLog.txt", true);
+				PrintWriter out = new PrintWriter(fileWriter);
+				String[] parts= log.split(",");
+				for(String part : parts){
+					out.println(part);
+				}
+				out.close();
+				fileWriter.close();
+			}catch(Exception e){e.printStackTrace();}
 		}
+
 	}
 
 	void partiallyStabilize(){
@@ -287,7 +315,7 @@ class BlockServer {
 		String s;
 		try {
 			PrintWriter out = new PrintWriter("cacheContents.txt");
-			s = "MAX_CACHE_FULL_SIZE="+utils.MAX_CACHE_FULL_SIZE+" CACHE_SIZE="+utils.CACHE_SIZE+"\n";
+			s = "MAX_CACHE_FULL_SIZE\n"+utils.MAX_CACHE_FULL_SIZE+"" + "\nCACHE_SIZE\n"+utils.CACHE_SIZE+"\n";
 			for (int k: cache.pointersList.keySet()){
 				s += k+"\n";
 			}
@@ -299,7 +327,7 @@ class BlockServer {
 		while (SSD.pointersList.size() > utils.MAX_SSD_FULL_SIZE){}
 		try {
 			PrintWriter out = new PrintWriter("SSDContents.txt");
-			s = "MAX_SSD_FULL_SIZE="+utils.MAX_SSD_FULL_SIZE+" SSD_SIZE="+utils.SSD_SIZE+"\n";
+			s = "MAX_SSD_FULL_SIZE\n"+utils.MAX_SSD_FULL_SIZE+"\nSSD_SIZE\n"+utils.SSD_SIZE+"\n";
 			for (int k: SSD.pointersList){
 				s += k+"\n";
 			}
@@ -310,12 +338,12 @@ class BlockServer {
 
 		try {
 			PrintWriter out = new PrintWriter("HDFSBufferContents.txt");
-			s = "HDFS_BUFFER_SIZE="+utils.HDFS_BUFFER_SIZE*8+"\n";
+			s = "HDFS_BUFFER_SIZE\n"+utils.HDFS_BUFFER_SIZE*8+"\n";
 			for (int k: HDFSLayer.HDFSBufferList.keySet()){
 				for (int i=0;i<utils.BLOCK_SIZE;++i){
 					int pageNumber = (k<<3) + i;
 					Position pos = pageIndex.get(pageNumber);
-					if(pos.present && pos.isLocationHDFS()){
+					if(pos != null && pos.isLocationHDFS()){
 						s += pageNumber+"\n";
 					}
 				}
@@ -332,7 +360,7 @@ class BlockServer {
 				for (int i=0;i<utils.BLOCK_SIZE;++i){
 					int pageNumber = (k<<3) + i;
 					Position pos = pageIndex.get(pageNumber);
-					if(pos.present && pos.isLocationHDFS()){
+					if(pos != null && pos.isLocationHDFS()){
 						s += pageNumber+"\n";
 					}
 				}
@@ -377,7 +405,7 @@ class BlockServer {
 			for (int i=0;i<utils.BLOCK_SIZE;++i){
 				int pageNumber = (k<<3) + i;
 				Position pos = pageIndex.get(pageNumber);
-				if(pos.present && pos.isLocationHDFS()){
+				if(pos != null && pos.isLocationHDFS()){
 //					System.out.println(pageNumber);
 					s += pageNumber+" ";
 				}
@@ -392,7 +420,7 @@ class BlockServer {
 			for (int i=0;i<utils.BLOCK_SIZE;++i){
 				int pageNumber = (k<<3) + i;
 				Position pos = pageIndex.get(pageNumber);
-				if(pos.present && pos.isLocationHDFS()){
+				if(pos != null && pos.isLocationHDFS()){
 //					System.out.println(pageNumber);
 					s += pageNumber+" ";
 				}

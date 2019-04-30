@@ -17,9 +17,8 @@ public class ReadFromHDFS implements Runnable {
 	private void doWork() throws InterruptedException{
 		if(server.readFromHDFSQueue.size() > 0){
 			int pageNumber = server.readFromHDFSQueue.remove();
-
-			if(utils.SHOW_LOG)
-				System.out.println("Page " + pageNumber + " removed from readFromHDFSQueue");
+			if(pageNumber == -1){return;}
+			server.debugLog("HDFS,2,"+pageNumber+",Page: " + pageNumber + " removed from readFromHDFSQueue");
 
 			Block returnBlock = HDFSLayer.readBlock(pageNumber, server);
 			Page returnPage = returnBlock.readPage(pageNumber);
@@ -28,12 +27,16 @@ public class ReadFromHDFS implements Runnable {
 			for (int i = 0; i < utils.BLOCK_SIZE; i++){
 				int temp = ((returnBlock.blockNumber)<<3)+i;
 				Position p = server.pageIndex.get(temp);
-				if(p!=null && p.isLocationHDFS() && !p.isDirty() && !p.isLocationCache() && cache.pointersList.get(temp)==null) {
-					cache.writePage(returnAllPages[i],server);
-				if(utils.SHOW_LOG)
-					System.out.println("Page " + temp + " written to cache by readFromHDFSThread");
-
-					server.pageIndex.updatePageIndex(temp, 1, -1, 1, -1);
+				if(p!=null && p.isLocationHDFS() /*&& !p.isDirty()*/ && !p.isLocationCache() && cache.pointersList.get(temp)==null) {
+					boolean written = cache.writePage(returnAllPages[i],server);
+					if(written){
+						server.pageIndex.updatePageIndex(temp, 1, -1, 1, -1);
+//						System.out.println("Page: "+temp+" written to cache from ReadFromHDFSThread");
+						server.debugLog("cache,2,"+temp+",Page: " + temp + " written to cache by ReadFromHDFSThread");
+					} else {
+						server.debugLog("Error in writing Page: "+temp+" to cache in ReadFromHDFSThread");
+//						System.out.println("ERROR in writing Page: "+temp+" to cache in ReadFromHDFSThread");
+					}
 				}
 			}
 			server.readOutputQueue.add(returnPage);

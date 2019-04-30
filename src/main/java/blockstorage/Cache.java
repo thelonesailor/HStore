@@ -22,6 +22,7 @@ class Cache {
 	ConcurrentLinkedQueue<Integer> EmptyPointers;
 	ConcurrentHashMap<Integer, Integer> pointersList;
 	ConcurrentHashMap<Integer, Integer> wasputinpointersList;
+	@NotNull Lock pointersListLock = new ReentrantLock();
 
 	@Nullable
 	static Map.Entry<Integer, CacheValue> elder = null;
@@ -58,17 +59,20 @@ class Cache {
 //		CacheValue val = cacheList.get(pageNumber);
 
 //		System.out.println("Reading "+pageNumber+" from Cache");
+//		pointersListLock.lock();
 		if(pointersList.get(pageNumber) == null) {
-			System.out.println("Reading "+pageNumber+" from Cache "+wasputinpointersList.contains(pageNumber)+" "+forQueue);
+			System.out.println("Reading "+pageNumber+" from Cache "+wasputinpointersList.containsKey(pageNumber)+" "+forQueue);
 			assert false;
 		}
 
 		int pointer = pointersList.get(pageNumber);
+//		pointersListLock.unlock();
+
 		if(!forQueue){
-			cacheListLock.lock();
+//			cacheListLock.lock();
 			cacheList.remove(pageNumber);
 			cacheList.put(pageNumber,new CacheValue(pointer));
-			cacheListLock.unlock();
+//			cacheListLock.unlock();
 		}
 
 		return pointer;
@@ -84,10 +88,10 @@ class Cache {
 //			CacheValue val = cacheList.get(pageNumber);
 			int pointer = pointersList.get(pageNumber);
 
-			cacheListLock.lock();
+//			cacheListLock.lock();
 			cacheList.remove(pageNumber);
 			cacheList.put(pageNumber,new CacheValue(pointer));
-			cacheListLock.unlock();
+//			cacheListLock.unlock();
 
 			return pointer;
 		}else{
@@ -122,10 +126,10 @@ class Cache {
 				}
 				int freePointer = EmptyPointers.remove();
 
-				cacheListLock.lock();
+//				cacheListLock.lock();
 				cacheList.remove(pageNumber);
 				cacheList.put(pageNumber, new CacheValue(freePointer));
-				cacheListLock.unlock();
+//				cacheListLock.unlock();
 
 //	    		System.out.println("added "+pageNumber);
 
@@ -153,14 +157,19 @@ class Cache {
 
 	synchronized boolean writePage(@NotNull Page page, @NotNull BlockServer server){
 		int pageNumber = page.getPageNumber();
+
 		int pointer = addWrite(pageNumber, server);
 		cacheBuffer[pointer] = page.getPageData();
 
+		cacheListLock.lock();
+		pointersListLock.lock();
+		wasputinpointersList.put(pageNumber,pointer);
 //		pointersList.remove(pageNumber);
 //		pointersList.put(pageNumber, pointer);
 		pointersList.replace(pageNumber, pointer);
 		pointersList.putIfAbsent(pageNumber, pointer);
-		wasputinpointersList.put(pageNumber,pointer);
+		pointersListLock.unlock();
+		cacheListLock.unlock();
 
 		server.debugLog("cache,1,"+pageNumber+",Page: "+pageNumber+" written to Cache");
 		return true;

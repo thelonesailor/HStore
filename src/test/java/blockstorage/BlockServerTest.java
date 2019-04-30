@@ -56,7 +56,7 @@ public class BlockServerTest {
 	
 	@Test
 	public void correctness2(){
-		Utils utils = new Utils(512, 1024, 64, false);
+		Utils utils = new Utils(512, 1024, 44, false);
 		HDFSLayer HDFSLayer = new HDFSLayer(utils);
 		SSD SSD = new SSD(HDFSLayer, utils);
 		Cache cache = new Cache(SSD, utils);
@@ -96,7 +96,7 @@ public class BlockServerTest {
 
 	@Test
 	public void correctness3(){
-		Utils utils = new Utils(924, 1648, 64, false);
+		Utils utils = new Utils(824, 1448, 44, false);
 		HDFSLayer HDFSLayer = new HDFSLayer(utils);
 		SSD SSD = new SSD(HDFSLayer, utils);
 		Cache cache = new Cache(SSD, utils);
@@ -155,7 +155,7 @@ public class BlockServerTest {
 
 	@Test
 	public void WriteAndReadFromBlockServer1(){
-		Utils utils = new Utils(200, 400, 64, true);
+		Utils utils = new Utils(200, 400, 64, false);
 		HDFSLayer HDFSLayer = new HDFSLayer(utils);
 		SSD SSD = new SSD(HDFSLayer, utils);
 		Cache cache = new Cache(SSD, utils);
@@ -197,7 +197,7 @@ public class BlockServerTest {
 		BlockServer server = new BlockServer(cache, SSD, HDFSLayer, utils);
 		server.vMmanager.registerVM(4000);
 
-		int numPages = 2000;
+		int numPages = 1800;
 
 		double startTime = System.nanoTime();
 		byte[] b = new byte[utils.PAGE_SIZE];
@@ -232,7 +232,7 @@ public class BlockServerTest {
 		BlockServer server = new BlockServer(cache, SSD, HDFSLayer, utils);
 		server.vMmanager.registerVM(4000);
 
-		int numPages = 1400;
+		int numPages = 1000;
 		double startTime = System.nanoTime();
 		byte[] b = new byte[utils.PAGE_SIZE];
 		for (int i=0; i<numPages; ++i) {

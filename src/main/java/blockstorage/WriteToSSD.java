@@ -24,9 +24,16 @@ public class WriteToSSD implements Runnable{
 	}
 
 	void doWork() throws InterruptedException{
+		SSD.writeToSSDQueueLock.lock();
 		if(SSD.writeToSSDQueue.size() > 0) {
 			Pair<Integer, Integer> p = SSD.writeToSSDQueue.remove();
+			SSD.writeToSSDQueueLock.unlock();
+
 			int pageNumber = p.getKey();
+			if(pageNumber == -1){
+				cache.pointersList.remove(-1);
+				return;
+			}
 //			if(!server.pageIndex.get(pageNumber).isLocationCache()){
 //				return;
 //			}
@@ -51,7 +58,13 @@ public class WriteToSSD implements Runnable{
 
 				server.pageIndex.updatePageIndex(pageNumber, 0, 1, -1, -1);
 //				Cache.cacheList.remove(pageNumber);
+
+				cache.cacheListLock.lock();
+				cache.pointersListLock.lock();
 				cache.pointersList.remove(pageNumber);
+				cache.pointersListLock.unlock();
+				cache.cacheListLock.unlock();
+
 				cache.EmptyPointers.add(freePointer);
 //				Cache.size.getAndDecrement();// Cache.size--
 
@@ -75,6 +88,7 @@ public class WriteToSSD implements Runnable{
 			}
 		}
 		else{
+			SSD.writeToSSDQueueLock.unlock();
 			Thread.sleep(10);
 		}
 	}
@@ -99,7 +113,7 @@ public class WriteToSSD implements Runnable{
 				}
 			}
 		}
-		System.out.println("writetoSSDthread ended.");
+		System.out.println(Thread.currentThread().getName()+" ended.");
 	}
 }
 
