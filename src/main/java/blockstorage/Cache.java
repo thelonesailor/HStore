@@ -171,7 +171,7 @@ class Cache {
 		pointersListLock.unlock();
 		cacheListLock.unlock();
 
-		server.debugLog("cache,1,"+pageNumber+",Page: "+pageNumber+" written to Cache");
+		server.debugLog("cache,1,"+pageNumber+", pageNumber "+pageNumber+" written to Cache");
 		return true;
 	}
 }

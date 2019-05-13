@@ -30,6 +30,7 @@ public class WriteToHDFS implements Runnable {
 //				return;
 //			}
 //			System.out.println(pageNumber);
+			server.debugLog("HDFS,2,"+pageNumber+", pageNumber "+pageNumber+" removed from writeToHDFSQueue");
 			String fileName = SSD_LOCATION + "/" + pageNumber;
 //			File file = new File(fileName);
 			try {
@@ -44,7 +45,7 @@ public class WriteToHDFS implements Runnable {
 
 					HDFSlayer.writePage(page, server);
 					server.pageIndex.updatePageIndex(pageNumber, -1, 0, 1, -1);
-					server.debugLog("HDFS,1,"+pageNumber+",Page: "+pageNumber+" written to HDFSLayer");
+					server.debugLog("HDFS,1,"+pageNumber+", pageNumber "+pageNumber+" written to HDFSLayer");
 				}
 				else{
 					server.pageIndex.updatePageIndex(pageNumber, -1, 0, -1, -1);
@@ -52,7 +53,7 @@ public class WriteToHDFS implements Runnable {
 //				file.delete();
 				SSD.pointersList.remove(pageNumber);
 				SSD.pointersListLock.unlock();
-				server.debugLog("SSD,1,"+pageNumber+",Page: "+pageNumber+" removed from SSD");
+				server.debugLog("SSD,1,"+pageNumber+", pageNumber "+pageNumber+" removed from SSD");
 			} catch (IOException e) {
 				System.out.println("Exception Occurred:");
 				e.printStackTrace();

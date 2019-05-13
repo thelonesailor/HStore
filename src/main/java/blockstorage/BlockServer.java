@@ -13,8 +13,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 class BlockServer {
 	
@@ -30,7 +28,7 @@ class BlockServer {
 	@NotNull ConcurrentLinkedQueue<Page> readOutputQueue = new ConcurrentLinkedQueue<>();
 
 	RemoveFromCache removeFromCache;
-	WriteToSSD writeToSSD;
+	WriteToSSD writeToSSD1;
 	WriteToSSD writeToSSD2;
 	RemoveFromSSD removeFromSSD;
 	WriteToHDFS writeToHDFS;
@@ -38,15 +36,12 @@ class BlockServer {
 	ReadFromHDFS readFromHDFS;
 
 	Thread removeFromCacheThread;
-	Thread writeToSSDThread;
+	Thread writeToSSDThread1;
 	Thread writeToSSDThread2;
 	Thread removeFromSSDThread;
 	Thread writeToHDFSThread;
 	Thread readFromSSDThread;
 	Thread readFromHDFSThread;
-
-	@NotNull Lock Lock1 = new ReentrantLock();
-	@NotNull Lock Lock2 = new ReentrantLock();
 
 	boolean removeFromCacheStop = false;
 	boolean writeToSSDStop = false;
@@ -66,49 +61,49 @@ class BlockServer {
 		this.removeFromCache = new RemoveFromCache(this.cache, this.SSD, this, this.utils);
 		removeFromCacheThread = new Thread(this.removeFromCache);
 		removeFromCacheThread.start();
-		System.out.println("removeFromCacheThread started.");
-		removeFromCacheThread.setName("removeFromCacheThread");
+		System.out.println("RemoveFromCacheThread started.");
+		removeFromCacheThread.setName("RemoveFromCacheThread");
 
-		this.writeToSSD = new WriteToSSD(this.cache, this.SSD, this, this.utils);
-		writeToSSDThread = new Thread(this.writeToSSD);
-		writeToSSDThread.start();
-		System.out.println("writetoSSDthread started.");
-		writeToSSDThread.setName("writetoSSDthread");
+		this.writeToSSD1 = new WriteToSSD(this.cache, this.SSD, this, this.utils);
+		writeToSSDThread1 = new Thread(this.writeToSSD1);
+		writeToSSDThread1.start();
+		System.out.println("WriteToSSDThread1 started.");
+		writeToSSDThread1.setName("WriteToSSDThread1");
 
 		this.writeToSSD2 = new WriteToSSD(this.cache, this.SSD, this, this.utils);
 		writeToSSDThread2 = new Thread(this.writeToSSD2);
 		writeToSSDThread2.start();
-		System.out.println("writetoSSDthread2 started.");
-		writeToSSDThread2.setName("writetoSSDthread2");
+		System.out.println("WriteToSSDThread2 started.");
+		writeToSSDThread2.setName("WriteToSSDThread2");
 
 		this.removeFromSSD = new RemoveFromSSD(this.cache, this.SSD, this, this.utils);
 		removeFromSSDThread = new Thread(this.removeFromSSD);
 		removeFromSSDThread.start();
-		System.out.println("removeFromSSDThread started.");
-		removeFromSSDThread.setName("removeFromSSDThread");
+		System.out.println("RemoveFromSSDThread started.");
+		removeFromSSDThread.setName("RemoveFromSSDThread");
 
 		this.writeToHDFS = new WriteToHDFS(this.cache, this.SSD, this.HDFSLayer, this, this.utils);
 		writeToHDFSThread = new Thread(this.writeToHDFS);
 		writeToHDFSThread.start();
-		System.out.println("writeToHDFSThread started.");
-		writeToHDFSThread.setName("writetoHDFSthread");
+		System.out.println("WriteToHDFSThread started.");
+		writeToHDFSThread.setName("WriteToHDFSThread");
 
 		this.readFromSSD = new ReadFromSSD(this.cache, this.SSD, this);
 		readFromSSDThread = new Thread(this.readFromSSD);
 		readFromSSDThread.start();
-		System.out.println("readFromSSDThread started.");
-		readFromSSDThread.setName("readFromSSDThread");
+		System.out.println("ReadFromSSDThread started.");
+		readFromSSDThread.setName("ReadFromSSDThread");
 
 		this.readFromHDFS = new ReadFromHDFS(this.cache, this.SSD, this.HDFSLayer, this, utils);
 		readFromHDFSThread = new Thread(this.readFromHDFS);
 		readFromHDFSThread.start();
-		System.out.println("readFromHDFSThread started.");
-		readFromHDFSThread.setName("readFromHDFSThread");
+		System.out.println("ReadFromHDFSThread started.");
+		readFromHDFSThread.setName("ReadFromHDFSThread");
 
 		try{Thread.sleep(100);}
 		catch(InterruptedException e){}
 
-		File file = new File("debugLog.txt");
+		File file = new File("/var/www/html/data/debugLog.txt");
 		file.delete();
 
 		System.out.println("BlockServer initialised");
@@ -177,7 +172,8 @@ class BlockServer {
 		System.out.println("Stop function called, threads signalled to stop, waiting for threads to join");
 		try{
 			removeFromCacheThread.join();
-			writeToSSDThread.join();
+			writeToSSDThread1.join();
+			writeToSSDThread2.join();
 			removeFromSSDThread.join();
 			writeToHDFSThread.join();
 			readFromSSDThread.join();
@@ -239,18 +235,19 @@ class BlockServer {
 		}
 		else if(pos.isLocationSSD()) {
 			readFromSSDQueue.add(pageNumber);
-			debugLog("Reading Page " + pageNumber + " from SSD Layer");
+			debugLog("SSD,2,"+pageNumber+", pageNumber " + pageNumber + " added to ReadFromSSDQueue");
 
 //			readFromSSD(pageNumber);
 		}
 		else if(pos.isLocationHDFS()){
 			readFromHDFSQueue.add(pageNumber);
-			debugLog("Reading Page " + pageNumber + " from HDFS Layer");
+			debugLog("HDFS,2,"+pageNumber+", pageNumber " + pageNumber + " added to ReadFromHDFSQueue");
 
 //			readFromHDFS(pageNumber);
 		}else {
 			System.out.println("Error finding Page: "+pageNumber);
 		}
+//		stabilize();
 	}
 
 	/**
@@ -266,13 +263,29 @@ class BlockServer {
 		else{
 			debugLog("Error in writing Page: "+pageNumber+" to Cache");
 		}
+//		stabilize();
 	}
 
-	void debugLog(String log){
+	void writePageSynchronously(int pageNumber, byte[] pageData){
+		Page newPage = new Page(pageNumber, pageData);
+		boolean written = cache.writePage(newPage, this);
+
+		if(written){
+			pageIndex.updatePageIndex(pageNumber, 1, 0, 0, 1);
+		}
+		else{
+			debugLog("Error in writing Page: "+pageNumber+" to Cache");
+		}
+		int pointer = cache.pointersList.get(pageNumber);
+		SSD.writePage(pageNumber, pointer, this);
+		stabilize();
+	}
+
+	void debugLog(@NotNull String log){
 		if(utils.SHOW_LOG){
 			System.out.println(log);
 			try{
-				FileWriter fileWriter = new FileWriter("debugLog.txt", true);
+				FileWriter fileWriter = new FileWriter("/var/www/html/data/debugLog.txt", true);
 				PrintWriter out = new PrintWriter(fileWriter);
 				String[] parts= log.split(",");
 				for(String part : parts){
@@ -314,7 +327,7 @@ class BlockServer {
 		System.out.println("Pages in Cache["+utils.MAX_CACHE_FULL_SIZE+", "+utils.CACHE_SIZE+"]:");
 		String s;
 		try {
-			PrintWriter out = new PrintWriter("cacheContents.txt");
+			PrintWriter out = new PrintWriter("/var/www/html/data/cacheContents.txt");
 			s = "MAX_CACHE_FULL_SIZE\n"+utils.MAX_CACHE_FULL_SIZE+"" + "\nCACHE_SIZE\n"+utils.CACHE_SIZE+"\n";
 			for (int k: cache.pointersList.keySet()){
 				s += k+"\n";
@@ -326,7 +339,7 @@ class BlockServer {
 		while (cache.pointersList.size() > utils.MAX_CACHE_FULL_SIZE){}
 		while (SSD.pointersList.size() > utils.MAX_SSD_FULL_SIZE){}
 		try {
-			PrintWriter out = new PrintWriter("SSDContents.txt");
+			PrintWriter out = new PrintWriter("/var/www/html/data/SSDContents.txt");
 			s = "MAX_SSD_FULL_SIZE\n"+utils.MAX_SSD_FULL_SIZE+"\nSSD_SIZE\n"+utils.SSD_SIZE+"\n";
 			for (int k: SSD.pointersList){
 				s += k+"\n";
@@ -337,7 +350,7 @@ class BlockServer {
 
 
 		try {
-			PrintWriter out = new PrintWriter("HDFSBufferContents.txt");
+			PrintWriter out = new PrintWriter("/var/www/html/data/HDFSBufferContents.txt");
 			s = "HDFS_BUFFER_SIZE\n"+utils.HDFS_BUFFER_SIZE*8+"\n";
 			for (int k: HDFSLayer.HDFSBufferList.keySet()){
 				for (int i=0;i<utils.BLOCK_SIZE;++i){
@@ -354,7 +367,7 @@ class BlockServer {
 
 
 		try {
-			PrintWriter out = new PrintWriter("HDFSClusterContents.txt");
+			PrintWriter out = new PrintWriter("/var/www/html/data/HDFSClusterContents.txt");
 			s = "Infinite\n";
 			for (int k: HDFSLayer.blockList.keySet()){
 				for (int i=0;i<utils.BLOCK_SIZE;++i){

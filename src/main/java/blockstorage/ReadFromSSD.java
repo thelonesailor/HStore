@@ -14,14 +14,14 @@ public class ReadFromSSD implements Runnable {
 		if(server.readFromSSDQueue.size() > 0){
 			int pageNumber = server.readFromSSDQueue.remove();
 			if(pageNumber == -1){return;}
+			server.debugLog("SSD,2,"+pageNumber+", pageNumber " + pageNumber + " removed from ReadFromSSDQueue");
+
 			if(SSD.pointersList.contains(pageNumber)){
 				Page returnPage = SSD.readPage(pageNumber);
 				boolean written = cache.writePage(returnPage,server);
 				if(written){
 					server.pageIndex.updatePageIndex(pageNumber, 1, -1, -1, -1);
-//					System.out.println("Page: "+pageNumber+" written to cache from ReadFromSSDThread");
-//					System.out.flush();
-					server.debugLog("cache,2,"+pageNumber+",Page: " + pageNumber + " written to cache by ReadFromSSDThread");
+					server.debugLog("cache,2,"+pageNumber+", pageNumber " + pageNumber + " written to cache by ReadFromSSDThread");
 				}
 				else{
 					server.debugLog("Error in writing Page: "+pageNumber+" to cache in ReadFromSSDThread");

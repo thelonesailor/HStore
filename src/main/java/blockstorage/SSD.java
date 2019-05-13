@@ -24,7 +24,7 @@ public class SSD{
 	@NotNull Lock recencyListLock = new ReentrantLock();
 	CopyOnWriteArraySet<Integer> pointersList;
 	@NotNull Lock pointersListLock = new ReentrantLock();
-	Lock writeToSSDQueueLock = new ReentrantLock();
+	@NotNull Lock writeToSSDQueueLock = new ReentrantLock();
 
 
 	@Nullable
@@ -88,7 +88,7 @@ public class SSD{
 		return readSSDPage(pageNumber);
 	}
 
-	void writePage(int pageNumber,int pointer, BlockServer server){
+	void writePage(int pageNumber, int pointer, @NotNull BlockServer server){
 
 		while (pointersList.size() >= utils.SSD_SIZE){
 //			System.out.println("waiting for SSD to have space");
@@ -100,7 +100,7 @@ public class SSD{
 
 			if(pointersList.contains(pageNumber)){
 				writeSSDPage(pageNumber, pointer);
-				server.debugLog("cache,2,"+pageNumber+",Page: " + pageNumber + " added to writeToSSDQueue");
+				server.debugLog("cache,2,"+pageNumber+", pageNumber " + pageNumber + " added to writeToSSDQueue");
 			}else{
 				//assume elder is always updated
 				/*
@@ -126,7 +126,7 @@ public class SSD{
 //			}else{
 //				size.getAndIncrement();
 				writeSSDPage(pageNumber, pointer);
-				server.debugLog("cache,2,"+pageNumber+",Page: " + pageNumber + " added to writeToSSDQueue");
+				server.debugLog("cache,2,"+pageNumber+", pageNumber " + pageNumber + " added to writeToSSDQueue");
 //			}
 		}
 //		System.out.println("size & max_size = "+size+" "+utils.SSD_SIZE);

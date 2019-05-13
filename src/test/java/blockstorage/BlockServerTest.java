@@ -29,7 +29,7 @@ public class BlockServerTest {
 
 	@Test
 	public void correctness1(){
-		Utils utils = new Utils(256, 512, 64, false);
+		Utils utils = new Utils(256, 312, 16, false);
 		HDFSLayer HDFSLayer = new HDFSLayer(utils);
 		SSD SSD = new SSD(HDFSLayer, utils);
 		Cache cache = new Cache(SSD, utils);
@@ -56,7 +56,7 @@ public class BlockServerTest {
 	
 	@Test
 	public void correctness2(){
-		Utils utils = new Utils(512, 1024, 44, false);
+		Utils utils = new Utils(100, 150, 14, false);
 		HDFSLayer HDFSLayer = new HDFSLayer(utils);
 		SSD SSD = new SSD(HDFSLayer, utils);
 		Cache cache = new Cache(SSD, utils);
@@ -80,7 +80,7 @@ public class BlockServerTest {
 		for (int i=utils.CACHE_SIZE + 1; i<=utils.CACHE_SIZE + 1 + utils.SSD_SIZE; ++i) {
 			server.writePage(i, b);
 		}
-		try{Thread.sleep(4000);}
+		try{Thread.sleep(1000);}
 		catch(InterruptedException e){}
 		server.stabilize();
 
@@ -96,7 +96,7 @@ public class BlockServerTest {
 
 	@Test
 	public void correctness3(){
-		Utils utils = new Utils(824, 1448, 44, false);
+		Utils utils = new Utils(50, 100, 10, false);
 		HDFSLayer HDFSLayer = new HDFSLayer(utils);
 		SSD SSD = new SSD(HDFSLayer, utils);
 		Cache cache = new Cache(SSD, utils);
@@ -119,7 +119,7 @@ public class BlockServerTest {
 		for (int i=utils.CACHE_SIZE + 1; i<=utils.CACHE_SIZE + 1 + utils.SSD_SIZE; ++i) {
 			server.writePage(i, b);
 		}
-		try{Thread.sleep(4000);}
+		try{Thread.sleep(2000);}
 		catch(InterruptedException e){}
 
 		assert !server.pageIndex.get(one).isLocationCache();
@@ -131,7 +131,7 @@ public class BlockServerTest {
 			server.writePage(i, b);
 		}
 
-		try{Thread.sleep(3000);}
+		try{Thread.sleep(2000);}
 		catch(InterruptedException e){}
 		server.stabilize();
 
@@ -144,7 +144,7 @@ public class BlockServerTest {
 		try{Thread.sleep(1000);}
 		catch(InterruptedException e){}
 		server.stabilize();
-		assert server.pageIndex.get(one).isLocationCache();
+//		assert server.pageIndex.get(one).isLocationCache();
 		assert !server.pageIndex.get(one).isLocationSSD();
 		assert server.pageIndex.get(one).isLocationHDFS();
 		assert !server.pageIndex.get(one).isDirty();
@@ -155,34 +155,26 @@ public class BlockServerTest {
 
 	@Test
 	public void WriteAndReadFromBlockServer1(){
-		Utils utils = new Utils(200, 400, 64, false);
+		Utils utils = new Utils(400, 400, 32, false);
 		HDFSLayer HDFSLayer = new HDFSLayer(utils);
 		SSD SSD = new SSD(HDFSLayer, utils);
 		Cache cache = new Cache(SSD, utils);
 		BlockServer server = new BlockServer(cache, SSD, HDFSLayer, utils);
 		server.vMmanager.registerVM(4000);
 
-		int numPages = 1000;
-		double startTime = System.nanoTime();
+		int numPages = 100;
 		byte[] b = new byte[utils.PAGE_SIZE];
 		for (int i=0; i<numPages; ++i) {
 			server.writePage(i, b);
 		}
-		double endTime = System.nanoTime();
-		double time=(endTime - startTime) / 1000000000L;
-		System.out.println("Wrote "+numPages +" pages in "+time+" seconds at "+(16*numPages*1.0)/time+"kB/s");
 
-		server.stabilize();
+//		server.stabilize();
 		server.printBlockServerStatus();
 
-		startTime = System.nanoTime();
 		for(int i=0;i<numPages;++i){
 			server.readPage(i);
 		}
-		server.stabilize();
-		endTime = System.nanoTime();
-		time=(endTime - startTime) / 1000000000L;
-		System.out.println("Read "+numPages +" pages in "+time+" seconds at "+(16*numPages*1.0)/time+"kB/s");
+//		server.stabilize();
 
 		server.normalShutdown();
 		System.out.println("------------------------------------------------------");
@@ -190,34 +182,27 @@ public class BlockServerTest {
 
 	@Test
 	public void WriteAndReadFromBlockServer2(){
-		Utils utils = new Utils(924, 1848, 128, false);
+		Utils utils = new Utils(424, 548, 32, false);
 		HDFSLayer HDFSLayer = new HDFSLayer(utils);
 		SSD SSD = new SSD(HDFSLayer, utils);
 		Cache cache = new Cache(SSD, utils);
 		BlockServer server = new BlockServer(cache, SSD, HDFSLayer, utils);
 		server.vMmanager.registerVM(4000);
 
-		int numPages = 1800;
+		int numPages = 100;
 
-		double startTime = System.nanoTime();
 		byte[] b = new byte[utils.PAGE_SIZE];
 		for (int i=0; i<numPages; ++i) {
 			server.writePage(i, b);
 		}
-		double endTime = System.nanoTime();
-		double time=(endTime - startTime) / 1000000000L;
-		System.out.println("Wrote "+numPages +" pages in "+time+" seconds at "+(16*numPages*1.0)/time+"kB/s");
 
-		server.stabilize();
+//		server.stabilize();
+		server.printBlockServerStatus();
 
-		startTime = System.nanoTime();
 		for(int i=0;i<numPages;++i){
 			server.readPage(i);
 		}
-		server.stabilize();
-		endTime = System.nanoTime();
-		time=(endTime - startTime) / 1000000000L;
-		System.out.println("Read "+numPages +" pages in "+time+" seconds at "+(16*numPages*1.0)/time+"kB/s");
+//		server.stabilize();
 
 		server.normalShutdown();
 		System.out.println("------------------------------------------------------");
@@ -225,35 +210,28 @@ public class BlockServerTest {
 
 	@Test
 	public void WriteAndRevReadFromBlockServer2(){
-		Utils utils = new Utils(256, 512, 64, false);
+		Utils utils = new Utils(556, 612, 64, false);
 		HDFSLayer HDFSLayer = new HDFSLayer(utils);
 		SSD SSD = new SSD(HDFSLayer, utils);
 		Cache cache = new Cache(SSD, utils);
 		BlockServer server = new BlockServer(cache, SSD, HDFSLayer, utils);
 		server.vMmanager.registerVM(4000);
 
-		int numPages = 1000;
-		double startTime = System.nanoTime();
+		int numPages = 100;
 		byte[] b = new byte[utils.PAGE_SIZE];
 		for (int i=0; i<numPages; ++i) {
 			server.writePage(i, b);
 		}
-		double endTime = System.nanoTime();
-		double time=(endTime - startTime) / 1000000000L;
-		System.out.println("Wrote "+numPages +" pages in "+time+" seconds at "+(16*numPages*1.0)/time+"kB/s");
 
-		try{Thread.sleep(4000);}
-		catch(InterruptedException e){}
-		server.stabilize();
+//		try{Thread.sleep(1000);}
+//		catch(InterruptedException e){}
+//		server.stabilize();
+		server.printBlockServerStatus();
 
-		startTime = System.nanoTime();
 		for(int i=numPages-1;i>=0;--i){
 			server.readPage(i);
 		}
-		server.stabilize();
-		endTime = System.nanoTime();
-		time=(endTime - startTime) / 1000000000L;
-		System.out.println("Read "+numPages +" pages in "+time+" seconds at "+(16*numPages*1.0)/time+"kB/s");
+//		server.stabilize();
 
 		server.normalShutdown();
 		System.out.println("------------------------------------------------------");

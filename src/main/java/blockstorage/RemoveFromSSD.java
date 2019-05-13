@@ -39,7 +39,7 @@ public class RemoveFromSSD implements Runnable {
 			}
 //			if((int)pageNumberToRemove != -1) {
 				SSD.writeToHDFSQueue.add(pageNumberToRemove);
-				server.debugLog("SSD,2,"+pageNumberToRemove+",Page " + pageNumberToRemove + " added to writeToHDFSQueue");
+				server.debugLog("SSD,2,"+pageNumberToRemove+", pageNumber " + pageNumberToRemove + " added to WriteToHDFSQueue");
 //			}
 
 			SSD.recencyListLock.unlock();
@@ -65,7 +65,7 @@ public class RemoveFromSSD implements Runnable {
 			}
 
 			if(server.removeFromSSDStop){
-				if(!server.writeToSSDThread.isAlive() && SSD.pointersList.size() == 0){
+				if(!server.writeToSSDThread1.isAlive() && SSD.pointersList.size() == 0){
 					break;
 				}
 			}

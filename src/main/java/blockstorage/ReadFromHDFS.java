@@ -18,7 +18,7 @@ public class ReadFromHDFS implements Runnable {
 		if(server.readFromHDFSQueue.size() > 0){
 			int pageNumber = server.readFromHDFSQueue.remove();
 			if(pageNumber == -1){return;}
-			server.debugLog("HDFS,2,"+pageNumber+",Page: " + pageNumber + " removed from readFromHDFSQueue");
+			server.debugLog("HDFS,2,"+pageNumber+", pageNumber " + pageNumber + " removed from ReadFromHDFSQueue");
 
 			Block returnBlock = HDFSLayer.readBlock(pageNumber, server);
 			Page returnPage = returnBlock.readPage(pageNumber);
@@ -32,7 +32,7 @@ public class ReadFromHDFS implements Runnable {
 					if(written){
 						server.pageIndex.updatePageIndex(temp, 1, -1, 1, -1);
 //						System.out.println("Page: "+temp+" written to cache from ReadFromHDFSThread");
-						server.debugLog("cache,2,"+temp+",Page: " + temp + " written to cache by ReadFromHDFSThread");
+						server.debugLog("cache,2,"+temp+", temp " + temp + " written to cache by ReadFromHDFSThread");
 					} else {
 						server.debugLog("Error in writing Page: "+temp+" to cache in ReadFromHDFSThread");
 //						System.out.println("ERROR in writing Page: "+temp+" to cache in ReadFromHDFSThread");

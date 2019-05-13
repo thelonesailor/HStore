@@ -19,7 +19,7 @@ public class Utils{
 
 //	int SSD_SIZE = 100000;//pages   ~1.6GB
 	int SSD_SIZE = 10000;//pages   ~.16GB
-	final int MAX_SSD_FULL_PERCENTAGE = 60;// %
+	final int MAX_SSD_FULL_PERCENTAGE = 70;// %
 	int MAX_SSD_FULL_SIZE;
 
 

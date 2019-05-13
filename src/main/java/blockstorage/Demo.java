@@ -32,6 +32,9 @@ public class Demo {
 			server.pageIndex.writeToFilePageIndex();
 			server.writeToFileBlockServerStatus();
 
+			try{Thread.sleep(1000);}
+			catch(InterruptedException e){}
+			server.debugLog("-,-,-,-");
 			System.out.println("enter input:");
 			String op = input.next();
 
@@ -47,8 +50,23 @@ public class Demo {
 
 				server.writePage(pageNumber, b);
 			}
+			else if(op.contentEquals("ws")){
+				int pageNumber = input.nextInt();
+				System.out.println(op+" "+pageNumber);
+
+				server.writePageSynchronously(pageNumber, b);
+			}
 			else if(op.contentEquals("p")){
 				server.printBlockServerStatus();
+			}
+			else if(op.contentEquals("reg")){
+				int numberOfPages = input.nextInt();
+				System.out.println(op+" "+numberOfPages);
+				int VMID = server.vMmanager.registerVM(numberOfPages);
+				System.out.println("VMID= "+VMID);
+				int start = (VMID<<25);
+				int end = start + numberOfPages - 1;
+				System.out.println("Your range of page numbers is ["+start+","+end+"]");
 			}
 			else if(op.contentEquals("e")){
 				break;

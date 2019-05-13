@@ -34,6 +34,7 @@ public class WriteToSSD implements Runnable{
 				cache.pointersList.remove(-1);
 				return;
 			}
+			server.debugLog("SSD,2,"+pageNumber+", pageNumber "+pageNumber+" removed from writeToSSDQueue");
 //			if(!server.pageIndex.get(pageNumber).isLocationCache()){
 //				return;
 //			}
@@ -66,8 +67,7 @@ public class WriteToSSD implements Runnable{
 				cache.cacheListLock.unlock();
 
 				cache.EmptyPointers.add(freePointer);
-//				Cache.size.getAndDecrement();// Cache.size--
-
+				server.debugLog("cache,1,"+pageNumber+", pageNumber "+pageNumber+" removed from Cache");
 
 				SSD.recencyListLock.lock();
 				SSD.pointersListLock.lock();
@@ -77,7 +77,7 @@ public class WriteToSSD implements Runnable{
 
 				SSD.pointersListLock.unlock();
 				SSD.recencyListLock.unlock();
-
+				server.debugLog("SSD,1,"+pageNumber+", pageNumber "+pageNumber+" written to SSD by "+Thread.currentThread().getName());
 
 //				if((int)pageNumber == 50) {
 //					int lmaolmao=23;

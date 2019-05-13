@@ -7,8 +7,8 @@ import java.util.List;
 public class PageIndex {
 //	private Position[] pageIndex;
 	List<Position[]> pageIndex;
-	int localPageNumberMask = (1<<26) - 1;
-	int VMIDmask = ((1<<31) - 1) - localPageNumberMask;
+	int localPageNumberMask = (1<<25) - 1;
+	int VMIDmask = ((1<<30) - 1) - localPageNumberMask;
 
 	PageIndex(){
 		pageIndex = new ArrayList<>();
@@ -26,7 +26,8 @@ public class PageIndex {
 
 	void writeToFilePageIndex(){
 		try {
-			PrintWriter out = new PrintWriter("pageIndex.txt");
+			PrintWriter out = new PrintWriter("/var/www/html/data/" +
+					"pageIndex.txt");
 			for(int VMID=0;VMID<pageIndex.size();++VMID){
 				Position[] positions = pageIndex.get(VMID);
 				for(int localPageNumber=0;localPageNumber<positions.length;++localPageNumber){
@@ -64,8 +65,8 @@ public class PageIndex {
 		boolean locationCache, locationSSD, locationHDFS, dirtyBit;
 
 		int localPageNumber = pageNumber & localPageNumberMask;
-		int VMID = pageNumber & VMIDmask;
-
+		int VMID = (pageNumber & VMIDmask)>>25;
+//		System.out.println("Updating pageIndex for VMID="+VMID+" localPageNumber="+localPageNumber);
 		if(pageIndex.get(VMID)[localPageNumber] != null) {
 			Position po = pageIndex.get(VMID)[localPageNumber];
 
