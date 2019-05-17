@@ -54,7 +54,9 @@ public class SSD{
 
 
 	void writeSSDPage(int pageNumber, int pointer) {
+//		writeToSSDQueueLock.lock();
 		writeToSSDQueue.add(new Pair<>(pageNumber, pointer));
+//		writeToSSDQueueLock.unlock();
 	}
 
 	@NotNull Page readSSDPage(int pageNumber){

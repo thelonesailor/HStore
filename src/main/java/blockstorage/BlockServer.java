@@ -55,7 +55,7 @@ class BlockServer {
 		this.SSD = SSD;
 		this.HDFSLayer = HDFSLayer;
 		this.utils = utils;
-		this.pageIndex = new PageIndex();
+		this.pageIndex = new PageIndex(this);
 		this.vMmanager = new VMManager(this);
 
 		this.removeFromCache = new RemoveFromCache(this.cache, this.SSD, this, this.utils);
@@ -103,8 +103,10 @@ class BlockServer {
 		try{Thread.sleep(100);}
 		catch(InterruptedException e){}
 
-		File file = new File("/var/www/html/data/debugLog.txt");
-		file.delete();
+		if(utils.SHOW_LOG){
+			File file = new File("/var/www/html/data/debugLog.txt");
+			file.delete();
+		}
 
 		System.out.println("BlockServer initialised");
 	}

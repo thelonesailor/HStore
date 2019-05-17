@@ -9,18 +9,20 @@ public class PageIndex {
 	List<Position[]> pageIndex;
 	int localPageNumberMask = (1<<25) - 1;
 	int VMIDmask = ((1<<30) - 1) - localPageNumberMask;
+	BlockServer server;
 
-	PageIndex(){
+	PageIndex(BlockServer server){
+		this.server = server;
 		pageIndex = new ArrayList<>();
 	}
 
-	void addVM(int VMID,int pagesWanted){
+	void addVM(int pagesWanted){
 		pageIndex.add(new Position[pagesWanted]);
 	}
 
 	Position get(int pageNumber){
 		int localPageNumber = pageNumber & localPageNumberMask;
-		int VMID = pageNumber & VMIDmask;
+		int VMID = (pageNumber & VMIDmask)>>25;
 		return (pageIndex.get(VMID)[localPageNumber]);
 	}
 
@@ -66,6 +68,9 @@ public class PageIndex {
 
 		int localPageNumber = pageNumber & localPageNumberMask;
 		int VMID = (pageNumber & VMIDmask)>>25;
+		if(VMID >= pageIndex.size()){
+			server.vMmanager.registerVM(10000);
+		}
 //		System.out.println("Updating pageIndex for VMID="+VMID+" localPageNumber="+localPageNumber);
 		if(pageIndex.get(VMID)[localPageNumber] != null) {
 			Position po = pageIndex.get(VMID)[localPageNumber];

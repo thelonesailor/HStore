@@ -18,7 +18,7 @@ public class VMManager {
 
 	int registerVM(int numPages){
 		pagesForEachVM.add(numPages);
-		server.pageIndex.addVM(VMIDMax,numPages);
+		server.pageIndex.addVM(numPages);
 		return VMIDMax++;
 	}
 }

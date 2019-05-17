@@ -65,6 +65,11 @@ class Cache {
 			assert false;
 		}
 
+//		try{}
+//		catch(Exception e){
+//			System.out.println(pageNumber);
+//			e.printStackTrace();
+//		}
 		int pointer = pointersList.get(pageNumber);
 //		pointersListLock.unlock();
 
